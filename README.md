@@ -62,11 +62,13 @@ Aero makes listening to music feel light and breezy.
 
 - CSS Style Guide (*Tailwind CSS*)
     ![CSS Style Guide](./assets/aero_ss.png)
-    - Primary Color: `slate-50` (*No need to add this explicitly, it is already added as global font color in [app.css](./src/app.css)*)
-    - Secondary Color: `slate-200`
-    - Tertiary Color: `slate-400`
+    - Primary Font Color: `slate-50` (*No need to add this explicitly, it is already added as global font color in [app.css](./src/app.css)*)
+    - Secondary Font Color: `slate-200`
+    - Tertiary Font Color: `slate-400`
     - Theme Color: `sky-500`
-    - Background Color: `slate-950` (*Globally added in [app.css](./src/app.css)*)
+    - Primary Background Color: `slate-950` (*Globally added in [app.css](./src/app.css)*)
+    - Secondary Background Color: `slate-900` (*For cards/containers*)
+    - Tertiary Background Color: `slate-800` (*For cards/options on hover*)
     - Card/Container Background Color: `slate-900` (*For cards add `border-slate-700`*)
     - For other colors use `<color>-500` as text color and `<color>-500/10` as background color on hover (*make sure to have bg color as `slate-800`/`slate-900`/`slate-950` before hover*).
     - Rounded Corners: `rounded-lg` (*For every possible card/container*)
