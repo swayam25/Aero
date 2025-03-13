@@ -2,7 +2,7 @@
 
 ![Aero](./assets/banner.png)
 
-Aero makes listening to music feel light and breezy.
+Aero makes listening to music feel light and breezy
 
 </div>
 
@@ -41,7 +41,7 @@ Aero makes listening to music feel light and breezy.
     </details>
 
 5. Add redirect url at the Discord Developer Portal.
-    ![Discord Developer Portal](./assets/discord_dev_portal.png)
+    ![Discord Developer Portal](./assets/redirect_url.png)
 
 6. Start the app
     ```sh
