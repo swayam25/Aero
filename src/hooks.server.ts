@@ -2,8 +2,10 @@ import { JWT_SECRET } from "$env/static/private";
 import { db } from "$lib/db/db";
 import { verifyData } from "$lib/discord/jwt";
 import type { UserData } from "$lib/discord/types";
-import { redirect, type Handle } from "@sveltejs/kit";
+import { init as initPlayer } from "$lib/player";
+import { redirect, type Handle, type ServerInit } from "@sveltejs/kit";
 import { sequence } from "@sveltejs/kit/hooks";
+import { onMount } from "svelte";
 import YTMusic from "ytmusic-api";
 
 const handleRefreshHook: Handle = async ({ event, resolve }) => {
@@ -35,6 +37,12 @@ const handleYTMusicAPI: Handle = async ({ event, resolve }) => {
     event.locals.ytmusic = ytm;
 
     return resolve(event);
+};
+
+export const init: ServerInit = async () => {
+    onMount(async () => {
+        await initPlayer();
+    });
 };
 
 export const handle = sequence(handleRefreshHook, setLocalsHook, handleYTMusicAPI);

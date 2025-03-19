@@ -1,5 +1,6 @@
 <script lang="ts">
     import Button from "$lib/components/Button.svelte";
+    import { play } from "$lib/player";
     import { fade } from "svelte/transition";
     import SolarAltArrowLeftLinear from "~icons/solar/alt-arrow-left-linear";
     import SolarAltArrowRightLinear from "~icons/solar/alt-arrow-right-linear";
@@ -49,17 +50,20 @@
                         >
                             {#each songs as song}
                                 {@const thumb = song.thumbnails[0].url.replace("=w60-h60-l90-rj", "")}
-                                <div
+                                <button
                                     class="flex shrink-0 cursor-pointer flex-col items-start justify-start gap-2 rounded-lg p-3 transition-colors duration-200 hover:bg-slate-800"
+                                    onclick={async () => {
+                                        await play(song.videoId, song);
+                                    }}
                                 >
                                     <img src={thumb} alt="{song.name}'s Thumbnail" class="size-40 rounded-lg md:size-50" />
-                                    <div>
+                                    <div class="text-left">
                                         <p class="text-sm">{song.name.length > 20 ? song.name.slice(0, 20) + "..." : song.name}</p>
                                         <p class="text-sm text-slate-400">
                                             {song.artist.name.length > 20 ? song.artist.name.slice(0, 20) + "..." : song.artist.name}
                                         </p>
                                     </div>
-                                </div>
+                                </button>
                             {/each}
 
                             <div
