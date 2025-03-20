@@ -1,4 +1,5 @@
 <script lang="ts">
+    import { cn } from "$lib/utils/cn";
     import type { Snippet } from "svelte";
 
     interface Props {
@@ -32,7 +33,11 @@
     this={href ? "a" : "button"}
     role={href ? "link" : "button"}
     tabindex="0"
-    class="flex cursor-pointer items-center justify-center gap-2 rounded-lg bg-slate-800 {sizeClass} {className} transition-all duration-200 hover:brightness-80"
+    class={cn(
+        "flex cursor-pointer items-center justify-center gap-2 rounded-lg bg-slate-800 transition-all duration-200 hover:brightness-80",
+        className,
+        sizeClass
+    )}
     {onclick}
     {href}
     {disabled}

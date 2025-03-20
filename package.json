@@ -48,6 +48,8 @@
         ]
     },
     "dependencies": {
-        "@iconify/json": "^2.2.316"
+        "@iconify/json": "^2.2.316",
+        "clsx": "^2.1.1",
+        "tailwind-merge": "^3.0.2"
     }
 }

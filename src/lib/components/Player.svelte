@@ -14,6 +14,7 @@
     import SolarVolumeLinear from "~icons/solar/volume-linear";
     import SolarVolumeLoudLinear from "~icons/solar/volume-loud-linear";
     import SolarVolumeSmallLinear from "~icons/solar/volume-small-linear";
+    import MarqueeText from "./MarqueeText.svelte";
     import Popover from "./Popover.svelte";
 
     let { user }: { user: UserData } = $props();
@@ -30,9 +31,9 @@
             class="size-10 rounded-lg bg-slate-900 bg-cover transition-all md:size-15"
             style="background-image: url({$store.meta?.thumbnails[0].url});"
         ></div>
-        <div class="ml-2 flex flex-col items-start justify-center">
-            <span class="w-20 truncate text-sm font-semibold md:w-50">{$store.meta?.name}</span>
-            <span class="w-20 truncate text-xs text-slate-400 md:w-50">{$store.meta?.artist.name}</span>
+        <div class="ml-2 flex w-20 flex-col items-start justify-center md:w-40">
+            <MarqueeText text={$store.meta?.name || ""} class="text-sm font-semibold" />
+            <span class="w-20 truncate text-xs text-slate-400 md:w-40">{$store.meta?.artist.name}</span>
         </div>
     </div>
 
@@ -62,7 +63,7 @@
     </div>
 
     <div
-        class="flex w-20 items-center justify-center gap-2 transition-all *:cursor-pointer md:w-50 md:gap-4"
+        class="flex items-center justify-center gap-2 transition-all *:cursor-pointer md:gap-4"
         class:opacity-80={$store.state === "buffering" || $store.state === "unstarted"}
         class:pointer-events-none={$store.state === "unstarted"}
     >
