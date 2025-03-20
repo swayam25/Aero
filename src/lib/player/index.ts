@@ -65,6 +65,16 @@ export async function setVolume(vol: number) {
     player.setVolume(vol);
 }
 
+export async function previous() {
+    const player = get(store).player;
+    if (!player) return { error: "No player instance" };
+
+    if (get(store).queue.length <= 0) {
+        player.seekTo(0, true);
+        player.playVideo();
+    }
+}
+
 export async function skip() {
     const player = get(store).player;
     if (!player) return { error: "No player instance" };

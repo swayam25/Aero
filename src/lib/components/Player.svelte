@@ -1,10 +1,12 @@
 <script lang="ts">
     import type { UserData } from "$lib/discord/types";
-    import { setVolume, skip, store, togglePause } from "$lib/player";
+    import { previous, setVolume, skip, store, togglePause } from "$lib/player";
     import { Slider } from "bits-ui";
+    import SolarDownloadMinimalisticLinear from "~icons/solar/download-minimalistic-linear";
     import SolarMutedLinear from "~icons/solar/muted-linear";
     import SolarPauseCircleBold from "~icons/solar/pause-circle-bold";
     import SolarPlayCircleBold from "~icons/solar/play-circle-bold";
+    import SolarPlaylist2Linear from "~icons/solar/playlist-2-linear";
     import SolarRepeatLinear from "~icons/solar/repeat-linear";
     import SolarRepeatOneLinear from "~icons/solar/repeat-one-linear";
     import SolarSkipNextBold from "~icons/solar/skip-next-bold";
@@ -35,12 +37,12 @@
     </div>
 
     <div
-        class="flex items-center justify-center gap-3 transition-all *:cursor-pointer md:gap-4"
+        class="flex items-center justify-center gap-2 transition-all *:cursor-pointer md:gap-4"
         class:opacity-80={$store.state === "buffering" || $store.state === "unstarted"}
         class:pointer-events-none={$store.state === "unstarted"}
     >
         <!-- Previous -->
-        <button class="size-4 opacity-80 transition-opacity hover:opacity-100 md:size-5">
+        <button onclick={previous} class="size-4 opacity-80 transition-opacity hover:opacity-100 md:size-5">
             <SolarSkipPreviousBold class="size-full" />
         </button>
 
@@ -60,7 +62,7 @@
     </div>
 
     <div
-        class="flex w-20 items-center justify-center gap-3 transition-all *:cursor-pointer md:w-50 md:gap-4"
+        class="flex w-20 items-center justify-center gap-2 transition-all *:cursor-pointer md:w-50 md:gap-4"
         class:opacity-80={$store.state === "buffering" || $store.state === "unstarted"}
         class:pointer-events-none={$store.state === "unstarted"}
     >
@@ -117,6 +119,16 @@
             {:else}
                 <SolarRepeatLinear class="size-full text-sky-500" />
             {/if}
+        </button>
+
+        <!-- Queue -->
+        <button class="size-4 opacity-80 transition-opacity hover:opacity-100 md:size-5">
+            <SolarPlaylist2Linear class="size-full" />
+        </button>
+
+        <!-- Download -->
+        <button class="size-4 opacity-80 transition-opacity hover:opacity-100 md:size-5">
+            <SolarDownloadMinimalisticLinear class="size-full" />
         </button>
     </div>
 
