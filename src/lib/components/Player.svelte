@@ -25,13 +25,13 @@
     });
 </script>
 
-<div id="player" class="flex size-full h-15 w-full items-center justify-between rounded-lg px-5">
+<div id="player" class="flex size-full h-15 w-full items-center justify-evenly rounded-lg px-5 md:justify-between">
     <div class="flex items-center justify-center gap-2 transition-opacity" class:opacity-0={$store.state === "unstarted"}>
         <div
             class="size-10 rounded-lg bg-slate-900 bg-cover transition-all md:size-15"
             style="background-image: url({$store.meta?.thumbnails[0].url});"
         ></div>
-        <div class="ml-2 flex w-20 flex-col items-start justify-center md:w-40">
+        <div class="ml-2 flex max-w-40 flex-col items-start justify-center">
             <MarqueeText text={$store.meta?.name || ""} class="text-sm font-semibold" />
             <span class="w-20 truncate text-xs text-slate-400 md:w-40">{$store.meta?.artist.name}</span>
         </div>
@@ -63,7 +63,7 @@
     </div>
 
     <div
-        class="flex items-center justify-center gap-2 transition-all *:cursor-pointer md:gap-4"
+        class="hidden items-center justify-center gap-2 transition-all *:cursor-pointer md:flex md:gap-4"
         class:opacity-80={$store.state === "buffering" || $store.state === "unstarted"}
         class:pointer-events-none={$store.state === "unstarted"}
     >
