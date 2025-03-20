@@ -34,3 +34,22 @@ body {
         }
     }
 }
+
+/* Player Slider */
+:root {
+    --range-slider: var(--color-slate-800);
+    --range-range-inactive: var(--color-slate-200);
+    --range-range: var(--color-sky-500);
+    --range-handle-inactive: var(--color-slate-200);
+    --range-handle-focus: var(--color-slate-200);
+    --range-handle-border: transparent;
+}
+
+.rangeSlider {
+    font-size: 4px;
+}
+.rangeHandle {
+    width: 12px !important;
+    height: 12px !important;
+    @apply opacity-0 transition-opacity duration-200 group-hover:opacity-100;
+}

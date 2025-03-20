@@ -1,7 +1,7 @@
 <script lang="ts">
     import type { UserData } from "$lib/discord/types";
-    import { previous, setVolume, skip, store, togglePause } from "$lib/player";
-    import { Slider } from "bits-ui";
+    import { previous, seekTo, setVolume, skip, store, togglePause } from "$lib/player";
+    import { formatTime } from "$lib/utils/time";
     import SolarDownloadMinimalisticLinear from "~icons/solar/download-minimalistic-linear";
     import SolarMutedLinear from "~icons/solar/muted-linear";
     import SolarPauseCircleBold from "~icons/solar/pause-circle-bold";
@@ -15,7 +15,9 @@
     import SolarVolumeLoudLinear from "~icons/solar/volume-loud-linear";
     import SolarVolumeSmallLinear from "~icons/solar/volume-small-linear";
     import MarqueeText from "./MarqueeText.svelte";
+    import PlayerSlider from "./PlayerSlider.svelte";
     import Popover from "./Popover.svelte";
+    import Slider from "./Slider.svelte";
 
     let { user }: { user: UserData } = $props();
 
@@ -23,9 +25,27 @@
     $effect(() => {
         setVolume(volume);
     });
+
+    let currentTime: number = $state($store.currentTime);
+    let isSeeking: boolean = $state(false);
+
+    // Update currentTime from the store only when not seeking manually
+    $effect(() => {
+        if (!isSeeking) {
+            currentTime = $store.currentTime;
+        }
+    });
+
+    // Seek to the updated currentTime when manually changed
+    function handleSeek(value: number) {
+        isSeeking = true;
+        console.log(value);
+        seekTo(value);
+        isSeeking = false;
+    }
 </script>
 
-<div id="player" class="flex size-full h-15 w-full items-center justify-evenly rounded-lg px-5 md:justify-between">
+<div id="player" class="flex size-full h-15 w-full items-center justify-between rounded-lg px-10 md:px-5">
     <div class="flex items-center justify-center gap-2 transition-opacity" class:opacity-0={$store.state === "unstarted"}>
         <div
             class="size-10 rounded-lg bg-slate-900 bg-cover transition-all md:size-15"
@@ -38,28 +58,35 @@
     </div>
 
     <div
-        class="flex items-center justify-center gap-2 transition-all *:cursor-pointer md:gap-4"
+        class="flex flex-col items-center justify-center gap-1 transition-all"
         class:opacity-80={$store.state === "buffering" || $store.state === "unstarted"}
         class:pointer-events-none={$store.state === "unstarted"}
     >
-        <!-- Previous -->
-        <button onclick={previous} class="size-4 opacity-80 transition-opacity hover:opacity-100 md:size-5">
-            <SolarSkipPreviousBold class="size-full" />
-        </button>
+        <div class="flex items-center justify-center gap-2 transition-all *:cursor-pointer md:gap-4">
+            <!-- Previous -->
+            <button onclick={previous} class="size-4 opacity-80 transition-opacity hover:opacity-100 md:size-5">
+                <SolarSkipPreviousBold class="size-full" />
+            </button>
 
-        <!-- Play/Pause -->
-        <button class="size-8 transition-colors duration-200 hover:text-sky-500 md:size-10" onclick={togglePause}>
-            {#if $store.state === "playing"}
-                <SolarPauseCircleBold class="size-full" />
-            {:else}
-                <SolarPlayCircleBold class="size-full" />
-            {/if}
-        </button>
+            <!-- Play/Pause -->
+            <button class="size-8 transition-colors duration-200 hover:text-sky-500 md:size-10" onclick={togglePause}>
+                {#if $store.state === "playing"}
+                    <SolarPauseCircleBold class="size-full" />
+                {:else}
+                    <SolarPlayCircleBold class="size-full" />
+                {/if}
+            </button>
 
-        <!-- Next -->
-        <button onclick={skip} class="size-4 opacity-80 transition-opacity hover:opacity-100 md:size-5">
-            <SolarSkipNextBold class="size-full" />
-        </button>
+            <!-- Next -->
+            <button onclick={skip} class="size-4 opacity-80 transition-opacity hover:opacity-100 md:size-5">
+                <SolarSkipNextBold class="size-full" />
+            </button>
+        </div>
+        <div class="hidden items-center justify-center gap-2 md:flex">
+            <p class="text-xs text-slate-400">{formatTime(currentTime)}</p>
+            <PlayerSlider max={$store.totalDuration} value={currentTime} class="w-20 md:w-50 lg:w-80" onChange={handleSeek} />
+            <p class="text-xs text-slate-400">{formatTime($store.totalDuration)}</p>
+        </div>
     </div>
 
     <div
@@ -83,16 +110,7 @@
                 </span>
             {/snippet}
             {#snippet content()}
-                <div class="group w-40 p-1">
-                    <Slider.Root type="single" bind:value={volume} class="relative flex w-full touch-none items-center select-none">
-                        {#snippet children()}
-                            <span class="relative h-1 w-full grow cursor-pointer overflow-hidden rounded-full bg-slate-800">
-                                <Slider.Range class="absolute h-full bg-slate-200 transition-colors duration-200 group-hover:bg-sky-500" />
-                            </span>
-                            <Slider.Thumb index={0} class="size-3 cursor-pointer rounded-full bg-slate-200 transition-colors duration-200" />
-                        {/snippet}
-                    </Slider.Root>
-                </div>
+                <Slider value={volume} class="w-40" />
             {/snippet}
         </Popover>
 

@@ -48,6 +48,18 @@ export async function play(videoID: string, meta: PlayerStore["meta"]) {
     player = get(store).player;
     player?.loadVideoById(videoID);
     player?.playVideo();
+
+    // Continuously update current time and total duration
+    const updateTime = async () => {
+        const state = get(store).state;
+        if (state === "playing") {
+            const currentTime = (await player?.getCurrentTime()) || 0;
+            const totalDuration = (await player?.getDuration()) || 0;
+            store.update((state) => ({ ...state, currentTime, totalDuration }));
+        }
+        requestAnimationFrame(updateTime);
+    };
+    updateTime();
 }
 
 export async function togglePause() {
@@ -91,4 +103,11 @@ export async function setLoop(loop: PlayerStore["loop"]) {
 
     player.setLoop(loop === "queue");
     store.update((state) => ({ ...state, loop }));
+}
+
+export async function seekTo(time: number) {
+    const player = get(store).player;
+    if (!player) return { error: "No player instance" };
+
+    player.seekTo(time, true);
 }

@@ -14,6 +14,9 @@ importers:
       clsx:
         specifier: ^2.1.1
         version: 2.1.1
+      svelte-range-slider-pips:
+        specifier: ^3.2.2
+        version: 3.2.2(svelte@5.23.0)
       tailwind-merge:
         specifier: ^3.0.2
         version: 3.0.2
@@ -1572,6 +1575,11 @@ packages:
       svelte: ^4.0.0 || ^5.0.0-next.0
       typescript: '>=5.0.0'
 
+  svelte-range-slider-pips@3.2.2:
+    resolution: {integrity: sha512-Q2+hn5jEP2CtbWFrvFZoThRUURbijWSCsoOR6Z8UUKjA5ftYQI7Z+mHYxHQpnGd3LCb9OlkHX2wM1If+Vbci6g==}
+    peerDependencies:
+      svelte: ^4.2.7 || ^5.0.0
+
   svelte-toolbelt@0.7.1:
     resolution: {integrity: sha512-HcBOcR17Vx9bjaOceUvxkY3nGmbBmCBBbuWLLEWO6jtmWH8f/QoWmbyUfQZrpDINH39en1b8mptfPQT9VKQ1xQ==}
     engines: {node: '>=18', pnpm: '>=8.7.0'}
@@ -2838,6 +2846,10 @@ snapshots:
       typescript: 5.8.2
     transitivePeerDependencies:
       - picomatch
+
+  svelte-range-slider-pips@3.2.2(svelte@5.23.0):
+    dependencies:
+      svelte: 5.23.0
 
   svelte-toolbelt@0.7.1(svelte@5.23.0):
     dependencies:
