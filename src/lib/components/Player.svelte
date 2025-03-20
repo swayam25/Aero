@@ -15,7 +15,6 @@
     import SolarVolumeLoudLinear from "~icons/solar/volume-loud-linear";
     import SolarVolumeSmallLinear from "~icons/solar/volume-small-linear";
     import MarqueeText from "./MarqueeText.svelte";
-    import PlayerSlider from "./PlayerSlider.svelte";
     import Popover from "./Popover.svelte";
     import Slider from "./Slider.svelte";
 
@@ -84,7 +83,7 @@
         </div>
         <div class="hidden items-center justify-center gap-2 md:flex">
             <p class="text-xs text-slate-400">{formatTime(currentTime)}</p>
-            <PlayerSlider max={$store.totalDuration} value={currentTime} class="w-20 md:w-50 lg:w-80" onChange={handleSeek} />
+            <Slider max={$store.totalDuration} value={currentTime} class="w-20 md:w-50 lg:w-80" onChange={handleSeek} />
             <p class="text-xs text-slate-400">{formatTime($store.totalDuration)}</p>
         </div>
     </div>
@@ -110,7 +109,7 @@
                 </span>
             {/snippet}
             {#snippet content()}
-                <Slider value={volume} class="w-40" />
+                <Slider bind:value={volume} class="w-40" />
             {/snippet}
         </Popover>
 
