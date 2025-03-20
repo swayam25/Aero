@@ -26,7 +26,7 @@
     });
 </script>
 
-<div class="grid h-screen w-screen grid-rows-[auto_1fr_auto] overflow-hidden grid-cols-1 md:grid-cols-[5rem_auto] md:gap-2 md:p-2">
+<div class="grid h-screen w-screen grid-cols-1 grid-rows-[auto_1fr_auto] overflow-hidden md:grid-cols-[5rem_auto] md:gap-2 md:p-2">
     <div class="col-span-2">
         <Navbar user={data.user} />
     </div>

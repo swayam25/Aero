@@ -6,8 +6,9 @@
     interface Props {
         trigger: Snippet;
         content: Snippet;
+        side?: "top" | "right" | "bottom" | "left" | undefined;
     }
-    let { trigger, content }: Props = $props();
+    let { trigger, content, side = undefined }: Props = $props();
 </script>
 
 <Popover.Root>
@@ -15,7 +16,7 @@
         {@render trigger()}
     </Popover.Trigger>
     <Popover.Portal>
-        <Popover.Content side="top" class="mb-2 rounded-lg border border-slate-700 bg-slate-900 p-1 text-sm" forceMount>
+        <Popover.Content {side} class="z-50 m-2 min-w-45 rounded-lg border border-slate-700 bg-slate-900 p-2 text-sm" forceMount>
             {#snippet child({ wrapperProps, props, open })}
                 {#if open}
                     <div {...wrapperProps}>

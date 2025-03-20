@@ -28,7 +28,6 @@ export async function init() {
         });
         if (event.data === 0 && get(store).loop === "single") {
             newPlayer.playVideo();
-            console.log("SKIP")
         }
     });
     newPlayer.on("volumeChange", (event) => {

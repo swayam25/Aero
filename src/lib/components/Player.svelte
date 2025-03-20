@@ -24,25 +24,28 @@
 
 <div id="player" class="flex size-full h-15 w-full items-center justify-between rounded-lg px-5">
     <div class="flex items-center justify-center gap-2 transition-opacity" class:opacity-0={$store.state === "unstarted"}>
-        <div class="size-10 md:size-15 rounded-lg bg-slate-900 transition-all bg-cover" style="background-image: url({$store.meta?.thumbnails[0].url});"></div>
+        <div
+            class="size-10 rounded-lg bg-slate-900 bg-cover transition-all md:size-15"
+            style="background-image: url({$store.meta?.thumbnails[0].url});"
+        ></div>
         <div class="ml-2 flex flex-col items-start justify-center">
-            <span class="w-20 md:w-50 truncate text-sm font-semibold">{$store.meta?.name}</span>
-            <span class="w-20 md:w-50 truncate text-xs text-slate-400">{$store.meta?.artist.name}</span>
+            <span class="w-20 truncate text-sm font-semibold md:w-50">{$store.meta?.name}</span>
+            <span class="w-20 truncate text-xs text-slate-400 md:w-50">{$store.meta?.artist.name}</span>
         </div>
     </div>
 
     <div
-        class="flex items-center justify-center gap-3 md:gap-4 transition-all *:cursor-pointer"
+        class="flex items-center justify-center gap-3 transition-all *:cursor-pointer md:gap-4"
         class:opacity-80={$store.state === "buffering" || $store.state === "unstarted"}
         class:pointer-events-none={$store.state === "unstarted"}
     >
         <!-- Previous -->
-        <button class="size-4 md:size-5 opacity-80 transition-opacity hover:opacity-100">
+        <button class="size-4 opacity-80 transition-opacity hover:opacity-100 md:size-5">
             <SolarSkipPreviousBold class="size-full" />
         </button>
 
         <!-- Play/Pause -->
-        <button class="size-8 md:size-10 transition-colors duration-200 hover:text-sky-500" onclick={togglePause}>
+        <button class="size-8 transition-colors duration-200 hover:text-sky-500 md:size-10" onclick={togglePause}>
             {#if $store.state === "playing"}
                 <SolarPauseCircleBold class="size-full" />
             {:else}
@@ -51,20 +54,20 @@
         </button>
 
         <!-- Next -->
-        <button onclick={skip} class="size-4 md:size-5 opacity-80 transition-opacity hover:opacity-100">
+        <button onclick={skip} class="size-4 opacity-80 transition-opacity hover:opacity-100 md:size-5">
             <SolarSkipNextBold class="size-full" />
         </button>
     </div>
 
     <div
-        class="flex w-20 md:w-50 items-center justify-center gap-3 md:gap-4 transition-all *:cursor-pointer"
+        class="flex w-20 items-center justify-center gap-3 transition-all *:cursor-pointer md:w-50 md:gap-4"
         class:opacity-80={$store.state === "buffering" || $store.state === "unstarted"}
         class:pointer-events-none={$store.state === "unstarted"}
     >
         <!-- Volume -->
-        <Popover>
+        <Popover side="top">
             {#snippet trigger()}
-                <span class="size-4 md:size-5 opacity-80 transition-opacity hover:opacity-100">
+                <span class="size-4 opacity-80 transition-opacity hover:opacity-100 md:size-5">
                     {#if volume === 0}
                         <SolarMutedLinear class="size-full" />
                     {:else if volume < 50 && volume > 20}
@@ -77,7 +80,7 @@
                 </span>
             {/snippet}
             {#snippet content()}
-                <div class="group w-40 p-2">
+                <div class="group w-40 p-1">
                     <Slider.Root type="single" bind:value={volume} class="relative flex w-full touch-none items-center select-none">
                         {#snippet children()}
                             <span class="relative h-1 w-full grow cursor-pointer overflow-hidden rounded-full bg-slate-800">
@@ -105,7 +108,7 @@
                         break;
                 }
             }}
-            class="size-4 md:size-5 opacity-80 transition-opacity hover:opacity-100"
+            class="size-4 opacity-80 transition-opacity hover:opacity-100 md:size-5"
         >
             {#if $store.loop === "none"}
                 <SolarRepeatLinear class="size-full" />
