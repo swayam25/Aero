@@ -104,7 +104,7 @@
                 </div>
             </div>
         </div>
-        <div class="group relative">
+        <div class="group relative p-2">
             <div in:fade={{ duration: 100 }} id="sec-search" class="mt-5 flex gap-2 overflow-x-auto overflow-y-hidden" style="scrollbar-width: none;">
                 {#each songs.slice(5) as song}
                     {@const thumb = song.thumbnails[0].url.replace("=w60-h60-l90-rj", "")}

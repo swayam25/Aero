@@ -27,7 +27,7 @@
     {#each Object.keys(data.songs) as categoryName, idx}
         <div class="text-left">
             <h1 class="text-3xl font-bold md:text-4xl">{categoryName}</h1>
-            <div class="group relative">
+            <div class="group relative p-2">
                 <div class="mt-2.5 md:mt-5">
                     {#await data.songs[categoryName as keyof typeof data.songs]}
                         <div class="flex gap-2 overflow-x-auto overflow-y-hidden" style="scrollbar-width: none;">

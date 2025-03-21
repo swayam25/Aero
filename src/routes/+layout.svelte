@@ -34,7 +34,9 @@
         <Sidebar user={data.user} />
     </div>
     <div class="col-span-1 row-span-1 size-full overflow-x-hidden overflow-y-auto rounded-lg p-2 md:bg-slate-900 md:p-5">
-        {@render children()}
+        <div class="container m-auto size-full">
+            {@render children()}
+        </div>
     </div>
     <div class="col-span-2">
         <Player user={data.user} />
