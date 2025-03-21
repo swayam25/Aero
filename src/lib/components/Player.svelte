@@ -58,7 +58,7 @@
     <!-- Song Info -->
     <div class="flex items-center justify-center gap-2 transition-opacity">
         <Button
-            class="size-8 bg-slate-900 p-2 md: {$store.state === 'unstarted' ? 'pointer-events-none opacity-0' : 'opacity-100'}"
+            class="size-8 bg-slate-900 p-2 md:hidden {$store.state === 'unstarted' ? 'pointer-events-none opacity-0' : 'opacity-100'}"
             size=""
             onclick={() => (showMobilePlayer = true)}
         >
