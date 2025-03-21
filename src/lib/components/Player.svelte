@@ -156,7 +156,8 @@
                         break;
                 }
             }}
-            class="size-5 opacity-80 transition-opacity hover:opacity-100"
+            class="size-5 transition-opacity hover:opacity-100"
+            class:opacity-80={$store.loop === "none"}
         >
             {#if $store.loop === "none"}
                 <SolarRepeatLinear class="size-full" />
@@ -177,11 +178,12 @@
             onclick={() => {
                 $store.shuffle = !$store.shuffle;
             }}
-            class="size-5 opacity-80 transition-opacity not-disabled:hover:opacity-100"
+            class="size-5 transition-opacity not-disabled:hover:opacity-100"
+            class:opacity-80={!$store.shuffle}
             class:!cursor-not-allowed={$store.queue.length < 2}
             disabled={$store.queue.length < 2}
         >
-            <SolarShuffleLinear class="size-full" />
+            <SolarShuffleLinear class="size-full {$store.shuffle ? 'text-sky-500' : ''}" />
         </button>
 
         <!-- Download -->

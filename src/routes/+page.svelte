@@ -1,5 +1,6 @@
 <script lang="ts">
     import Button from "$lib/components/Button.svelte";
+    import { openCtxMenu } from "$lib/ctxmenu";
     import { play } from "$lib/player";
     import { fade } from "svelte/transition";
     import SolarAltArrowLeftLinear from "~icons/solar/alt-arrow-left-linear";
@@ -53,7 +54,11 @@
                                 <button
                                     class="flex shrink-0 cursor-pointer flex-col items-start justify-center gap-2 rounded-lg p-3 transition-colors duration-200 hover:bg-slate-800"
                                     onclick={async () => {
-                                        await play(song.videoId, song);
+                                        await play(song);
+                                    }}
+                                    oncontextmenu={(e) => {
+                                        e.preventDefault();
+                                        openCtxMenu(e, song);
                                     }}
                                 >
                                     <img src={thumb} alt="{song.name}'s Thumbnail" class="size-40 rounded-lg md:size-50" />

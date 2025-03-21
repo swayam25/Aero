@@ -65,7 +65,7 @@
                 <p class="hidden text-4xl font-bold md:block">Top Result</p>
                 <button
                     onclick={async () => {
-                        await play(songs[0].videoId, songs[0]);
+                        await play(songs[0]);
                     }}
                     class="flex cursor-pointer flex-col items-center justify-center gap-2 rounded-lg bg-slate-800 p-5 transition-colors duration-200 hover:bg-slate-700 md:size-full md:items-start"
                 >
@@ -86,7 +86,7 @@
                     {#each songs.slice(1, 5) as song}
                         <button
                             onclick={async () => {
-                                await play(song.videoId, song);
+                                await play(song);
                             }}
                             class="flex w-full items-center justify-center gap-2 rounded-lg p-2 transition-colors duration-200 hover:bg-slate-800"
                         >
@@ -111,7 +111,7 @@
                     <button
                         class="flex shrink-0 cursor-pointer flex-col items-start justify-center gap-2 rounded-lg p-3 transition-colors duration-200 hover:bg-slate-800"
                         onclick={async () => {
-                            await play(song.videoId, song);
+                            await play(song);
                         }}
                     >
                         <img src={thumb} alt="{song.name}'s Thumbnail" class="size-40 rounded-lg md:size-50" />
