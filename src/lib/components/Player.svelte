@@ -64,7 +64,7 @@
         </Button>
         <div
             class="size-10 rounded-lg bg-slate-900 bg-cover transition-all md:size-15"
-            style="background-image: url({$store.meta?.thumbnails[0].url});"
+            style="background-image: url({$store.state !== 'unstarted' ? $store.meta?.thumbnails[0].url : ''});"
         ></div>
         {#if $store.state === "unstarted"}
             <div class="flex max-w-40 flex-col items-start justify-center gap-2">
