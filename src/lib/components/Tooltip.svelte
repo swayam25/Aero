@@ -16,7 +16,12 @@
         <Tooltip.Trigger>
             {@render trigger()}
         </Tooltip.Trigger>
-        <Tooltip.Content {side} sideOffset={8} class="z-50 rounded-lg border border-slate-700 bg-slate-900 p-2 text-sm" forceMount>
+        <Tooltip.Content
+            {side}
+            sideOffset={8}
+            class="z-50 cursor-default rounded-lg border border-slate-700 bg-slate-900 p-2 text-sm text-slate-200"
+            forceMount
+        >
             {#snippet child({ wrapperProps, props, open })}
                 {#if open}
                     <div {...wrapperProps}>
