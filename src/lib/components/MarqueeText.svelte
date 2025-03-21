@@ -70,8 +70,8 @@
     });
 </script>
 
-<div class="relative w-full overflow-hidden">
-    <span bind:this={textElement} class={cn("whitespace-nowrap transition-transform ease-in-out", className)} style="display: inline-block;">
+<div class="relative w-full overflow-hidden h-fit">
+    <span bind:this={textElement} class={cn("whitespace-nowrap transition-transform ease-in-out h-fit", className)} style="display: inline-block;">
         {text}
     </span>
 </div>
