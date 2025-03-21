@@ -1,6 +1,7 @@
 <script lang="ts">
     import Button from "$lib/components/Button.svelte";
     import MarqueeText from "$lib/components/MarqueeText.svelte";
+    import { openCtxMenu } from "$lib/ctxmenu";
     import { play } from "$lib/player";
     import { fade } from "svelte/transition";
     import SolarAltArrowLeftLinear from "~icons/solar/alt-arrow-left-linear";
@@ -67,6 +68,10 @@
                     onclick={async () => {
                         await play(songs[0]);
                     }}
+                    oncontextmenu={(e) => {
+                        e.preventDefault();
+                        openCtxMenu(e, songs[0]);
+                    }}
                     class="flex cursor-pointer flex-col items-center justify-center gap-2 rounded-lg bg-slate-800 p-5 transition-colors duration-200 hover:bg-slate-700 md:size-full md:items-start"
                 >
                     <img
@@ -87,6 +92,10 @@
                         <button
                             onclick={async () => {
                                 await play(song);
+                            }}
+                            oncontextmenu={(e) => {
+                                e.preventDefault();
+                                openCtxMenu(e, song);
                             }}
                             class="flex w-full items-center justify-center gap-2 rounded-lg p-2 transition-colors duration-200 hover:bg-slate-800"
                         >
@@ -112,6 +121,10 @@
                         class="flex shrink-0 cursor-pointer flex-col items-start justify-center gap-2 rounded-lg p-3 transition-colors duration-200 hover:bg-slate-800"
                         onclick={async () => {
                             await play(song);
+                        }}
+                        oncontextmenu={(e) => {
+                            e.preventDefault();
+                            openCtxMenu(e, song);
                         }}
                     >
                         <img src={thumb} alt="{song.name}'s Thumbnail" class="size-40 rounded-lg md:size-50" />
