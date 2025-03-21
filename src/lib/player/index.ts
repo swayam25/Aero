@@ -27,8 +27,29 @@ export async function init() {
             };
             return { ...state, state: stateMap[event.data as keyof typeof stateMap] as PlayerStore["state"] };
         });
-        if (event.data === 0 && get(store).loop === "single") {
-            newPlayer.playVideo();
+        if (event.data === 0) {
+            if (get(store).loop === "single") {
+                newPlayer.playVideo();
+            } else if (get(store).loop === "queue") {
+                const queue = get(store).queue;
+                if (queue.length > 0) {
+                    const currentID = get(store).meta?.videoId; // Current video ID
+                    if (currentID) {
+                        const currentIndex = queue.indexOf(currentID); // Current video index
+                        let next; // Next video ID
+                        if (get(store).shuffle) {
+                            // Shuffle queue if enabled
+                            next = queue[Math.floor(Math.random() * queue.length)];
+                        } else {
+                            // Otherwise, play next video in queue
+                            next = queue[currentIndex + 1] || queue[0];
+                        }
+                        newPlayer.loadVideoById(next);
+                        newPlayer.playVideo();
+                        store.update((state) => ({ ...state, queue }));
+                    }
+                }
+            }
         }
     });
     newPlayer.on("volumeChange", (event) => {
@@ -48,6 +69,10 @@ export async function play(videoID: string, meta: PlayerStore["meta"]) {
 
     player = get(store).player;
     player?.loadVideoById(videoID);
+    store.update((state) => {
+        state.queue.push(videoID);
+        return state;
+    });
     player?.playVideo();
 
     // Continuously update current time and total duration
