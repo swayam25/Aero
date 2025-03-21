@@ -11,6 +11,7 @@
     import SolarPlaylist2Linear from "~icons/solar/playlist-2-linear";
     import SolarRepeatLinear from "~icons/solar/repeat-linear";
     import SolarRepeatOneLinear from "~icons/solar/repeat-one-linear";
+    import SolarShuffleLinear from "~icons/solar/shuffle-linear";
     import SolarSkipNextBold from "~icons/solar/skip-next-bold";
     import SolarSkipPreviousBold from "~icons/solar/skip-previous-bold";
     import SolarVolumeLinear from "~icons/solar/volume-linear";
@@ -54,9 +55,10 @@
 {/if}
 
 <div id="player" class="flex size-full h-15 w-full items-center justify-between rounded-lg px-8 md:px-5">
+    <!-- Song Info -->
     <div class="flex items-center justify-center gap-2 transition-opacity">
         <Button
-            class="size-8 bg-slate-900 p-2 md:hidden {$store.state === 'unstarted' ? 'pointer-events-none opacity-0' : 'opacity-100'}"
+            class="size-8 bg-slate-900 p-2 md: {$store.state === 'unstarted' ? 'pointer-events-none opacity-0' : 'opacity-100'}"
             size=""
             onclick={() => (showMobilePlayer = true)}
         >
@@ -79,6 +81,7 @@
         {/if}
     </div>
 
+    <!-- Main Controls -->
     <div
         class="flex flex-col items-center justify-center gap-1 transition-all"
         class:opacity-80={$store.state === "buffering" || $store.state === "unstarted"}
@@ -104,6 +107,7 @@
                 <SolarSkipNextBold class="size-full" />
             </button>
         </div>
+        <!-- Player Slider -->
         <div class="hidden items-center justify-center gap-2 md:flex">
             <p class="text-xs text-slate-400">{formatTime(currentTime)}</p>
             <Slider max={$store.totalDuration} value={currentTime} class="w-20 md:w-50 lg:w-80" onChange={handleSeek} />
@@ -111,15 +115,16 @@
         </div>
     </div>
 
+    <!-- Other Controls -->
     <div
-        class="hidden items-center justify-center gap-2 transition-all *:cursor-pointer md:flex md:gap-4"
+        class="hidden items-center justify-center transition-all *:cursor-pointer md:flex md:gap-4"
         class:opacity-80={$store.state === "buffering" || $store.state === "unstarted"}
         class:pointer-events-none={$store.state === "unstarted"}
     >
         <!-- Volume -->
         <Popover side="top">
             {#snippet trigger()}
-                <span class="size-4 opacity-80 transition-opacity hover:opacity-100 md:size-5">
+                <span class="size-5 opacity-80 transition-opacity hover:opacity-100">
                     {#if volume === 0}
                         <SolarMutedLinear class="size-full" />
                     {:else if volume < 50 && volume > 20}
@@ -151,7 +156,7 @@
                         break;
                 }
             }}
-            class="size-4 opacity-80 transition-opacity hover:opacity-100 md:size-5"
+            class="size-5 opacity-80 transition-opacity hover:opacity-100"
         >
             {#if $store.loop === "none"}
                 <SolarRepeatLinear class="size-full" />
@@ -163,12 +168,24 @@
         </button>
 
         <!-- Queue -->
-        <button class="size-4 opacity-80 transition-opacity hover:opacity-100 md:size-5">
+        <button class="size-5 opacity-80 transition-opacity hover:opacity-100">
             <SolarPlaylist2Linear class="size-full" />
         </button>
 
+        <!-- Shuffle -->
+        <button
+            onclick={() => {
+                $store.shuffle = !$store.shuffle;
+            }}
+            class="size-5 opacity-80 transition-opacity not-disabled:hover:opacity-100"
+            class:!cursor-not-allowed={$store.queue.length < 2}
+            disabled={$store.queue.length < 2}
+        >
+            <SolarShuffleLinear class="size-full" />
+        </button>
+
         <!-- Download -->
-        <button class="size-4 opacity-80 transition-opacity hover:opacity-100 md:size-5">
+        <button class="size-5 opacity-80 transition-opacity hover:opacity-100">
             <SolarDownloadMinimalisticLinear class="size-full" />
         </button>
     </div>

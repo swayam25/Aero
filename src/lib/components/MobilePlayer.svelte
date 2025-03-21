@@ -4,8 +4,13 @@
     import { expoOut } from "svelte/easing";
     import { fly } from "svelte/transition";
     import SolarAltArrowDownLinear from "~icons/solar/alt-arrow-down-linear";
+    import SolarDownloadMinimalisticLinear from "~icons/solar/download-minimalistic-linear";
     import SolarPauseCircleBold from "~icons/solar/pause-circle-bold";
     import SolarPlayCircleBold from "~icons/solar/play-circle-bold";
+    import SolarPlaylist2Linear from "~icons/solar/playlist-2-linear";
+    import SolarRepeatLinear from "~icons/solar/repeat-linear";
+    import SolarRepeatOneLinear from "~icons/solar/repeat-one-linear";
+    import SolarShuffleLinear from "~icons/solar/shuffle-linear";
     import SolarSkipNextBold from "~icons/solar/skip-next-bold";
     import SolarSkipPreviousBold from "~icons/solar/skip-previous-bold";
     import Button from "./Button.svelte";
@@ -56,7 +61,7 @@
             <div></div>
         </div>
 
-        <div class="flex flex-col items-center justify-center gap-10 w-full">
+        <div class="flex w-full flex-col items-center justify-center gap-10">
             <div class="flex flex-col items-center justify-center gap-2">
                 <img src={$store.meta?.thumbnails[0].url.replace("=w60-h60-l90-rj", "")} alt="thumbnail" class="size-40 rounded-lg" />
                 <div class="flex flex-col items-start justify-center">
@@ -67,10 +72,11 @@
                 </div>
             </div>
             <div
-                class="flex flex-col w-full items-center justify-center gap-2 transition-all"
+                class="flex w-full flex-col items-center justify-center gap-2 transition-all"
                 class:opacity-80={$store.state === "buffering" || $store.state === "unstarted"}
                 class:pointer-events-none={$store.state === "unstarted"}
             >
+                <!-- Player Slider -->
                 <div class="flex w-full items-center justify-center gap-2">
                     <p class="text-xs text-slate-400">{formatTime(currentTime)}</p>
                     <Slider max={$store.totalDuration} value={currentTime} class="w-80" onChange={handleSeek} />
@@ -83,7 +89,7 @@
                     </button>
 
                     <!-- Play/Pause -->
-                    <button class="size-11 transition-colors duration-200 hover:text-sky-500" onclick={togglePause}>
+                    <button class="size-16 transition-colors duration-200 hover:text-sky-500" onclick={togglePause}>
                         {#if $store.state === "playing"}
                             <SolarPauseCircleBold class="size-full" />
                         {:else}
@@ -99,7 +105,60 @@
             </div>
         </div>
 
-        <div></div>
+        <!-- Other Controls -->
+        <div
+            class="flex items-center justify-center gap-4 transition-all *:cursor-pointer"
+            class:opacity-80={$store.state === "buffering" || $store.state === "unstarted"}
+            class:pointer-events-none={$store.state === "unstarted"}
+        >
+            <!-- Loop -->
+            <button
+                onclick={() => {
+                    switch ($store.loop) {
+                        case "none":
+                            $store.loop = "single";
+                            break;
+                        case "single":
+                            $store.loop = "queue";
+                            break;
+                        case "queue":
+                            $store.loop = "none";
+                            break;
+                    }
+                }}
+                class="size-6 opacity-80 transition-opacity hover:opacity-100"
+            >
+                {#if $store.loop === "none"}
+                    <SolarRepeatLinear class="size-full" />
+                {:else if $store.loop === "single"}
+                    <SolarRepeatOneLinear class="size-full" />
+                {:else}
+                    <SolarRepeatLinear class="size-full text-sky-500" />
+                {/if}
+            </button>
+
+            <!-- Queue -->
+            <button class="size-6 opacity-80 transition-opacity hover:opacity-100">
+                <SolarPlaylist2Linear class="size-full" />
+            </button>
+
+            <!-- Shuffle -->
+            <button
+                onclick={() => {
+                    $store.shuffle = !$store.shuffle;
+                }}
+                class="size-6 opacity-80 transition-opacity not-disabled:hover:opacity-100"
+                class:!cursor-not-allowed={$store.queue.length < 2}
+                disabled={$store.queue.length < 2}
+            >
+                <SolarShuffleLinear class="size-full" />
+            </button>
+
+            <!-- Download -->
+            <button class="size-6 opacity-80 transition-opacity hover:opacity-100">
+                <SolarDownloadMinimalisticLinear class="size-full" />
+            </button>
+        </div>
         <div></div>
         <div></div>
     </div>

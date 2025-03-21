@@ -5,6 +5,7 @@ import type { PlayerStore } from "./types";
 export const store = writable<PlayerStore>({
     player: null,
     queue: [],
+    shuffle: false,
     state: "unstarted",
     loop: "none",
     meta: null,
