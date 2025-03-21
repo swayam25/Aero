@@ -23,18 +23,18 @@
 
             // Adjust vertical position
             if ($store.y + menuHeight > window.innerHeight) {
-                y = Math.max($store.y - menuHeight, 100);
+                y = Math.max($store.y - menuHeight, 50);
             } else if (playerRect && $store.y + menuHeight > playerRect.top) {
-                y = Math.max($store.y - menuHeight, 100);
+                y = Math.max($store.y - menuHeight, 50);
             } else {
                 y = $store.y;
             }
 
             // Adjust horizontal position
             if ($store.x + menuWidth > window.innerWidth) {
-                x = Math.max($store.x - menuWidth, 100);
+                x = Math.max($store.x - menuWidth, 50);
             } else if (playerRect && $store.x + menuWidth > playerRect.left) {
-                x = Math.max($store.x - menuWidth, 100);
+                x = Math.max($store.x - menuWidth, 50);
             } else {
                 x = $store.x;
             }
