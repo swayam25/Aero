@@ -57,7 +57,7 @@
         </div>
 
         <div class="flex flex-col items-center justify-center gap-10 w-full">
-            <div class="flex flex-col items-center justify-center gap-2">
+            <div class="flex flex-col items-start justify-center gap-2">
                 <img src={$store.meta?.thumbnails[0].url.replace("=w60-h60-l90-rj", "")} alt="thumbnail" class="size-40 rounded-lg" />
                 <div class="flex flex-col items-start justify-center">
                     <div class="max-w-80">
