@@ -24,7 +24,7 @@
         {#each $store.queue as song, idx}
             <button
                 onclick={async () => {
-                    await play(song);
+                    await play(song, true);
                 }}
                 in:fly={{ duration: 500, easing: expoOut, x: -100, y: 0 }}
                 out:fly={{ duration: 500, easing: expoOut, x: 100, y: 0 }}

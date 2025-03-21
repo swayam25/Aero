@@ -39,7 +39,7 @@ export async function init() {
     store.update((state) => ({ ...state, player: newPlayer }));
 }
 
-export async function play(song: SongDetailed) {
+export async function play(song: SongDetailed, fromQueue: boolean = false) {
     let { player } = get(store);
 
     // Update player metadata
@@ -50,7 +50,7 @@ export async function play(song: SongDetailed) {
 
     player = get(store).player;
     player?.loadVideoById(song.videoId);
-    await addToQueue(song);
+    if (!fromQueue) await addToQueue(song);
     player?.playVideo();
 
     // Continuously update current time and total duration
