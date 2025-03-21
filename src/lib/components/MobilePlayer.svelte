@@ -60,7 +60,7 @@
             <div class="flex flex-col items-center justify-center gap-2">
                 <img src={$store.meta?.thumbnails[0].url.replace("=w60-h60-l90-rj", "")} alt="thumbnail" class="size-40 rounded-lg" />
                 <div class="flex flex-col items-start justify-center">
-                    <div class="max-w-80">
+                    <div class="max-w-50">
                         <MarqueeText text={$store.meta?.name || ""} class="text-lg font-semibold" />
                     </div>
                     <span class="text-sm text-slate-400">{$store.meta?.artist.name}</span>
