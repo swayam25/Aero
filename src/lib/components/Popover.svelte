@@ -4,11 +4,11 @@
     import { fade } from "svelte/transition";
 
     interface Props {
+        side?: "top" | "right" | "bottom" | "left" | undefined;
         trigger: Snippet;
         content: Snippet;
-        side?: "top" | "right" | "bottom" | "left" | undefined;
     }
-    let { trigger, content, side = undefined }: Props = $props();
+    let { side = undefined, trigger, content }: Props = $props();
 </script>
 
 <Popover.Root>

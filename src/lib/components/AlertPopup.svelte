@@ -4,13 +4,13 @@
     import { fade } from "svelte/transition";
 
     interface Props {
-        trigger: Snippet;
         title: string;
+        open?: boolean;
+        trigger: Snippet;
         description: Snippet;
         actions: Snippet;
-        open?: boolean;
     }
-    let { trigger, title, description, actions, open = $bindable(false) }: Props = $props();
+    let { title, open = $bindable(false), trigger, description, actions }: Props = $props();
 </script>
 
 <AlertDialog.Root bind:open>
