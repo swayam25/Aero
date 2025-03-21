@@ -1,7 +1,8 @@
 <script lang="ts">
     import { store } from "$lib/ctxmenu";
-    import { addToQueue, play } from "$lib/player";
+    import { addToQueue, play, store as playerStore, removeFromQueue } from "$lib/player";
     import { fade } from "svelte/transition";
+    import SolarNotificationLinesRemoveLinear from "~icons/solar/notification-lines-remove-linear";
     import SolarPlayLinear from "~icons/solar/play-linear";
     import SolarPlaylist2Linear from "~icons/solar/playlist-2-linear";
 
@@ -49,16 +50,16 @@
         class="absolute z-1000 flex min-w-45 flex-col items-start justify-center rounded-lg border border-slate-700 bg-slate-900 p-2 text-sm *:flex *:w-full *:cursor-pointer *:items-center *:justify-start *:gap-2 *:rounded-lg *:px-2 *:py-1.5 *:transition-colors *:duration-200 *:hover:bg-slate-800"
         style="top: {y}px; left: {x}px;"
     >
-        {#if $store.type === "song" && $store.song}
-            <!-- Play -->
-            <button
-                onclick={async () => {
-                    if ($store.song) await play($store.song);
-                }}
-            >
-                <SolarPlayLinear class="size-5" />
-                Play
-            </button>
+        <!-- Play -->
+        <button
+            onclick={async () => {
+                if ($store.song) await play($store.song);
+            }}
+        >
+            <SolarPlayLinear class="size-5" />
+            Play
+        </button>
+        {#if $store.type === "song" && $store.song && $playerStore.queue.length > 0}
             <!-- Add To Queue -->
             <button
                 onclick={async () => {
@@ -67,6 +68,16 @@
             >
                 <SolarPlaylist2Linear class="size-5" />
                 Add to Queue
+            </button>
+        {:else if $store.type === "queue" && $store.song && $store.song.videoId !== $playerStore.meta?.videoId}
+            <!-- Remove From Queue -->
+            <button
+                onclick={async () => {
+                    if ($store.song) await removeFromQueue($store.song);
+                }}
+            >
+                <SolarNotificationLinesRemoveLinear class="size-5" />
+                Remove from Queue
             </button>
         {/if}
     </div>

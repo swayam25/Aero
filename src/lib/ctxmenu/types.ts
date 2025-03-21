@@ -4,6 +4,6 @@ export interface CtxStore {
     isOpen: boolean;
     x: number;
     y: number;
-    type: "song" | "playlist";
+    type: "song" | "queue" | "playlist";
     song?: SongDetailed; // Only defined if type === "song"
 }

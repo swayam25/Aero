@@ -50,10 +50,7 @@ export async function play(song: SongDetailed) {
 
     player = get(store).player;
     player?.loadVideoById(song.videoId);
-    store.update((state) => {
-        state.queue.push(song);
-        return state;
-    });
+    await addToQueue(song);
     player?.playVideo();
 
     // Continuously update current time and total duration
@@ -74,17 +71,21 @@ export async function addToQueue(song: SongDetailed) {
     if (!player) return { error: "No player instance" };
 
     store.update((state) => {
+        // Filter out the song if already in the queue
+        state.queue = state.queue.filter((queuedSong) => queuedSong.videoId !== song.videoId);
+
+        // Add the song at the end of the queue
         state.queue.push(song);
         return state;
     });
 }
 
-export async function removeFromQueue(videoID: string) {
+export async function removeFromQueue(song: SongDetailed) {
     const player = get(store).player;
     if (!player) return { error: "No player instance" };
 
     store.update((state) => {
-        state.queue = state.queue.filter((song) => song.videoId !== videoID);
+        state.queue = state.queue.filter((queuedSong) => queuedSong.videoId !== song.videoId);
         return state;
     });
 }
@@ -108,9 +109,29 @@ export async function previous() {
     const player = get(store).player;
     if (!player) return { error: "No player instance" };
 
-    if (get(store).queue.length <= 0) {
+    if (get(store).queue.length <= 0 || get(store).loop === "single") {
         player.seekTo(0, true);
         player.playVideo();
+    } else {
+        const queue = get(store).queue;
+        const currentID = get(store).meta?.videoId; // Current video ID
+        if (currentID) {
+            const currentIndex = queue.findIndex((song) => song.videoId === currentID); // Current video index
+            let prev; // Previous video ID
+            if (get(store).shuffle) {
+                // Shuffle queue if enabled
+                prev = queue[Math.floor(Math.random() * queue.length)];
+            } else {
+                // Otherwise, play previous video in queue
+                prev = queue[currentIndex - 1] || queue[queue.length - 1];
+            }
+            store.update((state) => {
+                state.meta = state.queue.find((song) => song.videoId === prev.videoId) || null;
+                return state;
+            });
+            player.loadVideoById(prev);
+            player.playVideo();
+        }
     }
 }
 

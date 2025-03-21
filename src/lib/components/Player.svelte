@@ -103,7 +103,12 @@
             </button>
 
             <!-- Next -->
-            <button onclick={skip} class="size-4 opacity-80 transition-opacity hover:opacity-100 md:size-5">
+            <button
+                onclick={skip}
+                class="size-4 opacity-80 transition-opacity not-disabled:hover:opacity-100 md:size-5"
+                class:!cursor-not-allowed={$store.queue.length < 2}
+                disabled={$store.queue.length < 2}
+            >
                 <SolarSkipNextBold class="size-full" />
             </button>
         </div>
