@@ -40,7 +40,7 @@
 />
 <CtxMenu />
 
-<div class="grid h-screen w-screen grid-cols-3 grid-rows-[auto_1fr_auto] overflow-hidden md:grid-cols-[5rem_auto] md:gap-2 md:p-2">
+<div class="grid h-screen w-screen grid-cols-3 grid-rows-[auto_1fr_auto] overflow-hidden md:grid-cols-[5rem_auto_30vw] md:gap-2 md:p-2">
     <div class="col-span-3">
         <Navbar user={data.user} />
     </div>
@@ -49,15 +49,20 @@
     </div>
     <div
         id="body"
-        class="col-span-2 row-span-1 size-full overflow-x-hidden overflow-y-auto rounded-lg p-2 md:bg-slate-900 md:p-5"
-        class:col-span-2={!$store.showQueue}
+        class="col-span-3 row-span-1 size-full overflow-x-hidden overflow-y-auto rounded-lg p-2 md:col-span-1 md:bg-slate-900 md:p-5"
+        class:md:!col-span-2={!$store.showQueue}
     >
         <div class="container m-auto size-full">
             {@render children()}
         </div>
     </div>
     {#if $store.showQueue}
-        <div in:fly={{ duration: 500, easing: expoOut, x: 100, y: 0 }} class="col-span-1 row-span-1 hidden md:block">
+        <!-- Here "window.innerWidth >= 768" refers to "md" breakpoint -->
+        <div
+            in:fly={{ duration: 500, easing: expoOut, x: window.innerWidth >= 768 ? 100 : 0, y: window.innerWidth < 768 ? 100 : 0 }}
+            out:fly={{ duration: window.innerWidth >= 768 ? 0 : 500, easing: expoOut, x: 0, y: window.innerWidth < 768 ? 100 : 0 }}
+            class="fixed bottom-0 z-300 flex size-full items-end justify-center bg-slate-900/50 md:relative md:z-0 md:col-span-1 md:row-span-1 md:block"
+        >
             <Queue />
         </div>
     {/if}
