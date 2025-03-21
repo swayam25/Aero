@@ -32,7 +32,7 @@
                     {#await data.songs[categoryName as keyof typeof data.songs]}
                         <div class="flex gap-2 overflow-x-auto overflow-y-hidden" style="scrollbar-width: none;">
                             {#each Array(10) as _}
-                                <div class="flex shrink-0 flex-col items-start justify-start gap-2 rounded-lg bg-slate-800 p-3">
+                                <div class="flex shrink-0 flex-col items-start justify-center gap-2 rounded-lg bg-slate-800 p-3">
                                     <div class="size-40 shrink-0 animate-pulse rounded-lg bg-slate-900 md:size-50"></div>
                                     <div class="flex size-full flex-col gap-1">
                                         <div class="h-5 w-full animate-pulse rounded-lg bg-slate-900"></div>
@@ -51,7 +51,7 @@
                             {#each songs as song}
                                 {@const thumb = song.thumbnails[0].url.replace("=w60-h60-l90-rj", "")}
                                 <button
-                                    class="flex shrink-0 cursor-pointer flex-col items-start justify-start gap-2 rounded-lg p-3 transition-colors duration-200 hover:bg-slate-800"
+                                    class="flex shrink-0 cursor-pointer flex-col items-start justify-center gap-2 rounded-lg p-3 transition-colors duration-200 hover:bg-slate-800"
                                     onclick={async () => {
                                         await play(song.videoId, song);
                                     }}
