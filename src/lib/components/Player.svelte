@@ -2,6 +2,8 @@
     import type { UserData } from "$lib/discord/types";
     import { previous, seekTo, setVolume, skip, store, togglePause } from "$lib/player";
     import { formatTime } from "$lib/utils/time";
+    import { fly } from "svelte/transition";
+    import SolarAltArrowUpLinear from "~icons/solar/alt-arrow-up-linear";
     import SolarDownloadMinimalisticLinear from "~icons/solar/download-minimalistic-linear";
     import SolarMutedLinear from "~icons/solar/muted-linear";
     import SolarPauseCircleBold from "~icons/solar/pause-circle-bold";
@@ -14,46 +16,67 @@
     import SolarVolumeLinear from "~icons/solar/volume-linear";
     import SolarVolumeLoudLinear from "~icons/solar/volume-loud-linear";
     import SolarVolumeSmallLinear from "~icons/solar/volume-small-linear";
+    import Button from "./Button.svelte";
     import MarqueeText from "./MarqueeText.svelte";
+    import MobilePlayer from "./MobilePlayer.svelte";
     import Popover from "./Popover.svelte";
     import Slider from "./Slider.svelte";
 
     let { user }: { user: UserData } = $props();
 
-    let volume: number = $state(100);
-    $effect(() => {
-        setVolume(volume);
-    });
+    let showMobilePlayer: boolean = $state(false);
 
+    // Update currentTime
     let currentTime: number = $state($store.currentTime);
     let isSeeking: boolean = $state(false);
 
-    // Update currentTime from the store only when not seeking manually
     $effect(() => {
         if (!isSeeking) {
             currentTime = $store.currentTime;
         }
     });
 
-    // Seek to the updated currentTime when manually changed
     function handleSeek(value: number) {
         isSeeking = true;
-        console.log(value);
         seekTo(value);
         isSeeking = false;
     }
+
+    // Update volume
+    let volume: number = $state(100);
+    function handleVol(value: number) {
+        setVolume(value);
+    }
 </script>
 
-<div id="player" class="flex size-full h-15 w-full items-center justify-between rounded-lg px-10 md:px-5">
-    <div class="flex items-center justify-center gap-2 transition-opacity" class:opacity-0={$store.state === "unstarted"}>
+{#if showMobilePlayer}
+    <MobilePlayer bind:show={showMobilePlayer} />
+{/if}
+
+<div id="player" class="flex size-full h-15 w-full items-center justify-between rounded-lg px-8 md:px-5">
+    <div class="flex items-center justify-center gap-2 transition-opacity">
+        <Button
+            class="size-8 bg-slate-900 p-2 md:hidden {$store.state === 'unstarted' ? 'pointer-events-none opacity-0' : 'opacity-100'}"
+            size=""
+            onclick={() => (showMobilePlayer = true)}
+        >
+            <SolarAltArrowUpLinear class="size-full" />
+        </Button>
         <div
             class="size-10 rounded-lg bg-slate-900 bg-cover transition-all md:size-15"
             style="background-image: url({$store.meta?.thumbnails[0].url});"
         ></div>
-        <div class="ml-2 flex max-w-40 flex-col items-start justify-center">
-            <MarqueeText text={$store.meta?.name || ""} class="text-sm font-semibold" />
-            <span class="w-20 truncate text-xs text-slate-400 md:w-40">{$store.meta?.artist.name}</span>
-        </div>
+        {#if $store.state === "unstarted"}
+            <div class="flex max-w-40 flex-col items-start justify-center gap-2">
+                <span class="h-3 w-40 rounded-lg bg-slate-900 md:h-4"></span>
+                <span class="h-3 w-40 rounded-lg bg-slate-900 md:h-4"></span>
+            </div>
+        {:else}
+            <div in:fly={{ duration: 100 }} class="flex max-w-40 flex-col items-start justify-center">
+                <MarqueeText text={$store.meta?.name || ""} class="text-sm font-semibold" />
+                <span class="w-20 truncate text-xs text-slate-400 md:w-40">{$store.meta?.artist.name}</span>
+            </div>
+        {/if}
     </div>
 
     <div
@@ -109,7 +132,7 @@
                 </span>
             {/snippet}
             {#snippet content()}
-                <Slider bind:value={volume} class="w-40" />
+                <Slider bind:value={volume} class="w-40" onChange={handleVol} />
             {/snippet}
         </Popover>
 

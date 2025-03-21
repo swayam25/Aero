@@ -13,9 +13,9 @@
     let marqueeInterval: number;
     let speed: number = 50; // 50ms interval
     let delay: number = 5000; // 5s delay
+    let textElement: HTMLElement;
 
     function startMarquee() {
-        const textElement = document.querySelector("#marquee-text") as HTMLElement;
         if (!textElement) return;
 
         const textWidth = textElement.scrollWidth;
@@ -56,7 +56,6 @@
             clearInterval(marqueeInterval); // Clear any existing interval
             marqueeOffset = 0; // Reset offset
             marqueeDirection = "forward"; // Reset direction
-            const textElement = document.querySelector("#marquee-text") as HTMLElement;
             if (textElement) {
                 textElement.style.transform = `translateX(0)`; // Reset transform to avoid jitter
             }
@@ -72,7 +71,7 @@
 </script>
 
 <div class="relative w-full overflow-hidden">
-    <span id="marquee-text" class={cn("whitespace-nowrap transition-transform ease-in-out", className)} style="display: inline-block;">
+    <span bind:this={textElement} class={cn("whitespace-nowrap transition-transform ease-in-out", className)} style="display: inline-block;">
         {text}
     </span>
 </div>
