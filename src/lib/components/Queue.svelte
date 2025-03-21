@@ -20,7 +20,7 @@
         </Button>
         <h1 class="text-3xl font-bold md:text-4xl">Queue</h1>
     </div>
-    <div class="h-60 overflow-x-hidden overflow-y-auto px-5 pb-5 *:cursor-pointer md:h-[calc(100vh-232px)]">
+    <div id="queue" class="h-60 overflow-x-hidden overflow-y-auto px-5 pb-5 *:cursor-pointer md:h-[calc(100vh-232px)]">
         {#each $store.queue as song, idx}
             <button
                 onclick={async () => {

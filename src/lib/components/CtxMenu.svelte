@@ -8,8 +8,10 @@
 
     $effect(() => {
         const bodyElement = document.getElementById("body");
-        if (bodyElement) {
+        const queueElement = document.getElementById("queue");
+        if (bodyElement && queueElement) {
             bodyElement.style.overflow = $store.isOpen ? "hidden" : "";
+            queueElement.style.overflow = $store.isOpen ? "hidden" : "";
         }
     });
 
