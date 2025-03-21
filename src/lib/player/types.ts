@@ -10,4 +10,5 @@ export interface PlayerStore {
     meta: SongDetailed | null;
     totalDuration: number;
     currentTime: number;
+    showQueue: boolean;
 }

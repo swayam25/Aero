@@ -8,7 +8,7 @@
     <title>Aero | {data.user.global_name || data.user.username}'s Profile</title>
 </svelte:head>
 
-<div class="flex w-full flex-col items-center justify-start">
+<div class="flex flex-col items-center justify-start">
     <div class="w-full">
         {#if data.user.banner}
             <img

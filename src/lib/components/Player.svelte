@@ -1,6 +1,6 @@
 <script lang="ts">
     import type { UserData } from "$lib/discord/types";
-    import { previous, seekTo, setVolume, skip, store, togglePause } from "$lib/player";
+    import { previous, seekTo, setVolume, skip, store, togglePause, toggleQueue } from "$lib/player";
     import { formatTime } from "$lib/utils/time";
     import { fly } from "svelte/transition";
     import SolarAltArrowUpLinear from "~icons/solar/alt-arrow-up-linear";
@@ -169,7 +169,12 @@
         </button>
 
         <!-- Queue -->
-        <button class="size-5 opacity-80 transition-opacity hover:opacity-100">
+        <button
+            onclick={toggleQueue}
+            class="size-5 opacity-80 transition-opacity not-disabled:hover:opacity-100"
+            class:!cursor-not-allowed={$store.queue.length < 2}
+            disabled={$store.queue.length < 2}
+        >
             <SolarPlaylist2Linear class="size-full" />
         </button>
 

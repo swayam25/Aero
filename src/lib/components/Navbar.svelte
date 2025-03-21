@@ -28,7 +28,7 @@
     });
 </script>
 
-<nav class="flex h-15 items-center justify-between rounded-b-lg bg-slate-900 px-5 md:rounded-lg">
+<nav class="flex h-15 w-full items-center justify-between rounded-b-lg bg-slate-900 px-5 md:rounded-lg">
     <a href="/">
         <img src="/aero.webp" alt="Aero" class="size-8 md:size-10" />
     </a>

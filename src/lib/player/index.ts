@@ -11,7 +11,8 @@ export const store = writable<PlayerStore>({
     loop: "none",
     meta: null,
     totalDuration: 0,
-    currentTime: 0
+    currentTime: 0,
+    showQueue: false
 });
 
 export async function init() {
@@ -162,4 +163,8 @@ export async function seekTo(time: number) {
     if (!player) return { error: "No player instance" };
 
     player.seekTo(time, true);
+}
+
+export async function toggleQueue() {
+    store.update((state) => ({ ...state, showQueue: !state.showQueue }));
 }
