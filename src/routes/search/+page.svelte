@@ -95,7 +95,7 @@
                                 alt="{song.name}'s Thumbnail"
                                 class="size-15 rounded-lg"
                             />
-                            <div class="flex w-full flex-col items-start justify-center gap-2 text-left">
+                            <div class="flex w-full flex-col items-center justify-center text-left">
                                 <MarqueeText class="w-10 font-bold" text={song.name} />
                                 <MarqueeText class="w-10 text-sm text-slate-400" text={song.artist.name} />
                             </div>
