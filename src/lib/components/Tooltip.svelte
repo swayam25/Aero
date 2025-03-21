@@ -1,19 +1,21 @@
 <script lang="ts">
+    import { cn } from "$lib/utils/cn";
     import { Tooltip } from "bits-ui";
     import type { Snippet } from "svelte";
     import { fly } from "svelte/transition";
 
     interface Props {
         side?: "top" | "right" | "bottom" | "left" | undefined;
+        class?: string;
         trigger: Snippet;
         content: Snippet;
     }
-    let { side = undefined, trigger, content }: Props = $props();
+    let { side = undefined, class: className, trigger, content }: Props = $props();
 </script>
 
 <Tooltip.Provider>
     <Tooltip.Root delayDuration={100}>
-        <Tooltip.Trigger>
+        <Tooltip.Trigger class={cn(className)}>
             {@render trigger()}
         </Tooltip.Trigger>
         <Tooltip.Content
