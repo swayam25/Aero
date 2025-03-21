@@ -17,27 +17,26 @@
     let y: number = $state(0);
 
     $effect(() => {
-        if ($store.isOpen) {
-            if (ctxMenu) {
-                const menuHeight = ctxMenu.offsetHeight;
-                const menuWidth = ctxMenu.offsetWidth;
+        if ($store.isOpen && ctxMenu) {
+            const { offsetHeight: menuHeight, offsetWidth: menuWidth } = ctxMenu;
+            const playerRect = document.getElementById("player")?.getBoundingClientRect();
 
-                const playerElement = document.getElementById("player");
-                const playerRect = playerElement?.getBoundingClientRect();
+            // Adjust vertical position
+            if ($store.y + menuHeight > window.innerHeight) {
+                y = Math.max($store.y - menuHeight, 100);
+            } else if (playerRect && $store.y + menuHeight > playerRect.top) {
+                y = Math.max($store.y - menuHeight, 100);
+            } else {
+                y = $store.y;
+            }
 
-                // Adjust vertical position
-                if (window.innerHeight - $store.y < menuHeight || (playerRect && $store.y + menuHeight > playerRect.top)) {
-                    y = Math.abs($store.y - menuHeight);
-                } else {
-                    y = $store.y;
-                }
-
-                // Adjust horizontal position
-                if (window.innerWidth - $store.x < menuWidth || (playerRect && $store.x + menuWidth > playerRect.left)) {
-                    x = Math.abs($store.x - menuWidth);
-                } else {
-                    x = $store.x;
-                }
+            // Adjust horizontal position
+            if ($store.x + menuWidth > window.innerWidth) {
+                x = Math.max($store.x - menuWidth, 100);
+            } else if (playerRect && $store.x + menuWidth > playerRect.left) {
+                x = Math.max($store.x - menuWidth, 100);
+            } else {
+                x = $store.x;
             }
         }
     });
