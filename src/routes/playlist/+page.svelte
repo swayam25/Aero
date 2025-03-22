@@ -23,7 +23,7 @@
 {/if}
 
 {#if data.playlists.length <= 0}
-    <div class="flex size-full items-center justify-center">
+    <div in:fade={{ duration: 100 }} class="flex size-full items-center justify-center">
         <div class="flex flex-col items-center justify-center gap-2">
             <SolarConfoundedCircleLinear class="size-10 text-slate-400 md:size-15" />
             <p class="text-lg text-slate-400 md:text-xl">No playlists found</p>
@@ -36,7 +36,7 @@
         </div>
     </div>
 {:else}
-    <div class="flex flex-wrap items-center justify-start gap-2">
+    <div in:fade={{ duration: 100 }} class="flex flex-wrap items-center justify-start gap-2">
         {#each data.playlists as playlist, i}
             <a
                 in:fly={{ duration: 500, easing: expoOut, x: -100, y: 0 }}
