@@ -5,6 +5,7 @@ import type { SelectPlaylist } from "$lib/db/schema";
 import type { UserData } from "$lib/discord/types";
 import { fetchUser } from "$lib/discord/user";
 import { error } from "@sveltejs/kit";
+import type { SongFull } from "ytmusic-api";
 import type { PageServerLoad } from "./$types";
 
 export const load: PageServerLoad = async ({ setHeaders, params, locals }) => {
@@ -18,6 +19,7 @@ export const load: PageServerLoad = async ({ setHeaders, params, locals }) => {
     const userExists = await checkUser(locals.db, userID);
     let user: UserData;
     let playlist: SelectPlaylist;
+    let playlistSongs: Promise<SongFull>[];
 
     if (!userExists) {
         return error(404, "User not found");
@@ -38,8 +40,12 @@ export const load: PageServerLoad = async ({ setHeaders, params, locals }) => {
             return error(404, "Playlist not found");
         } else {
             playlist = playlistExists;
+            playlistSongs = [];
+            playlist.songs.forEach(async (song) => {
+                playlistSongs.push(locals.ytmusic.getSong(song));
+            });
         }
     }
 
-    return { user, playlist };
+    return { user, playlist, playlistSongs };
 };
