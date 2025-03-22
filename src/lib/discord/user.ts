@@ -43,7 +43,6 @@ export async function fetchUser(baseURI: string, botToken: string, id: string) {
             Authorization: `Bot ${botToken}`
         }
     });
-    console.log("OK");
     if (!resp.ok) {
         return { error: true };
     }
