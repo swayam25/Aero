@@ -12,7 +12,6 @@
     let input: HTMLInputElement;
     $effect(() => {
         if (inputValue) goto("/search?q=" + inputValue, { keepFocus: true });
-        else goto("/");
     });
 
     onMount(() => {
@@ -22,6 +21,10 @@
                 input.focus();
             }
             if (e.key === "Escape" && document.activeElement === input) {
+                input.blur();
+            }
+            if (!inputValue && document.activeElement === input && e.key === "Backspace") {
+                goto("/");
                 input.blur();
             }
         });

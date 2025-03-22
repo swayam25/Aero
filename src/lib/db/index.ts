@@ -16,5 +16,5 @@ export async function deleteUser(db: DB, id: string) {
 }
 
 export async function checkUser(db: DB, id: string) {
-    return await db.query.userTable.findFirst({ where: eq(schema.userTable.userID, id) });
+    return db.query.userTable.findFirst({ where: eq(schema.userTable.userID, id) });
 }
