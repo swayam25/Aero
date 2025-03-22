@@ -37,11 +37,11 @@
     </div>
 {:else}
     <div in:fade={{ duration: 100 }} class="flex flex-wrap items-center justify-start gap-2">
-        {#each data.playlists as playlist, i}
+        {#each data.playlists as playlist}
             <a
                 in:fly={{ duration: 500, easing: expoOut, x: -100, y: 0 }}
                 out:fly={{ duration: 500, easing: expoOut, x: 100, y: 0 }}
-                href={`/playlist/${playlist.id}`}
+                href={`/playlist/${data.user.id}/${playlist.id}`}
                 oncontextmenu={(e) => {
                     e.preventDefault();
                     openCtxMenu(e, null, { name: playlist.name, id: playlist.id }, "playlist");
