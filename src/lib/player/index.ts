@@ -109,7 +109,7 @@ export async function previous() {
     const player = get(store).player;
     if (!player) return { error: "No player instance" };
 
-    if (get(store).queue.length <= 0 || get(store).loop === "single") {
+    if (get(store).queue.length <= 1 || get(store).loop === "single") {
         player.seekTo(0, true);
         player.playVideo();
     } else {
@@ -169,6 +169,7 @@ export async function skip() {
             player.playVideo();
         }
     }
+    if (get(store).queue.length < 2) store.update((state) => ({ ...state, showQueue: false }));
 }
 
 export async function setLoop(loop: PlayerStore["loop"]) {
