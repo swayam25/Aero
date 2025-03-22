@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { invalidateAll } from "$app/navigation";
+    import { invalidate, invalidateAll } from "$app/navigation";
     import { store } from "$lib/ctxmenu";
     import { addToQueue, play, store as playerStore, removeFromQueue } from "$lib/player";
     import { fade } from "svelte/transition";
@@ -52,7 +52,7 @@
             body: JSON.stringify({ id: $store.playlistData?.id }),
             method: "DELETE"
         });
-        invalidateAll();
+        invalidateAll()
     }
 </script>
 
