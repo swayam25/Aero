@@ -1,6 +1,6 @@
 <script lang="ts">
-    import Button from "$lib/components/Button.svelte";
     import NewPlaylistPopup from "$lib/components/NewPlaylistPopup.svelte";
+    import Button from "$lib/components/ui/Button.svelte";
     import { openCtxMenu } from "$lib/ctxmenu";
     import { expoOut } from "svelte/easing";
     import { fade, fly } from "svelte/transition";

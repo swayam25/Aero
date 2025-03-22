@@ -1,6 +1,6 @@
 <script lang="ts">
-    import Button from "$lib/components/Button.svelte";
-    import MarqueeText from "$lib/components/MarqueeText.svelte";
+    import Button from "$lib/components/ui/Button.svelte";
+    import MarqueeText from "$lib/components/ui/MarqueeText.svelte";
     import { openCtxMenu } from "$lib/ctxmenu";
     import { play } from "$lib/player";
     import { fade } from "svelte/transition";

@@ -3,7 +3,7 @@
     import type { UserData } from "$lib/discord/types";
     import { onMount } from "svelte";
     import SolarMagniferLinear from "~icons/solar/magnifer-linear";
-    import Input from "./Input.svelte";
+    import Input from "./ui/Input.svelte";
     import UserButton from "./UserButton.svelte";
 
     let { user }: { user: UserData | null } = $props();

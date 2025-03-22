@@ -1,7 +1,7 @@
 <script lang="ts">
     import type { UserData } from "$lib/discord/types";
     import SolarMusicLibraryLinear from "~icons/solar/music-library-linear";
-    import Tooltip from "./Tooltip.svelte";
+    import Tooltip from "./ui/Tooltip.svelte";
 
     let { user }: { user: UserData } = $props();
 </script>

@@ -6,10 +6,10 @@
     import SolarLogout2Linear from "~icons/solar/logout-2-linear";
     import SolarTrashBinTrashLinear from "~icons/solar/trash-bin-trash-linear";
     import SolarUserCircleLinear from "~icons/solar/user-circle-linear";
-    import AlertPopup from "./AlertPopup.svelte";
-    import Button from "./Button.svelte";
     import CtxButton from "./CtxButton.svelte";
-    import Popover from "./Popover.svelte";
+    import AlertPopup from "./ui/AlertPopup.svelte";
+    import Button from "./ui/Button.svelte";
+    import Popover from "./ui/Popover.svelte";
 
     let { user }: { user: UserData | null } = $props();
     let deletePopupOpen = $state(false);

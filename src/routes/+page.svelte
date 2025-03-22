@@ -1,5 +1,5 @@
 <script lang="ts">
-    import Button from "$lib/components/Button.svelte";
+    import Button from "$lib/components/ui/Button.svelte";
     import { openCtxMenu } from "$lib/ctxmenu";
     import { play } from "$lib/player";
     import { fade } from "svelte/transition";

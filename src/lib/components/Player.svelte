@@ -17,11 +17,11 @@
     import SolarVolumeLinear from "~icons/solar/volume-linear";
     import SolarVolumeLoudLinear from "~icons/solar/volume-loud-linear";
     import SolarVolumeSmallLinear from "~icons/solar/volume-small-linear";
-    import Button from "./Button.svelte";
-    import MarqueeText from "./MarqueeText.svelte";
     import MobilePlayer from "./MobilePlayer.svelte";
-    import Popover from "./Popover.svelte";
-    import Slider from "./Slider.svelte";
+    import Button from "./ui/Button.svelte";
+    import MarqueeText from "./ui/MarqueeText.svelte";
+    import Popover from "./ui/Popover.svelte";
+    import Slider from "./ui/Slider.svelte";
 
     let { user }: { user: UserData } = $props();
 

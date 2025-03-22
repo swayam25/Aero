@@ -13,9 +13,9 @@
     import SolarShuffleLinear from "~icons/solar/shuffle-linear";
     import SolarSkipNextBold from "~icons/solar/skip-next-bold";
     import SolarSkipPreviousBold from "~icons/solar/skip-previous-bold";
-    import Button from "./Button.svelte";
-    import MarqueeText from "./MarqueeText.svelte";
-    import Slider from "./Slider.svelte";
+    import Button from "./ui/Button.svelte";
+    import MarqueeText from "./ui/MarqueeText.svelte";
+    import Slider from "./ui/Slider.svelte";
 
     interface Props {
         show: boolean;

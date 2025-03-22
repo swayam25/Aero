@@ -1,12 +1,12 @@
 <script lang="ts">
-    import MarqueeText from "$lib/components/MarqueeText.svelte";
+    import MarqueeText from "$lib/components/ui/MarqueeText.svelte";
     import { openCtxMenu } from "$lib/ctxmenu";
     import { play, store } from "$lib/player";
     import { expoOut } from "svelte/easing";
     import { fade, fly } from "svelte/transition";
     import HugeiconsCd from "~icons/hugeicons/cd";
     import SolarAltArrowDownLinear from "~icons/solar/alt-arrow-down-linear";
-    import Button from "./Button.svelte";
+    import Button from "./ui/Button.svelte";
 </script>
 
 <div class="h-80 w-full rounded-lg bg-slate-900 md:h-full md:w-[30vw]">

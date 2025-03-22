@@ -1,7 +1,7 @@
 <script lang="ts">
     import { invalidateAll } from "$app/navigation";
-    import DialogPopup from "$lib/components/DialogPopup.svelte";
-    import Input from "$lib/components/Input.svelte";
+    import DialogPopup from "$lib/components/ui/DialogPopup.svelte";
+    import Input from "$lib/components/ui/Input.svelte";
     import { Dialog } from "bits-ui";
     import type { Snippet } from "svelte";
     import MaterialSymbolsAdd2Rounded from "~icons/material-symbols/add-2-rounded";
