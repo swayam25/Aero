@@ -9,12 +9,12 @@
 <div class="flex size-full w-20 flex-col items-center justify-start gap-5 rounded-lg bg-slate-900 p-5 *:cursor-pointer">
     <Tooltip side="right">
         {#snippet trigger()}
-            <a href="/library" class="opacity-80 transition-opacity hover:opacity-100">
+            <a href="/playlist" class="opacity-80 transition-opacity hover:opacity-100">
                 <SolarMusicLibraryLinear class="size-8" />
             </a>
         {/snippet}
         {#snippet content()}
-            Library
+            Playlists
         {/snippet}
     </Tooltip>
 </div>

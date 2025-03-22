@@ -30,7 +30,7 @@
                 out:fly={{ duration: 500, easing: expoOut, x: 100, y: 0 }}
                 oncontextmenu={(e) => {
                     e.preventDefault();
-                    openCtxMenu(e, song, "queue");
+                    openCtxMenu(e, song, null, "queue");
                 }}
                 class="flex w-full items-center justify-center gap-2 rounded-lg p-2 transition-colors duration-200 hover:bg-slate-800"
             >

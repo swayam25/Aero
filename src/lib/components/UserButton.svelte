@@ -8,6 +8,7 @@
     import SolarUserCircleLinear from "~icons/solar/user-circle-linear";
     import AlertPopup from "./AlertPopup.svelte";
     import Button from "./Button.svelte";
+    import CtxButton from "./CtxButton.svelte";
     import Popover from "./Popover.svelte";
 
     let { user }: { user: UserData | null } = $props();
@@ -22,10 +23,8 @@
 
     async function deleteAcc() {
         deletePopupOpen = false;
-        try {
-            await fetch("/auth/delete", { method: "POST" });
-            invalidateAll();
-        } catch {}
+        await fetch("/auth/delete", { method: "POST" });
+        invalidateAll();
     }
 </script>
 
@@ -57,30 +56,26 @@
                 </div>
             {/snippet}
             {#snippet content()}
-                <div
-                    class="flex flex-col items-start justify-center gap-1 *:not-first:rounded-lg *:not-first:not-[*:nth-child(2)]:not-last:flex *:not-first:not-[*:nth-child(2)]:not-last:w-full *:not-first:not-[*:nth-child(2)]:not-last:items-center *:not-first:not-[*:nth-child(2)]:not-last:justify-start *:not-first:not-[*:nth-child(2)]:not-last:gap-2 *:not-first:not-[*:nth-child(2)]:not-last:px-2 *:not-first:not-[*:nth-child(2)]:not-last:py-1.5 *:not-first:not-[*:nth-child(2)]:not-last:text-slate-200 *:not-first:not-[*:nth-child(2)]:not-last:transition-all *:not-first:not-[*:nth-child(2)]:not-last:duration-200 *:not-first:not-[*:nth-child(2)]:not-last:hover:bg-slate-800"
-                >
+                <div class="flex flex-col items-start justify-center gap-1">
                     <p class="text-lg font-bold">{user.global_name || user.username}</p>
                     <span class="w-full border-t border-slate-700"></span>
                     <!-- Profile -->
-                    <a href="/profile/{user.id}">
+                    <CtxButton href="/profile/{user.id}">
                         <SolarUserCircleLinear class="size-5" />
                         Profile
-                    </a>
+                    </CtxButton>
                     <!-- Logout -->
-                    <button onclick={logout} class="cursor-pointer">
+                    <CtxButton onclick={logout}>
                         <SolarLogout2Linear class="size-5" />
                         Logout
-                    </button>
+                    </CtxButton>
                     <!-- Delete -->
                     <AlertPopup title="ARE YOU SURE?" bind:open={deletePopupOpen}>
                         {#snippet trigger()}
-                            <button
-                                class="flex w-full cursor-pointer items-center justify-start gap-2 rounded-lg px-2 py-1.5 text-slate-200 transition-all duration-200 hover:bg-red-500/10 hover:text-red-500"
-                            >
+                            <CtxButton type="error">
                                 <SolarTrashBinTrashLinear class="size-5" />
                                 Delete Account
-                            </button>
+                            </CtxButton>
                         {/snippet}
                         {#snippet description()}
                             This action cannot be undone. This will permanently

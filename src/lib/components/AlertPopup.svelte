@@ -14,7 +14,7 @@
 </script>
 
 <AlertDialog.Root bind:open>
-    <AlertDialog.Trigger class="w-full">
+    <AlertDialog.Trigger class="flex w-full items-center justify-center">
         {@render trigger()}
     </AlertDialog.Trigger>
     <AlertDialog.Portal>
@@ -29,7 +29,7 @@
                                     {@render description()}
                                 </AlertDialog.Description>
                                 <div
-                                    class="flex items-center justify-between gap-5 *:w-full *:cursor-pointer *:rounded-lg *:bg-slate-800 *:px-3 *:py-2 *:transition-all *:duration-200 *:not-first:flex *:not-first:w-full *:not-first:items-center *:not-first:justify-center *:not-first:gap-2 *:hover:bg-slate-800/50"
+                                    class="flex items-center justify-between gap-5 *:w-full *:cursor-pointer *:rounded-lg *:bg-slate-800 *:px-3 *:py-2 *:transition-all *:duration-200 *:not-first:flex *:not-first:w-full *:not-first:items-center *:not-first:justify-center *:not-first:gap-2 *:not-disabled:hover:bg-slate-800/50 *:disabled:brightness-80"
                                 >
                                     <AlertDialog.Cancel>Cancel</AlertDialog.Cancel>
                                     {@render actions()}

@@ -1,10 +1,13 @@
 <script lang="ts">
+    import { invalidateAll } from "$app/navigation";
     import { store } from "$lib/ctxmenu";
     import { addToQueue, play, store as playerStore, removeFromQueue } from "$lib/player";
     import { fade } from "svelte/transition";
     import SolarNotificationLinesRemoveLinear from "~icons/solar/notification-lines-remove-linear";
     import SolarPlayLinear from "~icons/solar/play-linear";
     import SolarPlaylist2Linear from "~icons/solar/playlist-2-linear";
+    import SolarTrashBinTrashLinear from "~icons/solar/trash-bin-trash-linear";
+    import CtxButton from "./CtxButton.svelte";
 
     $effect(() => {
         const bodyElement = document.getElementById("body");
@@ -43,55 +46,74 @@
             }
         }
     });
+
+    export async function deletePlaylist() {
+        const resp = await fetch(`/api/playlist`, {
+            body: JSON.stringify({ id: $store.playlistData?.id }),
+            method: "DELETE"
+        });
+        invalidateAll();
+    }
 </script>
 
 {#if $store.isOpen}
     <div
         transition:fade={{ duration: 100 }}
         bind:this={ctxMenu}
-        class="absolute z-1000 flex min-w-45 flex-col items-start justify-center rounded-lg border border-slate-700 bg-slate-900 p-2 text-sm *:flex *:w-full *:cursor-pointer *:items-center *:justify-start *:gap-2 *:rounded-lg *:px-2 *:py-1.5 *:transition-colors *:duration-200 *:hover:bg-slate-800"
+        class="absolute z-1000 flex min-w-45 flex-col items-start justify-center rounded-lg border border-slate-700 bg-slate-900 p-2 text-sm"
         style="top: {y}px; left: {x}px;"
     >
         {#if $store.type === "song" && $store.song}
             <!-- Play -->
-            <button
+            <CtxButton
                 onclick={async () => {
                     if ($store.song) await play($store.song);
                 }}
             >
                 <SolarPlayLinear class="size-5" />
                 Play
-            </button>
+            </CtxButton>
             {#if $playerStore.queue.length > 0}
                 <!-- Add To Queue -->
-                <button
+                <CtxButton
                     onclick={async () => {
                         if ($store.song) await addToQueue($store.song);
                     }}
                 >
                     <SolarPlaylist2Linear class="size-5" />
                     Add to Queue
-                </button>
+                </CtxButton>
             {/if}
         {:else if $store.type === "queue" && $store.song && $store.song.videoId !== $playerStore.meta?.videoId}
             <!-- Play -->
-            <button
+            <CtxButton
                 onclick={async () => {
                     if ($store.song) await play($store.song, true);
                 }}
             >
                 <SolarPlayLinear class="size-5" />
                 Play
-            </button>
+            </CtxButton>
             <!-- Remove From Queue -->
-            <button
+            <CtxButton
                 onclick={async () => {
                     if ($store.song) await removeFromQueue($store.song);
                 }}
             >
                 <SolarNotificationLinesRemoveLinear class="size-5" />
                 Remove from Queue
-            </button>
+            </CtxButton>
+        {:else if $store.type === "playlist" && $store.playlistData}
+            <!-- Play -->
+            <CtxButton>
+                <SolarPlayLinear class="size-5" />
+                Play
+            </CtxButton>
+            <!-- Delete Playlist -->
+            <CtxButton type="error" onclick={deletePlaylist}>
+                <SolarTrashBinTrashLinear class="size-5" />
+                Delete Playlist
+            </CtxButton>
         {/if}
     </div>
 {/if}

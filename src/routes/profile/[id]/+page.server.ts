@@ -6,7 +6,7 @@ import { fetchUser } from "$lib/discord/user";
 import { error } from "@sveltejs/kit";
 import type { PageServerLoad } from "./$types";
 
-export const load = (async ({ setHeaders, params, locals }) => {
+export const load: PageServerLoad = async ({ setHeaders, params, locals }) => {
     setHeaders({
         "cache-control": "max-age=6000" // 100 minutes
     });
@@ -28,4 +28,4 @@ export const load = (async ({ setHeaders, params, locals }) => {
     }
 
     return { user };
-}) satisfies PageServerLoad;
+};
