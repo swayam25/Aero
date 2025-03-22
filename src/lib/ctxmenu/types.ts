@@ -5,7 +5,7 @@ export interface CtxStore {
     showPlaylistMenu: boolean;
     x: number;
     y: number;
-    type: "song" | "queue" | "playlist";
+    type: "song" | "queue" | "playlist" | "playlistSong";
     song?: SongDetailed | null; // Only defined if type === "song"
     playlistData?: { name: string; id: number } | null; // Only defined if type === "playlist"
 }

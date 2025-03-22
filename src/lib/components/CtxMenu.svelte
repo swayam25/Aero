@@ -188,6 +188,51 @@
                         <SolarTrashBinTrashLinear class="size-5" />
                         Delete Playlist
                     </CtxButton>
+                {:else if $store.type === "playlistSong" && $store.song && $store.playlistData}
+                    <!-- Play -->
+                    <CtxButton
+                        onclick={async () => {
+                            if ($store.song) await play($store.song, true);
+                        }}
+                    >
+                        <SolarPlayLinear class="size-5" />
+                        Play
+                    </CtxButton>
+                    <!-- Add To Queue -->
+                    <CtxButton
+                        onclick={async () => {
+                            if ($store.song) await addToQueue($store.song);
+                        }}
+                    >
+                        <SolarPlaylist2Linear class="size-5" />
+                        Add to Queue
+                    </CtxButton>
+                    <!-- Remove From Playlist -->
+                    <CtxButton
+                        type="error"
+                        onclick={async () => {
+                            const resp = await fetch(`/api/playlist/${$store.playlistData?.id}`, {
+                                body: JSON.stringify({
+                                    key: "add_song",
+                                    value: { playlistID: $store.playlistData?.id, songID: $store.song?.videoId }
+                                }),
+                                method: "POST"
+                            });
+                        }}
+                    >
+                        <SolarTrashBinTrashLinear class="size-5" />
+                        Remove from Playlist
+                    </CtxButton>
+                {/if}
+                {#if $store.type === "song" || $store.type === "queue"}
+                    <CtxButton
+                        onclick={(e) => {
+                            e.stopPropagation();
+                            $store.isOpen = false;
+                        }}
+                    >
+                        Cancel
+                    </CtxButton>
                 {/if}
             </div>
         {/if}
