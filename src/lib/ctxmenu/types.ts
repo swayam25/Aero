@@ -2,6 +2,7 @@ import type { SongDetailed } from "ytmusic-api";
 
 export interface CtxStore {
     isOpen: boolean;
+    showPlaylistMenu: boolean;
     x: number;
     y: number;
     type: "song" | "queue" | "playlist";

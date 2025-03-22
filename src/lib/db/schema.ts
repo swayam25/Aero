@@ -20,3 +20,6 @@ export const playlistTable = pgTable("playlist", {
 export const userRelations = relations(userTable, ({ many }) => ({
     playlists: many(playlistTable)
 }));
+
+export type SelectPlaylist = typeof playlistTable.$inferSelect;
+export type InsertPlaylist = typeof playlistTable.$inferInsert;

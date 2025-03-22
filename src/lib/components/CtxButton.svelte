@@ -5,19 +5,20 @@
     interface Props {
         type?: "normal" | "error" | "success";
         href?: string;
-        onclick?: () => void;
+        disabled?: boolean;
+        onclick?: (e: MouseEvent) => void;
         children: Snippet;
     }
-    let { type = "normal", href, onclick = () => {}, children }: Props = $props();
+    let { type = "normal", href, disabled, onclick = () => {}, children }: Props = $props();
 
     let typeClass = $derived.by(() => {
         switch (type) {
             case "error":
-                return "hover:bg-red-500/10 hover:text-red-500";
+                return "not-disabled:hover:bg-red-500/10 not-disabled:hover:text-red-500";
             case "success":
-                return "hover:bg-green-500/10 hover:text-green-500";
+                return "not-disabled:hover:bg-green-500/10 not-disabled:hover:text-green-500";
             default:
-                return "hover:bg-slate-800";
+                return "not-disabled:hover:bg-slate-800";
         }
     });
 </script>
@@ -27,8 +28,12 @@
     role={href ? "link" : "button"}
     tabindex="0"
     {href}
+    {disabled}
     {onclick}
-    class={cn("flex w-full cursor-pointer items-center justify-start gap-2 rounded-lg px-2 py-1.5 transition-colors duration-200", typeClass)}
+    class={cn(
+        "group flex w-full items-center justify-start gap-2 rounded-lg px-2 py-1.5 transition-colors duration-200 not-disabled:cursor-pointer",
+        typeClass
+    )}
 >
     {@render children()}
 </svelte:element>

@@ -3,6 +3,7 @@ import type { CtxStore } from "./types";
 
 export const store = writable<CtxStore>({
     isOpen: false,
+    showPlaylistMenu: false,
     x: 0,
     y: 0,
     type: "song"
@@ -12,9 +13,9 @@ export function openCtxMenu(e: MouseEvent, song?: CtxStore["song"], playlistData
     if (!type) type = "song";
     const x = e.clientX;
     const y = e.clientY;
-    store.set({ isOpen: true, x, y, type, song, playlistData });
+    store.set({ isOpen: true, showPlaylistMenu: false, x, y, type, song, playlistData });
 }
 
 export function closeCtxMenu() {
-    store.set({ isOpen: false, x: 0, y: 0, type: "song" });
+    store.set({ isOpen: false, showPlaylistMenu: false, x: 0, y: 0, type: "song" });
 }

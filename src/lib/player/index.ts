@@ -88,6 +88,7 @@ export async function removeFromQueue(song: SongDetailed) {
         state.queue = state.queue.filter((queuedSong) => queuedSong.videoId !== song.videoId);
         return state;
     });
+    if (get(store).queue.length < 2) store.update((state) => ({ ...state, showQueue: false }));
 }
 
 export async function togglePause() {
