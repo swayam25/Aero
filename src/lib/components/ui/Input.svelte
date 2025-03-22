@@ -7,9 +7,10 @@
         class?: string;
         placeholder?: string;
         icon?: Component;
+        onEnter?: () => void;
         ref?: HTMLInputElement | null;
     }
-    let { value = $bindable(""), class: className, placeholder, icon, ref = $bindable() }: Props = $props();
+    let { value = $bindable(""), class: className, placeholder, icon, onEnter = () => {}, ref = $bindable() }: Props = $props();
 
     let inputFocus: boolean = $state(false);
 </script>
@@ -37,5 +38,10 @@
         }}
         bind:this={ref}
         bind:value
+        onkeydown={(e) => {
+            if (e.key === "Enter") {
+                onEnter();
+            }
+        }}
     />
 </div>

@@ -3,7 +3,7 @@
     import DialogPopup from "$lib/components/ui/DialogPopup.svelte";
     import Input from "$lib/components/ui/Input.svelte";
     import { Dialog } from "bits-ui";
-    import type { Snippet } from "svelte";
+    import { onMount, type Snippet } from "svelte";
     import MaterialSymbolsAdd2Rounded from "~icons/material-symbols/add-2-rounded";
     import SolarPlaylist2Linear from "~icons/solar/playlist-2-linear";
 
@@ -14,21 +14,28 @@
 
     let input: HTMLInputElement | null = $state(null);
     let inputValue: string = $state("");
+    let open: boolean = $state(false);
 
     async function createPlaylist() {
+        open = false;
+        const plName = inputValue.trim();
+        inputValue = "";
         const resp = await fetch("/api/playlist", {
             method: "POST",
             headers: {
                 "Content-Type": "application/json"
             },
-            body: JSON.stringify({ key: "create_pl", value: inputValue })
+            body: JSON.stringify({ key: "create_pl", value: plName })
         });
-        inputValue = "";
         invalidateAll();
     }
+
+    onMount(() => {
+        input?.focus();
+    });
 </script>
 
-<DialogPopup title="NEW PLAYLIST">
+<DialogPopup title="NEW PLAYLIST" bind:open>
     {#snippet trigger()}
         {@render children()}
     {/snippet}
@@ -37,7 +44,14 @@
     {/snippet}
     {#snippet fields()}
         <div class="flex size-full flex-col items-start justify-center gap-2">
-            <Input bind:value={inputValue} class="w-full" placeholder="Playlist Name" icon={SolarPlaylist2Linear} bind:ref={input} />
+            <Input
+                bind:value={inputValue}
+                class="w-full"
+                placeholder="Playlist Name"
+                icon={SolarPlaylist2Linear}
+                onEnter={createPlaylist}
+                bind:ref={input}
+            />
         </div>
     {/snippet}
     {#snippet actions()}
