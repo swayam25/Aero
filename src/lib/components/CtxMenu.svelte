@@ -173,12 +173,17 @@
                     </CtxButton>
                 {:else if $store.type === "playlist" && $store.playlistData}
                     <!-- Delete PLaylist -->
-                    <CtxButton type="error" onclick={showPlDeletePopup}>
+                    <CtxButton
+                        type="error"
+                        onclick={() => {
+                            showPlDeletePopup($store?.playlistData);
+                        }}
+                    >
                         <SolarTrashBinTrashLinear class="size-5" />
                         Delete Playlist
                     </CtxButton>
                     <!-- Rename Playlist -->
-                    <CtxButton onclick={showPlRenamePopup}>
+                    <CtxButton onclick={() => showPlRenamePopup($store?.playlistData)}>
                         <SolarRestartLinear class="size-5" />
                         Rename Playlist
                     </CtxButton>

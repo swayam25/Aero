@@ -5,7 +5,7 @@
     import Button from "$lib/components/ui/Button.svelte";
     import DialogPopup from "$lib/components/ui/DialogPopup.svelte";
     import Input from "$lib/components/ui/Input.svelte";
-    import { store as ctxStore, openCtxMenu } from "$lib/ctxmenu";
+    import { openCtxMenu } from "$lib/ctxmenu";
     import { hidePlDeletePopup, hidePlRenamePopup, store as popupStore } from "$lib/popups";
     import { AlertDialog, Dialog } from "bits-ui";
     import { expoOut } from "svelte/easing";
@@ -20,7 +20,7 @@
     let { data }: { data: PageData } = $props();
 
     async function deletePlaylist() {
-        const plID = $ctxStore.playlistData?.id;
+        const plID = $popupStore.playlistData?.id;
         hidePlDeletePopup();
         const resp = await fetch(`/api/playlist`, {
             body: JSON.stringify({ id: plID }),
@@ -33,12 +33,12 @@
     let inputValue: string = $state("");
 
     function renamePlaylist() {
-        const plID = $ctxStore.playlistData?.id;
+        const plID = $popupStore.playlistData?.id;
         const newName = inputValue.trim();
         hidePlRenamePopup();
         inputValue = "";
         const resp = fetch(`/api/playlist`, {
-            body: JSON.stringify({ key: "rename_pl", value: { id: plID, name: newName } }),
+            body: JSON.stringify({ key: "rename_pl", value: { playlistID: plID, name: newName } }),
             method: "POST"
         });
         invalidateAll();
@@ -51,7 +51,7 @@
     {#snippet description()}
         This action cannot be undone. This will permanently
         <span class="font-semibold text-red-500">delete your playlist</span> named
-        <span class="font-semibold text-sky-500">{$ctxStore.playlistData?.name}</span>. Please confirm that you want to proceed.
+        <span class="font-semibold text-sky-500">{$popupStore.playlistData?.name}</span>. Please confirm that you want to proceed.
     {/snippet}
     {#snippet actions()}
         <AlertDialog.Action class="hover:!bg-red-500/10 hover:text-red-500" onclick={deletePlaylist}>
@@ -126,7 +126,7 @@
             >
                 <div class="size-40 rounded-lg bg-slate-800 transition-colors duration-200 group-hover:bg-slate-900 md:size-50"></div>
                 <div class="text-left">
-                    <p class="text-sm">{playlist.name.length > 20 ? playlist.name.slice(0, 20) + "..." : playlist.name}</p>
+                    <p class="text-sm">{playlist.name}</p>
                 </div>
             </a>
         {/each}

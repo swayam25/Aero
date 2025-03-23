@@ -1,4 +1,5 @@
 export interface PopupsStore {
     showPlDeletePopup: boolean;
     showPlRenamePopup: boolean;
+    playlistData?: { name: string; id: number } | null;
 }

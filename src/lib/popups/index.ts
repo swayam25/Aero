@@ -1,5 +1,4 @@
-import { store as ctxStore } from "$lib/ctxmenu";
-import { get, writable } from "svelte/store";
+import { writable } from "svelte/store";
 import type { PopupsStore } from "./types";
 
 export const store = writable<PopupsStore>({
@@ -7,22 +6,18 @@ export const store = writable<PopupsStore>({
     showPlRenamePopup: false
 });
 
-export function showPlDeletePopup() {
-    ctxStore.update((s) => ({ ...s, preservePlaylistData: true }));
-    store.update((s) => ({ ...s, showPlDeletePopup: true }));
+export function showPlDeletePopup(playlistData: PopupsStore["playlistData"]) {
+    store.update((s) => ({ ...s, showPlDeletePopup: true, playlistData }));
 }
 
 export function hidePlDeletePopup() {
-    ctxStore.update((s) => ({ ...s, preservePlaylistData: false }));
-    store.update((s) => ({ ...s, showPlDeletePopup: false }));
+    store.update((s) => ({ ...s, showPlDeletePopup: false, playlistData: null }));
 }
 
-export function showPlRenamePopup() {
-    ctxStore.update((s) => ({ ...s, preservePlaylistData: true }));
-    store.update((s) => ({ ...s, showPlRenamePopup: true }));
+export function showPlRenamePopup(playlistData: PopupsStore["playlistData"]) {
+    store.update((s) => ({ ...s, showPlRenamePopup: true, playlistData }));
 }
 
 export function hidePlRenamePopup() {
-    ctxStore.update((s) => ({ ...s, preservePlaylistData: false }));
-    store.update((s) => ({ ...s, showPlRenamePopup: false }));
+    store.update((s) => ({ ...s, showPlRenamePopup: false, playlistData: null }));
 }

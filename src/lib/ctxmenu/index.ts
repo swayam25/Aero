@@ -1,4 +1,4 @@
-import { get, writable } from "svelte/store";
+import { writable } from "svelte/store";
 import type { CtxStore } from "./types";
 
 export const store = writable<CtxStore>({
@@ -31,7 +31,7 @@ export function closeCtxMenu() {
         y: 0,
         type: "song",
         song: null,
-        playlistData: get(store).preservePlaylistData ? get(store).playlistData : null,
+        playlistData: null,
         loginUserID: null,
         accessedUserID: null
     });
