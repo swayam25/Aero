@@ -6,7 +6,7 @@ Aero makes listening to music feel light and breezy
 
 </div>
 
-## 🚀 Installing
+## 🚩 Installing
 
 1. Clone this repository
     ```sh
@@ -46,6 +46,20 @@ Aero makes listening to music feel light and breezy
 6. Start the app
     ```sh
     pnpm run dev
+    ```
+
+## 🚀 Production
+
+1. Follow steps 1-4 from the [installation](#-installing) section.
+
+2. Build docker image
+    ```sh
+    docker build -t aero .
+    ```
+
+3. Run docker container
+    ```sh
+    docker run --name aero -d -p 3000:3000 -e ORIGIN="http://localhost:3000" aero
     ```
 
 ## ❤️ Contributing
