@@ -66,6 +66,31 @@ export async function play(song: SongDetailed, fromQueue: boolean = false) {
     updateTime();
 }
 
+export async function playPlaylist(song: SongDetailed, songs: SongDetailed[]) {
+    let { player } = get(store);
+
+    // Update player metadata
+    store.update((state) => ({ ...state, meta: song }));
+
+    // Initialize player if not already
+    if (!player) await init();
+
+    // Play the given song
+    await play(song);
+
+    // Split the playlist into two parts: songs after the given song and songs before it
+    const songIndex = songs.findIndex((s) => s.videoId === song.videoId);
+    if (songIndex === -1) return; // If the song is not found, exit
+
+    const songsAfter = songs.slice(songIndex + 1);
+    const songsBefore = songs.slice(0, songIndex);
+    const reorderedPlaylist = [song, ...songsAfter, ...songsBefore];
+    console.log(reorderedPlaylist);
+
+    // Update the queue with the reordered playlist
+    store.update((state) => ({ ...state, queue: reorderedPlaylist }));
+}
+
 export async function addToQueue(song: SongDetailed) {
     const player = get(store).player;
     if (!player) return { error: "No player instance" };

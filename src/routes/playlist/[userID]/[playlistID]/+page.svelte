@@ -3,7 +3,7 @@
     import Switch from "$lib/components/ui/Switch.svelte";
     import Tooltip from "$lib/components/ui/Tooltip.svelte";
     import { openCtxMenu } from "$lib/ctxmenu";
-    import { play, store } from "$lib/player";
+    import { playPlaylist, store } from "$lib/player";
     import { expoOut } from "svelte/easing";
     import { fade, fly } from "svelte/transition";
     import type { SongDetailed, SongFull } from "ytmusic-api";
@@ -14,6 +14,7 @@
     let { data }: { data: PageData } = $props();
     let isPublic: boolean = $state(data.playlist.isPublic);
     let enableToggleBtn: boolean = $state(true);
+    let songDetailedList: SongDetailed[] = [];
 
     function fetchSongDetailed(song: SongFull): SongDetailed {
         return {
@@ -49,7 +50,7 @@
         <div class="flex items-center justify-center gap-2"></div>
         <div class="flex items-center justify-center gap-2 md:items-end">
             <h1
-                class="font-bold text-4xl"
+                class="text-4xl font-bold"
                 class:md:text-6xl={data.playlist.name.length > 10 && data.playlist.name.length <= 20}
                 class:md:text-8xl={data.playlist.name.length <= 10}
             >
@@ -70,7 +71,7 @@
     </div>
 </div>
 
-<div class="mt-2 flex flex-col items-start justify-center gap-2 md:mt-5" class:!mt-20={data.playlistSongs.length <= 0}>
+<div class="mt-2 flex flex-col items-start justify-center gap-2 md:mt-5 p-2" class:!mt-20={data.playlistSongs.length <= 0}>
     {#if data.playlistSongs.length <= 0}
         <div in:fade={{ duration: 100 }} class="flex size-full items-center justify-center">
             <div in:fade={{ duration: 100 }} class="flex flex-col items-center justify-center gap-2">
@@ -95,9 +96,10 @@
                     </div>
                 </div>
             {:then song}
+                {@const NaN = songDetailedList.push(fetchSongDetailed(song))}
                 <button
                     onclick={async () => {
-                        await play(fetchSongDetailed(song), true);
+                        await playPlaylist(fetchSongDetailed(song), songDetailedList);
                     }}
                     in:fly={{ duration: 500, easing: expoOut, x: -100, y: 0 }}
                     out:fly={{ duration: 500, easing: expoOut, x: 100, y: 0 }}

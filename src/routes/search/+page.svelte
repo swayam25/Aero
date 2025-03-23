@@ -49,7 +49,7 @@
                 </div>
             </div>
         </div>
-        <div class="mt-5 flex gap-2 overflow-x-auto overflow-y-hidden" style="scrollbar-width: none;">
+        <div class="mt-5 flex gap-2 overflow-x-auto overflow-y-hidden p-2" style="scrollbar-width: none;">
             {#each Array(10) as _}
                 <div class="flex shrink-0 flex-col items-start justify-center gap-2 rounded-lg bg-slate-800 p-3">
                     <div class="size-40 shrink-0 animate-pulse rounded-lg bg-slate-900 md:size-50"></div>
@@ -113,8 +113,8 @@
                 </div>
             </div>
         </div>
-        <div class="group relative p-2">
-            <div in:fade={{ duration: 100 }} id="sec-search" class="mt-5 flex gap-2 overflow-x-auto overflow-y-hidden" style="scrollbar-width: none;">
+        <div class="group relative mt-5 p-2">
+            <div in:fade={{ duration: 100 }} id="sec-search" class="flex gap-2 overflow-x-auto overflow-y-hidden" style="scrollbar-width: none;">
                 {#each songs.slice(5) as song}
                     {@const thumb = song.thumbnails[0].url.replace("=w60-h60-l90-rj", "")}
                     <button
