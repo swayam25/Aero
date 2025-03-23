@@ -4,7 +4,6 @@
     import { formatTime } from "$lib/utils/time";
     import { fly } from "svelte/transition";
     import SolarAltArrowUpLinear from "~icons/solar/alt-arrow-up-linear";
-    import SolarDownloadMinimalisticLinear from "~icons/solar/download-minimalistic-linear";
     import SolarMutedLinear from "~icons/solar/muted-linear";
     import SolarPauseCircleBold from "~icons/solar/pause-circle-bold";
     import SolarPlayCircleBold from "~icons/solar/play-circle-bold";
@@ -66,7 +65,7 @@
         </Button>
         <div
             class="size-10 rounded-lg bg-slate-900 bg-cover transition-all md:size-15"
-            style="background-image: url({$store.state !== 'unstarted' ? $store.meta?.thumbnails[0].url.replace("=w60-h60-l90-rj", "") : ''});"
+            style="background-image: url({$store.state !== 'unstarted' ? $store.meta?.thumbnails[0].url.replace('=w60-h60-l90-rj', '') : ''});"
         ></div>
         {#if $store.state === "unstarted"}
             <div class="flex max-w-40 flex-col items-start justify-center gap-2">
@@ -194,11 +193,6 @@
             disabled={$store.queue.length < 2}
         >
             <SolarShuffleLinear class="size-full {$store.shuffle ? 'text-sky-500' : ''}" />
-        </button>
-
-        <!-- Download -->
-        <button class="size-5 opacity-80 transition-opacity hover:opacity-100">
-            <SolarDownloadMinimalisticLinear class="size-full" />
         </button>
     </div>
 

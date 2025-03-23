@@ -4,7 +4,6 @@
     import { expoOut } from "svelte/easing";
     import { fly } from "svelte/transition";
     import SolarAltArrowDownLinear from "~icons/solar/alt-arrow-down-linear";
-    import SolarDownloadMinimalisticLinear from "~icons/solar/download-minimalistic-linear";
     import SolarPauseCircleBold from "~icons/solar/pause-circle-bold";
     import SolarPlayCircleBold from "~icons/solar/play-circle-bold";
     import SolarPlaylist2Linear from "~icons/solar/playlist-2-linear";
@@ -158,11 +157,6 @@
                 disabled={$store.queue.length < 2}
             >
                 <SolarShuffleLinear class="size-full {$store.shuffle ? 'text-sky-500' : ''}" />
-            </button>
-
-            <!-- Download -->
-            <button class="size-6 opacity-80 transition-opacity hover:opacity-100">
-                <SolarDownloadMinimalisticLinear class="size-full" />
             </button>
         </div>
         <div></div>
