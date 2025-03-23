@@ -2,13 +2,14 @@
     import { invalidateAll } from "$app/navigation";
     import { store } from "$lib/ctxmenu";
     import type { InsertPlaylist } from "$lib/db/schema";
-    import { addToQueue, play, store as playerStore, removeFromQueue } from "$lib/player";
+    import { addToQueue, play, store as playerStore, removeFromQueue, togglePause } from "$lib/player";
     import { showPlDeletePopup, showPlRenamePopup } from "$lib/popups";
     import { fade } from "svelte/transition";
     import SolarAltArrowLeftLinear from "~icons/solar/alt-arrow-left-linear";
     import SolarConfoundedCircleLinear from "~icons/solar/confounded-circle-linear";
     import SolarMusicLibraryLinear from "~icons/solar/music-library-linear";
     import SolarNotificationLinesRemoveLinear from "~icons/solar/notification-lines-remove-linear";
+    import SolarPauseLinear from "~icons/solar/pause-linear";
     import SolarPlayLinear from "~icons/solar/play-linear";
     import SolarPlaylist2Linear from "~icons/solar/playlist-2-linear";
     import SolarRestartLinear from "~icons/solar/restart-linear";
@@ -147,25 +148,42 @@
                                 Add to Queue
                             </CtxButton>
                         {/if}
-                    {:else if $store.type === "queue" && $store.song && $store.song.videoId !== $playerStore.meta?.videoId}
-                        <!-- Play -->
-                        <CtxButton
-                            onclick={async () => {
-                                if ($store.song) await play($store.song, true);
-                            }}
-                        >
-                            <SolarPlayLinear class="size-5" />
-                            Play
-                        </CtxButton>
-                        <!-- Remove From Queue -->
-                        <CtxButton
-                            onclick={async () => {
-                                if ($store.song) await removeFromQueue($store.song);
-                            }}
-                        >
-                            <SolarNotificationLinesRemoveLinear class="size-5" />
-                            Remove from Queue
-                        </CtxButton>
+                    {:else if $store.type === "queue" && $store.song}
+                        {#if $store.song.videoId === $playerStore.meta?.videoId}
+                            <!-- Pause/Resume -->
+                            <CtxButton
+                                onclick={async () => {
+                                    if ($store.song) await togglePause();
+                                }}
+                            >
+                                {#if $playerStore.state === "paused"}
+                                    <SolarPlayLinear class="size-5" />
+                                    Resume
+                                {:else}
+                                    <SolarPauseLinear class="size-5" />
+                                    Pause
+                                {/if}
+                            </CtxButton>
+                        {:else}
+                            <!-- Play -->
+                            <CtxButton
+                                onclick={async () => {
+                                    if ($store.song) await play($store.song, true);
+                                }}
+                            >
+                                <SolarPlayLinear class="size-5" />
+                                Play
+                            </CtxButton>
+                            <!-- Remove From Queue -->
+                            <CtxButton
+                                onclick={async () => {
+                                    if ($store.song) await removeFromQueue($store.song);
+                                }}
+                            >
+                                <SolarNotificationLinesRemoveLinear class="size-5" />
+                                Remove from Queue
+                            </CtxButton>
+                        {/if}
                     {/if}
                     {#if $store.loginUserID}
                         <CtxButton
