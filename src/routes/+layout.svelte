@@ -45,7 +45,7 @@
         <Navbar user={data.user} />
     </div>
     <div class="col-span-1 row-span-1 hidden md:block">
-        <Sidebar user={data.user} />
+        <Sidebar user={data.user} playlists={data.playlists} />
     </div>
     <div
         id="body"

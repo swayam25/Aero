@@ -178,11 +178,6 @@
                         Add To Playlist
                     </CtxButton>
                 {:else if $store.type === "playlist" && $store.playlistData}
-                    <!-- Play -->
-                    <CtxButton>
-                        <SolarPlayLinear class="size-5" />
-                        Play
-                    </CtxButton>
                     <!-- Delete Playlist -->
                     <CtxButton type="error" onclick={deletePlaylist}>
                         <SolarTrashBinTrashLinear class="size-5" />
@@ -192,7 +187,7 @@
                     <!-- Play -->
                     <CtxButton
                         onclick={async () => {
-                            if ($store.song) await play($store.song, true);
+                            if ($store.song) await play($store.song);
                         }}
                     >
                         <SolarPlayLinear class="size-5" />
