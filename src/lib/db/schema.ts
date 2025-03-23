@@ -14,6 +14,7 @@ export const playlistTable = pgTable("playlist", {
         .references(() => userTable.userID, { onDelete: "cascade" }),
     createdAt: timestamp("created_at").notNull().defaultNow(),
     name: text("name").notNull(),
+    cover: text("cover"),
     songs: jsonb("songs").$type<string[]>().notNull(),
     isPublic: boolean("is_public").notNull().default(false)
 });

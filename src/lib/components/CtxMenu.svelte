@@ -101,7 +101,11 @@
                                             const resp = await fetch(`/api/playlist/${playlist.id}`, {
                                                 body: JSON.stringify({
                                                     key: "add_song",
-                                                    value: { playlistID: playlist.id, songID: $store.song.videoId }
+                                                    value: {
+                                                        playlistID: playlist.id,
+                                                        songID: $store.song.videoId,
+                                                        songCover: $store.song.thumbnails[0].url.replace("=w60-h60-l90-rj", "")
+                                                    }
                                                 }),
                                                 method: "POST"
                                             });
@@ -109,7 +113,8 @@
                                     }}
                                 >
                                     <div
-                                        class="size-10 shrink-0 rounded-lg bg-slate-800 transition-colors duration-200 group-hover:bg-slate-900"
+                                        class="size-10 shrink-0 rounded-lg bg-slate-800 bg-cover transition-colors duration-200 group-hover:bg-slate-900"
+                                        style="background-image: url({playlist.cover});"
                                     ></div>
                                     {playlist.name}
                                 </CtxButton>
@@ -216,7 +221,10 @@
                                 const resp = await fetch(`/api/playlist/${$store.playlistData?.id}`, {
                                     body: JSON.stringify({
                                         key: "remove_song",
-                                        value: { playlistID: $store.playlistData?.id, songID: $store.song?.videoId }
+                                        value: {
+                                            playlistID: $store.playlistData?.id,
+                                            songID: $store.song?.videoId
+                                        }
                                     }),
                                     method: "POST"
                                 });

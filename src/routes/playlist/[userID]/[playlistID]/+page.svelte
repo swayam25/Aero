@@ -45,7 +45,7 @@
 </script>
 
 <div class="flex w-full flex-col items-center justify-center gap-4 md:flex-row md:justify-start">
-    <div class="size-40 shrink-0 rounded-lg bg-slate-800 md:size-50"></div>
+    <div class="size-40 shrink-0 rounded-lg bg-slate-800 bg-cover md:size-50" style="background-image: url({data.playlist.cover});"></div>
     <div class="flex flex-col items-center justify-center gap-2 md:items-start">
         <div class="flex items-center justify-center gap-2"></div>
         <div class="flex items-center justify-center gap-2 md:items-end">
@@ -71,7 +71,7 @@
     </div>
 </div>
 
-<div class="mt-2 flex flex-col items-start justify-center gap-2 md:mt-5 p-2" class:!mt-20={data.playlistSongs.length <= 0}>
+<div class="mt-2 flex flex-col items-start justify-center gap-2 p-2 md:mt-5" class:!mt-20={data.playlistSongs.length <= 0}>
     {#if data.playlistSongs.length <= 0}
         <div in:fade={{ duration: 100 }} class="flex size-full items-center justify-center">
             <div in:fade={{ duration: 100 }} class="flex flex-col items-center justify-center gap-2">

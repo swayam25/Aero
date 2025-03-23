@@ -22,8 +22,12 @@
     {#each playlists as playlist}
         <Tooltip side="right">
             {#snippet trigger()}
-                <div aria-label={playlist.name} class="size-15 cursor-pointer rounded-lg bg-slate-800">
-                    <a href="/playlist/{user.id}/{playlist.id}" class="block size-full" aria-label={playlist.name}></a>
+                <div
+                    aria-label={playlist.name}
+                    class="size-15 cursor-pointer bg-cover rounded-lg bg-slate-800"
+                    style="background-image: url({playlist.cover});"
+                >
+                    <a href="/playlist/{user.id}/{playlist.id}" class="block size-full bg-transparent" aria-label={playlist.name}></a>
                 </div>
             {/snippet}
             {#snippet content()}

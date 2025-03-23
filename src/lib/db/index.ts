@@ -54,6 +54,10 @@ export async function removeSongFromPlaylist(db: DB, playlistID: number, songID:
     await db.update(schema.playlistTable).set({ songs: newSongs }).where(eq(schema.playlistTable.id, playlistID));
 }
 
+export async function setPlaylistCover(db: DB, playlistID: number, cover: string) {
+    await db.update(schema.playlistTable).set({ cover }).where(eq(schema.playlistTable.id, playlistID));
+}
+
 export async function toggleView(db: DB, playlistID: number) {
     const pl = await db.query.playlistTable.findFirst({ where: eq(schema.playlistTable.id, playlistID) });
     await db.update(schema.playlistTable).set({ isPublic: !pl!.isPublic }).where(eq(schema.playlistTable.id, playlistID));
