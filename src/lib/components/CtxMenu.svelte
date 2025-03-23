@@ -209,23 +209,25 @@
                             Add to Queue
                         </CtxButton>
                     {/if}
-                    <!-- Remove From Playlist -->
-                    <CtxButton
-                        type="error"
-                        onclick={async () => {
-                            const resp = await fetch(`/api/playlist/${$store.playlistData?.id}`, {
-                                body: JSON.stringify({
-                                    key: "remove_song",
-                                    value: { playlistID: $store.playlistData?.id, songID: $store.song?.videoId }
-                                }),
-                                method: "POST"
-                            });
-                            invalidateAll();
-                        }}
-                    >
-                        <SolarTrashBinTrashLinear class="size-5" />
-                        Remove from Playlist
-                    </CtxButton>
+                    {#if $store.loginUserID && $store.accessedUserID && $store.loginUserID === $store.accessedUserID}
+                        <!-- Remove From Playlist -->
+                        <CtxButton
+                            type="error"
+                            onclick={async () => {
+                                const resp = await fetch(`/api/playlist/${$store.playlistData?.id}`, {
+                                    body: JSON.stringify({
+                                        key: "remove_song",
+                                        value: { playlistID: $store.playlistData?.id, songID: $store.song?.videoId }
+                                    }),
+                                    method: "POST"
+                                });
+                                invalidateAll();
+                            }}
+                        >
+                            <SolarTrashBinTrashLinear class="size-5" />
+                            Remove from Playlist
+                        </CtxButton>
+                    {/if}
                 {/if}
             </div>
         {/if}

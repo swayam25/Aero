@@ -1,5 +1,5 @@
 import { relations } from "drizzle-orm";
-import { jsonb, pgTable, serial, text, timestamp } from "drizzle-orm/pg-core";
+import { boolean, jsonb, pgTable, serial, text, timestamp } from "drizzle-orm/pg-core";
 
 export const userTable = pgTable("user", {
     id: serial("id").primaryKey(),
@@ -14,7 +14,8 @@ export const playlistTable = pgTable("playlist", {
         .references(() => userTable.userID, { onDelete: "cascade" }),
     createdAt: timestamp("created_at").notNull().defaultNow(),
     name: text("name").notNull(),
-    songs: jsonb("songs").$type<string[]>().notNull()
+    songs: jsonb("songs").$type<string[]>().notNull(),
+    isPublic: boolean("is_public").notNull().default(false)
 });
 
 export const userRelations = relations(userTable, ({ many }) => ({

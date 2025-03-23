@@ -43,5 +43,5 @@ export const load: PageServerLoad = async ({ params, locals }) => {
         }
     }
 
-    return { user, playlist, playlistSongs };
+    return { loginUser: locals.user, user, playlist, playlistSongs };
 };
