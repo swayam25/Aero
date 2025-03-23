@@ -1,15 +1,44 @@
 <script lang="ts">
+    import { invalidateAll } from "$app/navigation";
     import NewPlaylistPopup from "$lib/components/NewPlaylistPopup.svelte";
+    import AlertPopup from "$lib/components/ui/AlertPopup.svelte";
     import Button from "$lib/components/ui/Button.svelte";
-    import { openCtxMenu } from "$lib/ctxmenu";
+    import { store as ctxStore, openCtxMenu } from "$lib/ctxmenu";
+    import { hidePlDeletePopup, store as popupStore } from "$lib/popups";
+    import { AlertDialog } from "bits-ui";
     import { expoOut } from "svelte/easing";
     import { fade, fly } from "svelte/transition";
     import MaterialSymbolsAdd2Rounded from "~icons/material-symbols/add-2-rounded";
     import SolarConfoundedCircleLinear from "~icons/solar/confounded-circle-linear";
+    import SolarTrashBinTrashLinear from "~icons/solar/trash-bin-trash-linear";
     import type { PageData } from "./$types";
 
     let { data }: { data: PageData } = $props();
+
+    async function deletePlaylist() {
+        hidePlDeletePopup();
+        const resp = await fetch(`/api/playlist`, {
+            body: JSON.stringify({ id: $ctxStore.playlistData?.id }),
+            method: "DELETE"
+        });
+        invalidateAll();
+    }
 </script>
+
+<AlertPopup title="ARE YOU SURE?" bind:open={$popupStore.showPlDeletePopup}>
+    {#snippet trigger()}{/snippet}
+    {#snippet description()}
+        This action cannot be undone. This will permanently
+        <span class="font-semibold text-red-500">delete your playlist</span> named
+        <span class="font-semibold text-sky-500">{$ctxStore.playlistData?.name}</span>. Please confirm that you want to proceed.
+    {/snippet}
+    {#snippet actions()}
+        <AlertDialog.Action class="hover:!bg-red-500/10 hover:text-red-500" onclick={deletePlaylist}>
+            <SolarTrashBinTrashLinear class="size-5" />
+            Delete Playlist
+        </AlertDialog.Action>
+    {/snippet}
+</AlertPopup>
 
 {#if data.playlists.length > 0}
     <div in:fade={{ duration: 100 }} class="mb-2 flex size-fit items-center justify-center gap-2 md:mb-5">

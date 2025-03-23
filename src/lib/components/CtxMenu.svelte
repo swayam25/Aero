@@ -3,6 +3,7 @@
     import { store } from "$lib/ctxmenu";
     import type { InsertPlaylist } from "$lib/db/schema";
     import { addToQueue, play, store as playerStore, removeFromQueue } from "$lib/player";
+    import { showPlDeletePopup } from "$lib/popups";
     import { fade } from "svelte/transition";
     import SolarAltArrowLeftLinear from "~icons/solar/alt-arrow-left-linear";
     import SolarConfoundedCircleLinear from "~icons/solar/confounded-circle-linear";
@@ -51,15 +52,7 @@
         }
     });
 
-    export async function deletePlaylist() {
-        const resp = await fetch(`/api/playlist`, {
-            body: JSON.stringify({ id: $store.playlistData?.id }),
-            method: "DELETE"
-        });
-        invalidateAll();
-    }
-
-    export async function fetchPlaylists() {
+    async function fetchPlaylists() {
         const resp = await fetch(`/api/playlists`);
         return (await resp.json()) as InsertPlaylist[];
     }
@@ -178,8 +171,8 @@
                         Add To Playlist
                     </CtxButton>
                 {:else if $store.type === "playlist" && $store.playlistData}
-                    <!-- Delete Playlist -->
-                    <CtxButton type="error" onclick={deletePlaylist}>
+                    <!-- Delete PLaylist -->
+                    <CtxButton type="error" onclick={showPlDeletePopup}>
                         <SolarTrashBinTrashLinear class="size-5" />
                         Delete Playlist
                     </CtxButton>
