@@ -20,7 +20,6 @@ export function hidePlDeletePopup() {
 export function showPlRenamePopup() {
     ctxStore.update((s) => ({ ...s, preservePlaylistData: true }));
     store.update((s) => ({ ...s, showPlRenamePopup: true }));
-    console.log(get(ctxStore));
 }
 
 export function hidePlRenamePopup() {

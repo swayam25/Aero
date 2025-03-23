@@ -33,10 +33,8 @@
     let inputValue: string = $state("");
 
     function renamePlaylist() {
-        console.log($ctxStore);
         const plID = $ctxStore.playlistData?.id;
         const newName = inputValue.trim();
-        console.log(plID, newName);
         hidePlRenamePopup();
         inputValue = "";
         const resp = fetch(`/api/playlist`, {
