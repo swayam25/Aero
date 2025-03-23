@@ -8,11 +8,7 @@ import { error } from "@sveltejs/kit";
 import type { SongFull } from "ytmusic-api";
 import type { PageServerLoad } from "./$types";
 
-export const load: PageServerLoad = async ({ setHeaders, params, locals }) => {
-    setHeaders({
-        "cache-control": "max-age=6000" // 100 minutes
-    });
-
+export const load: PageServerLoad = async ({ params, locals }) => {
     const userID = params.userID;
     const playlistID = Number(params.playlistID);
 

@@ -1,7 +1,27 @@
 <script lang="ts">
+    import MarqueeText from "$lib/components/ui/MarqueeText.svelte";
+    import { openCtxMenu } from "$lib/ctxmenu";
+    import { play, store } from "$lib/player";
+    import { expoOut } from "svelte/easing";
+    import { fade, fly } from "svelte/transition";
+    import type { SongDetailed, SongFull } from "ytmusic-api";
+    import HugeiconsCd from "~icons/hugeicons/cd";
+    import SolarConfoundedCircleLinear from "~icons/solar/confounded-circle-linear";
     import type { PageData } from "./$types";
 
     let { data }: { data: PageData } = $props();
+
+    function fetchSongDetailed(song: SongFull): SongDetailed {
+        return {
+            type: song.type,
+            name: song.name,
+            videoId: song.videoId,
+            artist: song.artist,
+            album: { name: "", albumId: "" },
+            duration: song.duration,
+            thumbnails: song.thumbnails
+        };
+    }
 </script>
 
 <div class="flex w-full flex-col items-center justify-center gap-4 md:flex-row md:justify-start">
@@ -10,4 +30,61 @@
         <h1 class="text-4xl font-bold md:text-8xl">{data.playlist.name}</h1>
         <p class="text-slate-400 md:text-lg">Created At {new Date(data.playlist.createdAt).toLocaleDateString()}</p>
     </div>
+</div>
+
+<div class="mt-2 flex flex-col items-start justify-center gap-2 md:mt-5" class:!mt-20={data.playlistSongs.length <= 0}>
+    {#if data.playlistSongs.length <= 0}
+        <div in:fade={{ duration: 100 }} class="flex size-full items-center justify-center">
+            <div in:fade={{ duration: 100 }} class="flex flex-col items-center justify-center gap-2">
+                <SolarConfoundedCircleLinear class="size-10 text-slate-400 md:size-15" />
+                <p class="text-lg text-slate-400 md:text-xl">Playlist is empty</p>
+            </div>
+        </div>
+    {:else}
+        {#each data.playlistSongs as song, idx}
+            {#await song}
+                <div
+                    in:fade={{ duration: 100 }}
+                    class="flex w-full items-center justify-center gap-2 rounded-lg bg-slate-800 p-2 transition-colors duration-200"
+                >
+                    <div class="flex size-10 items-center justify-center p-1 text-lg">
+                        <span class="text-slate-200">{idx + 1}</span>
+                    </div>
+                    <div class="size-15 shrink-0 animate-pulse rounded-lg bg-slate-900"></div>
+                    <div class="flex w-full flex-col items-start justify-center gap-2 text-left">
+                        <div class="h-5 w-[80%] animate-pulse rounded-lg bg-slate-900 font-bold"></div>
+                        <div class="h-5 w-[50%] animate-pulse truncate rounded-lg bg-slate-900"></div>
+                    </div>
+                </div>
+            {:then song}
+                <button
+                    onclick={async () => {
+                        await play(fetchSongDetailed(song), true);
+                    }}
+                    in:fly={{ duration: 500, easing: expoOut, x: -100, y: 0 }}
+                    out:fly={{ duration: 500, easing: expoOut, x: 100, y: 0 }}
+                    oncontextmenu={(e) => {
+                        e.preventDefault();
+                        openCtxMenu(e, fetchSongDetailed(song), data.playlist, "playlistSong");
+                    }}
+                    class="flex w-full items-center justify-center gap-2 rounded-lg p-2 transition-colors duration-200 hover:bg-slate-800"
+                >
+                    <div class="flex size-10 items-center justify-center p-1 text-lg">
+                        {#if song.videoId === $store.meta?.videoId}
+                            <span in:fade={{ duration: 100 }} class="size-full">
+                                <HugeiconsCd class="size-full animate-spin text-sky-500" />
+                            </span>
+                        {:else}
+                            <span in:fade={{ duration: 100 }} class="text-slate-200">{idx + 1}</span>
+                        {/if}
+                    </div>
+                    <img src={song.thumbnails[0].url.replace("=w60-h60-l90-rj", "")} alt="{song.name}'s Thumbnail" class="size-15 rounded-lg" />
+                    <div class="flex w-full flex-col items-center justify-center text-left">
+                        <MarqueeText class="w-10 font-bold" text={song.name} />
+                        <MarqueeText class="w-10 text-sm text-slate-400" text={song.artist.name} />
+                    </div>
+                </button>
+            {/await}
+        {/each}
+    {/if}
 </div>
