@@ -1,4 +1,6 @@
 <script lang="ts">
+    import { expoOut } from "svelte/easing";
+    import { fly } from "svelte/transition";
     import type { PageData } from "./$types";
 
     let { data }: { data: PageData } = $props();
@@ -14,16 +16,16 @@
             <img
                 src={`https://cdn.discordapp.com/banners/${data.user.id}/${data.user.banner}?size=4096`}
                 alt="User Banner"
-                class="h-20 w-full rounded-t-lg object-cover md:h-30 lg:h-40"
+                class="h-20 w-full rounded-lg object-cover md:h-30 lg:h-40"
             />
         {:else}
             <div
-                class="h-20 w-full rounded-t-lg md:h-30 lg:h-40"
+                class="h-20 w-full rounded-lg md:h-30 lg:h-40"
                 style="background-color: {data.user.accent_color ? `#${data.user.accent_color.toString(16).padStart(6, '0')}` : '#1F2937'};"
             ></div>
         {/if}
     </div>
-    <div class="-mt-12 ml-10 flex w-full items-center justify-start gap-4">
+    <div class="relative -mt-12 ml-10 flex w-full items-center justify-start gap-4">
         <img
             src={`https://cdn.discordapp.com/avatars/${data.user.id}/${data.user.avatar}?size=4096`}
             alt="User Avatar"
@@ -42,3 +44,26 @@
         </div>
     </div>
 </div>
+
+{#if data.playlists.length > 0}
+    <h1 class="mt-10 text-3xl font-bold md:text-4xl">Public Playlists</h1>
+
+    <div class="mt-2 flex flex-wrap items-center justify-start gap-2 p-2">
+        {#each data.playlists as playlist}
+            <a
+                in:fly={{ duration: 500, easing: expoOut, x: -100, y: 0 }}
+                out:fly={{ duration: 500, easing: expoOut, x: 100, y: 0 }}
+                href={`/playlist/${data.user.id}/${playlist.id}`}
+                class="group flex size-fit cursor-pointer flex-col items-start justify-center gap-2 rounded-lg p-3 transition-colors duration-200 hover:bg-slate-800"
+            >
+                <div
+                    class="size-40 shrink-0 rounded-lg bg-slate-800 bg-cover transition-colors duration-200 group-hover:bg-slate-900 md:size-50"
+                    style="background-image: url({playlist.cover});"
+                ></div>
+                <div class="text-left">
+                    <p class="text-sm">{playlist.name}</p>
+                </div>
+            </a>
+        {/each}
+    </div>
+{/if}

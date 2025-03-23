@@ -35,6 +35,10 @@ export async function getPlaylists(db: DB, userID: string) {
     return db.query.playlistTable.findMany({ where: eq(schema.playlistTable.userID, userID) });
 }
 
+export async function getPublicPlaylists(db: DB, userID: string) {
+    return db.query.playlistTable.findMany({ where: eq(schema.playlistTable.userID, userID) && eq(schema.playlistTable.isPublic, true) });
+}
+
 export async function checkPlaylist(db: DB, userID: string, playlistID: number) {
     return db.query.playlistTable.findFirst({
         where: (fields) => eq(fields.userID, userID) && eq(fields.id, playlistID)
