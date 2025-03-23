@@ -1,4 +1,4 @@
-import { addSongToPlaylist, checkPlaylist, removeSongFromPlaylist } from "$lib/db";
+import { addSongToPlaylist, checkPlaylist, removeSongFromPlaylist, toggleView } from "$lib/db";
 import { json, type RequestHandler } from "@sveltejs/kit";
 
 export const POST: RequestHandler = async ({ locals, request }) => {
@@ -8,7 +8,7 @@ export const POST: RequestHandler = async ({ locals, request }) => {
 
     if (!user) return json({ error: "Unauthorized" }, { status: 401 });
 
-    const playlistExists = await checkPlaylist(locals.db, user.id, value.playlistID);
+    let playlistExists = await checkPlaylist(locals.db, user.id, value.playlistID);
     if (!playlistExists) {
         return json({ error: "Playlist not found" }, { status: 404 });
     } else {
@@ -21,6 +21,9 @@ export const POST: RequestHandler = async ({ locals, request }) => {
         await addSongToPlaylist(locals.db, value.playlistID, value.songID);
     } else if (key === "remove_song") {
         await removeSongFromPlaylist(locals.db, value.playlistID, value.songID);
+    } else if (key === "toggle_view") {
+        const isPublic = await toggleView(locals.db, value.playlistID);
+        return json({ success: true, isPublic });
     }
 
     return json({ success: true });

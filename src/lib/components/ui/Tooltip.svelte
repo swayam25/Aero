@@ -7,14 +7,15 @@
     interface Props {
         side?: "top" | "right" | "bottom" | "left" | undefined;
         class?: string;
+        disabled?: boolean;
         trigger: Snippet;
         content: Snippet;
     }
-    let { side = undefined, class: className, trigger, content }: Props = $props();
+    let { side = undefined, class: className, disabled = false, trigger, content }: Props = $props();
 </script>
 
 <Tooltip.Provider>
-    <Tooltip.Root delayDuration={100}>
+    <Tooltip.Root delayDuration={100} {disabled}>
         <Tooltip.Trigger class={cn(className)}>
             {@render trigger()}
         </Tooltip.Trigger>

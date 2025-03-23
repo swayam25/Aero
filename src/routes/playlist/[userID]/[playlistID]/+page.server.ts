@@ -13,6 +13,7 @@ export const load: PageServerLoad = async ({ params, locals }) => {
     const playlistID = Number(params.playlistID);
 
     const userExists = await checkUser(locals.db, userID);
+    let loginUser: UserData | null = locals.user;
     let user: UserData;
     let playlist: SelectPlaylist;
     let playlistSongs: Promise<SongFull>[];
@@ -36,6 +37,7 @@ export const load: PageServerLoad = async ({ params, locals }) => {
             return error(404, "Playlist not found");
         } else {
             playlist = playlistExists;
+            if (!playlist.isPublic && loginUser?.id !== user.id) return error(404, "Playlist not found");
             playlistSongs = [];
             playlist.songs.forEach(async (song) => {
                 playlistSongs.push(locals.ytmusic.getSong(song));
@@ -43,5 +45,5 @@ export const load: PageServerLoad = async ({ params, locals }) => {
         }
     }
 
-    return { loginUser: locals.user, user, playlist, playlistSongs };
+    return { loginUser, user, playlist, playlistSongs };
 };

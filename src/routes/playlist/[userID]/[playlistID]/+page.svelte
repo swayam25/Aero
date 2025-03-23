@@ -1,5 +1,7 @@
 <script lang="ts">
     import MarqueeText from "$lib/components/ui/MarqueeText.svelte";
+    import Switch from "$lib/components/ui/Switch.svelte";
+    import Tooltip from "$lib/components/ui/Tooltip.svelte";
     import { openCtxMenu } from "$lib/ctxmenu";
     import { play, store } from "$lib/player";
     import { expoOut } from "svelte/easing";
@@ -10,6 +12,8 @@
     import type { PageData } from "./$types";
 
     let { data }: { data: PageData } = $props();
+    let isPublic: boolean = $state(data.playlist.isPublic);
+    let enableToggleBtn: boolean = $state(true);
 
     function fetchSongDetailed(song: SongFull): SongDetailed {
         return {
@@ -22,12 +26,40 @@
             thumbnails: song.thumbnails
         };
     }
+
+    async function togglePlaylistView() {
+        enableToggleBtn = false;
+        const resp = await fetch(`/api/playlist/${data.playlist.id}`, {
+            method: "POST",
+            body: JSON.stringify({ key: "toggle_view", value: { playlistID: data.playlist.id } }),
+            headers: { "Content-Type": "application/json" }
+        });
+        if (resp.ok) {
+            isPublic = (await resp.json()).isPublic;
+        }
+        setTimeout(() => {
+            enableToggleBtn = true;
+        }, 500);
+    }
 </script>
 
 <div class="flex w-full flex-col items-center justify-center gap-4 md:flex-row md:justify-start">
     <div class="size-40 rounded-lg bg-slate-800 md:size-50"></div>
     <div class="flex flex-col items-center justify-center gap-2 md:items-start">
-        <h1 class="text-4xl font-bold md:text-8xl">{data.playlist.name}</h1>
+        <div class="flex items-center justify-center gap-2"></div>
+        <div class="flex items-center justify-center gap-2 md:items-end">
+            <h1 class="text-4xl font-bold md:text-8xl">{data.playlist.name}</h1>
+            {#if data.loginUser?.id === data.user.id}
+                <Tooltip side="right" disabled={!enableToggleBtn}>
+                    {#snippet trigger()}
+                        <Switch size="md" checked={isPublic} disabled={!enableToggleBtn} onCheckedChange={togglePlaylistView} />
+                    {/snippet}
+                    {#snippet content()}
+                        {isPublic ? "Public" : "Private"} Playlist
+                    {/snippet}
+                </Tooltip>
+            {/if}
+        </div>
         <p class="text-slate-400 md:text-lg">Created At {new Date(data.playlist.createdAt).toLocaleDateString()}</p>
     </div>
 </div>

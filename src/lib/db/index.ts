@@ -53,3 +53,9 @@ export async function removeSongFromPlaylist(db: DB, playlistID: number, songID:
     const newSongs = pl?.songs.filter((storedSongID) => storedSongID !== songID) || [];
     await db.update(schema.playlistTable).set({ songs: newSongs }).where(eq(schema.playlistTable.id, playlistID));
 }
+
+export async function toggleView(db: DB, playlistID: number) {
+    const pl = await db.query.playlistTable.findFirst({ where: eq(schema.playlistTable.id, playlistID) });
+    await db.update(schema.playlistTable).set({ isPublic: !pl!.isPublic }).where(eq(schema.playlistTable.id, playlistID));
+    return !pl!.isPublic;
+}
