@@ -124,7 +124,7 @@
                 }}
                 class="group flex size-fit cursor-pointer flex-col items-start justify-center gap-2 rounded-lg p-3 transition-colors duration-200 hover:bg-slate-800"
             >
-                <div class="size-40 rounded-lg bg-slate-800 transition-colors duration-200 group-hover:bg-slate-900 md:size-50"></div>
+                <div class="size-40 shrink-0 rounded-lg bg-slate-800 transition-colors duration-200 group-hover:bg-slate-900 md:size-50"></div>
                 <div class="text-left">
                     <p class="text-sm">{playlist.name}</p>
                 </div>

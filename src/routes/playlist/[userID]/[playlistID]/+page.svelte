@@ -44,11 +44,17 @@
 </script>
 
 <div class="flex w-full flex-col items-center justify-center gap-4 md:flex-row md:justify-start">
-    <div class="size-40 rounded-lg bg-slate-800 md:size-50"></div>
+    <div class="size-40 shrink-0 rounded-lg bg-slate-800 md:size-50"></div>
     <div class="flex flex-col items-center justify-center gap-2 md:items-start">
         <div class="flex items-center justify-center gap-2"></div>
         <div class="flex items-center justify-center gap-2 md:items-end">
-            <h1 class="text-4xl font-bold md:text-8xl">{data.playlist.name}</h1>
+            <h1
+                class="font-bold text-4xl"
+                class:md:text-6xl={data.playlist.name.length > 10 && data.playlist.name.length <= 20}
+                class:md:text-8xl={data.playlist.name.length <= 10}
+            >
+                {data.playlist.name}
+            </h1>
             {#if data.loginUser?.id === data.user.id}
                 <Tooltip side="right" disabled={!enableToggleBtn}>
                     {#snippet trigger()}
