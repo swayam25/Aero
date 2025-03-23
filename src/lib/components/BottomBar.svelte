@@ -10,7 +10,7 @@
     let links: { name: string; href: string; icon: Component; hidden?: boolean }[] = [
         { name: "Home", href: "/", icon: SolarHome2Linear },
         { name: "Playlists", href: "/playlist", icon: SolarMusicLibraryLinear },
-        { name: "Profile", href: `/profile/${user.id}`, icon: SolarUserCircleLinear, hidden: !user }
+        { name: "Profile", href: `/profile/${user?.id}`, icon: SolarUserCircleLinear, hidden: !user }
     ];
 </script>
 
