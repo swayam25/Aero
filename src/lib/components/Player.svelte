@@ -3,7 +3,6 @@
     import { previous, seekTo, setVolume, skip, store, togglePause, toggleQueue } from "$lib/player";
     import { formatTime } from "$lib/utils/time";
     import { fly } from "svelte/transition";
-    import SolarAltArrowUpLinear from "~icons/solar/alt-arrow-up-linear";
     import SolarMutedLinear from "~icons/solar/muted-linear";
     import SolarPauseCircleBold from "~icons/solar/pause-circle-bold";
     import SolarPlayCircleBold from "~icons/solar/play-circle-bold";
@@ -17,7 +16,6 @@
     import SolarVolumeLoudLinear from "~icons/solar/volume-loud-linear";
     import SolarVolumeSmallLinear from "~icons/solar/volume-small-linear";
     import MobilePlayer from "./MobilePlayer.svelte";
-    import Button from "./ui/Button.svelte";
     import MarqueeText from "./ui/MarqueeText.svelte";
     import Popover from "./ui/Popover.svelte";
     import Slider from "./ui/Slider.svelte";
@@ -56,27 +54,26 @@
 <div id="player" class="flex size-full h-15 w-full items-center justify-between rounded-lg px-8 md:px-5">
     <!-- Song Info -->
     <div class="flex items-center justify-center gap-2 transition-opacity">
-        <Button
-            class="size-8 bg-slate-900 p-2 md:hidden {$store.state === 'unstarted' ? 'pointer-events-none opacity-0' : 'opacity-100'}"
-            size=""
-            onclick={() => (showMobilePlayer = true)}
-        >
-            <SolarAltArrowUpLinear class="size-full" />
-        </Button>
         <div
-            class="size-10 rounded-lg bg-slate-900 bg-cover transition-all md:size-15"
+            class="size-10 rounded-lg bg-slate-800 md:bg-slate-900 bg-cover transition-all md:size-15"
             style="background-image: url({$store.state !== 'unstarted' ? $store.meta?.thumbnails[0].url.replace('=w60-h60-l90-rj', '') : ''});"
         ></div>
         {#if $store.state === "unstarted"}
             <div class="flex max-w-40 flex-col items-start justify-center gap-2">
-                <span class="h-3 w-40 rounded-lg bg-slate-900 md:h-4"></span>
-                <span class="h-3 w-40 rounded-lg bg-slate-900 md:h-4"></span>
+                <span class="h-3 w-40 rounded-lg bg-slate-800 md:bg-slate-900 md:h-4"></span>
+                <span class="h-3 w-40 rounded-lg bg-slate-800 md:bg-slate-900 md:h-4"></span>
             </div>
         {:else}
-            <div in:fly={{ duration: 100 }} class="flex max-w-40 flex-col items-start justify-center">
+            <button
+                in:fly={{ duration: 100 }}
+                onclick={() => {
+                    showMobilePlayer = true;
+                }}
+                class="flex max-w-40 flex-col items-start justify-center"
+            >
                 <MarqueeText text={$store.meta?.name || ""} class="text-sm font-semibold" />
                 <span class="w-20 truncate text-xs text-slate-400 md:w-40">{$store.meta?.artist.name}</span>
-            </div>
+            </button>
         {/if}
     </div>
 

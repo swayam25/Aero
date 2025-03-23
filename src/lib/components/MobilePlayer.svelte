@@ -40,7 +40,7 @@
 
 <div
     transition:fly={{ duration: 500, easing: expoOut, x: 0, y: 100 }}
-    class="fixed inset-0 z-100 h-screen w-screen bg-slate-950 bg-cover bg-center"
+    class="fixed inset-0 z-200 h-screen w-screen bg-slate-950 bg-cover bg-center"
     style="background-image: url({$store.meta?.thumbnails[0].url.replace('=w60-h60-l90-rj', '')});"
 >
     <div

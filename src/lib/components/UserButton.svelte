@@ -42,7 +42,7 @@
                         <img
                             src={`https://cdn.discordapp.com/avatar-decoration-presets/${user.avatar_decoration_data?.asset}.webp`}
                             alt="Avatar Decoration"
-                            class="absolute z-10 size-10 rounded-full md:size-12"
+                            class="absolute size-10 rounded-full md:size-12"
                             onmouseenter={(e) => {
                                 const img = e.target as HTMLImageElement;
                                 img.src = img.src.includes(".webp") ? img.src.replace(".webp", "") : `${img.src}.webp`;

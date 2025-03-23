@@ -1,5 +1,6 @@
 <script lang="ts">
     import { onNavigate } from "$app/navigation";
+    import BottomBar from "$lib/components/BottomBar.svelte";
     import CtxMenu from "$lib/components/CtxMenu.svelte";
     import Navbar from "$lib/components/Navbar.svelte";
     import Player from "$lib/components/Player.svelte";
@@ -56,6 +57,9 @@
             {@render children()}
         </div>
     </div>
+    <div class="md:hidden">
+        <BottomBar user={data.user} />
+    </div>
     {#if $store.showQueue}
         <!-- Here "window.innerWidth >= 768" refers to "md" breakpoint -->
         <div
@@ -71,7 +75,9 @@
             </div>
         </div>
     {/if}
-    <div class="col-span-3">
-        <Player user={data.user} />
+    <div class="fixed bottom-15 md:bottom-0 w-full p-2 md:relative md:col-span-3 md:p-0">
+        <div class="rounded-lg bg-slate-900 md:rounded-none md:bg-transparent">
+            <Player user={data.user} />
+        </div>
     </div>
 </div>
