@@ -3,28 +3,51 @@
     import NewPlaylistPopup from "$lib/components/NewPlaylistPopup.svelte";
     import AlertPopup from "$lib/components/ui/AlertPopup.svelte";
     import Button from "$lib/components/ui/Button.svelte";
+    import DialogPopup from "$lib/components/ui/DialogPopup.svelte";
+    import Input from "$lib/components/ui/Input.svelte";
     import { store as ctxStore, openCtxMenu } from "$lib/ctxmenu";
-    import { hidePlDeletePopup, store as popupStore } from "$lib/popups";
-    import { AlertDialog } from "bits-ui";
+    import { hidePlDeletePopup, hidePlRenamePopup, store as popupStore } from "$lib/popups";
+    import { AlertDialog, Dialog } from "bits-ui";
     import { expoOut } from "svelte/easing";
     import { fade, fly } from "svelte/transition";
     import MaterialSymbolsAdd2Rounded from "~icons/material-symbols/add-2-rounded";
     import SolarConfoundedCircleLinear from "~icons/solar/confounded-circle-linear";
+    import SolarPlaylist2Linear from "~icons/solar/playlist-2-linear";
+    import SolarRestartLinear from "~icons/solar/restart-linear";
     import SolarTrashBinTrashLinear from "~icons/solar/trash-bin-trash-linear";
     import type { PageData } from "./$types";
 
     let { data }: { data: PageData } = $props();
 
     async function deletePlaylist() {
+        const plID = $ctxStore.playlistData?.id;
         hidePlDeletePopup();
         const resp = await fetch(`/api/playlist`, {
-            body: JSON.stringify({ id: $ctxStore.playlistData?.id }),
+            body: JSON.stringify({ id: plID }),
             method: "DELETE"
+        });
+        invalidateAll();
+    }
+
+    let input: HTMLInputElement | null = $state(null);
+    let inputValue: string = $state("");
+
+    function renamePlaylist() {
+        console.log($ctxStore);
+        const plID = $ctxStore.playlistData?.id;
+        const newName = inputValue.trim();
+        console.log(plID, newName);
+        hidePlRenamePopup();
+        inputValue = "";
+        const resp = fetch(`/api/playlist`, {
+            body: JSON.stringify({ key: "rename_pl", value: { id: plID, name: newName } }),
+            method: "POST"
         });
         invalidateAll();
     }
 </script>
 
+<!-- Delete Alert Popup (triggered via context menu) -->
 <AlertPopup title="ARE YOU SURE?" bind:open={$popupStore.showPlDeletePopup}>
     {#snippet trigger()}{/snippet}
     {#snippet description()}
@@ -39,6 +62,32 @@
         </AlertDialog.Action>
     {/snippet}
 </AlertPopup>
+
+<!-- Rename Popup (triggered via context menu) -->
+<DialogPopup title="RENAME PLAYLIST" bind:open={$popupStore.showPlRenamePopup}>
+    {#snippet trigger()}{/snippet}
+    {#snippet description()}
+        Enter the new name for your playlist. Be creative!
+    {/snippet}
+    {#snippet fields()}
+        <div class="flex size-full flex-col items-start justify-center gap-2">
+            <Input
+                bind:value={inputValue}
+                class="w-full"
+                placeholder="Playlist Name"
+                icon={SolarPlaylist2Linear}
+                onEnter={renamePlaylist}
+                bind:ref={input}
+            />
+        </div>
+    {/snippet}
+    {#snippet actions()}
+        <Dialog.Close class="disabled:cursor-not-allowed" onclick={renamePlaylist} disabled={!inputValue}>
+            <SolarRestartLinear class="size-5" />
+            Rename
+        </Dialog.Close>
+    {/snippet}
+</DialogPopup>
 
 {#if data.playlists.length > 0}
     <div in:fade={{ duration: 100 }} class="mb-2 flex size-fit items-center justify-center gap-2 md:mb-5">

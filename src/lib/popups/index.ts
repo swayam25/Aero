@@ -1,5 +1,5 @@
 import { store as ctxStore } from "$lib/ctxmenu";
-import { writable } from "svelte/store";
+import { get, writable } from "svelte/store";
 import type { PopupsStore } from "./types";
 
 export const store = writable<PopupsStore>({
@@ -18,9 +18,12 @@ export function hidePlDeletePopup() {
 }
 
 export function showPlRenamePopup() {
+    ctxStore.update((s) => ({ ...s, preservePlaylistData: true }));
     store.update((s) => ({ ...s, showPlRenamePopup: true }));
+    console.log(get(ctxStore));
 }
 
 export function hidePlRenamePopup() {
+    ctxStore.update((s) => ({ ...s, preservePlaylistData: false }));
     store.update((s) => ({ ...s, showPlRenamePopup: false }));
 }

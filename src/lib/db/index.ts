@@ -23,7 +23,7 @@ export async function createPlaylist(db: DB, userID: string, name: string) {
     await db.insert(schema.playlistTable).values({ userID, name, songs: [] });
 }
 
-export async function editPlaylist(db: DB, playlistID: number, name: string) {
+export async function renamePlaylist(db: DB, playlistID: number, name: string) {
     await db.update(schema.playlistTable).set({ name }).where(eq(schema.playlistTable.id, playlistID));
 }
 

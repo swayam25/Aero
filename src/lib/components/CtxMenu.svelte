@@ -3,7 +3,7 @@
     import { store } from "$lib/ctxmenu";
     import type { InsertPlaylist } from "$lib/db/schema";
     import { addToQueue, play, store as playerStore, removeFromQueue } from "$lib/player";
-    import { showPlDeletePopup } from "$lib/popups";
+    import { showPlDeletePopup, showPlRenamePopup } from "$lib/popups";
     import { fade } from "svelte/transition";
     import SolarAltArrowLeftLinear from "~icons/solar/alt-arrow-left-linear";
     import SolarConfoundedCircleLinear from "~icons/solar/confounded-circle-linear";
@@ -11,6 +11,7 @@
     import SolarNotificationLinesRemoveLinear from "~icons/solar/notification-lines-remove-linear";
     import SolarPlayLinear from "~icons/solar/play-linear";
     import SolarPlaylist2Linear from "~icons/solar/playlist-2-linear";
+    import SolarRestartLinear from "~icons/solar/restart-linear";
     import SolarTrashBinTrashLinear from "~icons/solar/trash-bin-trash-linear";
     import CtxButton from "./CtxButton.svelte";
 
@@ -175,6 +176,11 @@
                     <CtxButton type="error" onclick={showPlDeletePopup}>
                         <SolarTrashBinTrashLinear class="size-5" />
                         Delete Playlist
+                    </CtxButton>
+                    <!-- Rename Playlist -->
+                    <CtxButton onclick={showPlRenamePopup}>
+                        <SolarRestartLinear class="size-5" />
+                        Rename Playlist
                     </CtxButton>
                 {:else if $store.type === "playlistSong" && $store.song && $store.playlistData}
                     <!-- Play -->

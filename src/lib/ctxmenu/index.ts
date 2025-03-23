@@ -20,7 +20,6 @@ export function openCtxMenu(
     if (!type) type = "song";
     const x = e.clientX;
     const y = e.clientY;
-    console.log(loginUserID, accessedUserID);
     store.set({ isOpen: true, showPlaylistMenu: false, x, y, type, song, playlistData, loginUserID, accessedUserID });
 }
 

@@ -1,4 +1,4 @@
-import { createPlaylist, deletePlaylist, editPlaylist } from "$lib/db";
+import { createPlaylist, deletePlaylist, renamePlaylist } from "$lib/db";
 import { json, type RequestHandler } from "@sveltejs/kit";
 
 export const POST: RequestHandler = async ({ locals, request }) => {
@@ -10,8 +10,8 @@ export const POST: RequestHandler = async ({ locals, request }) => {
 
     if (key === "create_pl") {
         await createPlaylist(locals.db, user.id, value);
-    } else if (key === "edit_pl") {
-        await editPlaylist(locals.db, value.playlistID, value.name);
+    } else if (key === "rename_pl") {
+        await renamePlaylist(locals.db, value.playlistID, value.name);
     }
 
     return json({ success: true });
