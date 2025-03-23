@@ -6,15 +6,16 @@ export const store = writable<CtxStore>({
     showPlaylistMenu: false,
     x: 0,
     y: 0,
-    type: "song"
+    type: "song",
+    loginUserID: null
 });
 
 export function openCtxMenu(
     e: MouseEvent,
+    loginUserID: CtxStore["loginUserID"],
     song?: CtxStore["song"],
     playlistData?: CtxStore["playlistData"],
     type?: CtxStore["type"],
-    loginUserID?: CtxStore["loginUserID"],
     accessedUserID?: CtxStore["accessedUserID"]
 ) {
     if (!type) type = "song";

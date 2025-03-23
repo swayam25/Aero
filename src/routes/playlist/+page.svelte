@@ -117,15 +117,15 @@
             <a
                 in:fly={{ duration: 500, easing: expoOut, x: -100, y: 0 }}
                 out:fly={{ duration: 500, easing: expoOut, x: 100, y: 0 }}
-                href={`/playlist/${data.user.id}/${playlist.id}`}
+                href={`/playlist/${data.user?.id}/${playlist.id}`}
                 oncontextmenu={(e) => {
                     e.preventDefault();
-                    openCtxMenu(e, null, { name: playlist.name, id: playlist.id }, "playlist");
+                    openCtxMenu(e, data.user?.id, null, { name: playlist.name, id: playlist.id }, "playlist");
                 }}
                 class="group flex size-fit cursor-pointer flex-col items-start justify-center gap-2 rounded-lg p-3 transition-colors duration-200 hover:bg-slate-800"
             >
                 <div
-                    class="size-40 shrink-0 bg-cover rounded-lg bg-slate-800 transition-colors duration-200 group-hover:bg-slate-900 md:size-50"
+                    class="size-40 shrink-0 rounded-lg bg-slate-800 bg-cover transition-colors duration-200 group-hover:bg-slate-900 md:size-50"
                     style="background-image: url({playlist.cover});"
                 ></div>
                 <div class="text-left">

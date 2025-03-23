@@ -67,7 +67,7 @@
                 out:fly={{ duration: window.innerWidth >= 768 ? 0 : 500, easing: expoOut, x: 0, y: window.innerWidth < 768 ? 100 : 0 }}
                 class="flex size-full items-end justify-center"
             >
-                <Queue />
+                <Queue user={data.user} />
             </div>
         </div>
     {/if}

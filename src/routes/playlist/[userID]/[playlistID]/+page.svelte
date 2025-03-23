@@ -56,7 +56,7 @@
             >
                 {data.playlist.name}
             </h1>
-            {#if data.loginUser?.id === data.user.id}
+            {#if data.loginUser?.id === data.user?.id}
                 <Tooltip side="right" disabled={!enableToggleBtn}>
                     {#snippet trigger()}
                         <Switch size="md" checked={isPublic} disabled={!enableToggleBtn} onCheckedChange={togglePlaylistView} />
@@ -105,7 +105,7 @@
                     out:fly={{ duration: 500, easing: expoOut, x: 100, y: 0 }}
                     oncontextmenu={(e) => {
                         e.preventDefault();
-                        openCtxMenu(e, fetchSongDetailed(song), data.playlist, "playlistSong", data.loginUser?.id, data.user.id);
+                        openCtxMenu(e, data.loginUser?.id, fetchSongDetailed(song), data.playlist, "playlistSong", data.user?.id);
                     }}
                     class="flex w-full items-center justify-center gap-2 rounded-lg p-2 transition-colors duration-200 hover:bg-slate-800"
                 >

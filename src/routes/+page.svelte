@@ -58,7 +58,7 @@
                                     }}
                                     oncontextmenu={(e) => {
                                         e.preventDefault();
-                                        openCtxMenu(e, song);
+                                        openCtxMenu(e, data.user?.id, song);
                                     }}
                                 >
                                     <img src={thumb} alt="{song.name}'s Thumbnail" class="size-40 rounded-lg md:size-50" />

@@ -1,12 +1,15 @@
 <script lang="ts">
     import MarqueeText from "$lib/components/ui/MarqueeText.svelte";
     import { openCtxMenu } from "$lib/ctxmenu";
+    import type { UserData } from "$lib/discord/types";
     import { play, store } from "$lib/player";
     import { expoOut } from "svelte/easing";
     import { fade, fly } from "svelte/transition";
     import HugeiconsCd from "~icons/hugeicons/cd";
     import SolarAltArrowDownLinear from "~icons/solar/alt-arrow-down-linear";
     import Button from "./ui/Button.svelte";
+
+    let { user }: { user: UserData } = $props();
 </script>
 
 <div class="h-80 w-full rounded-lg bg-slate-900 md:h-full md:w-[30vw]">
@@ -30,7 +33,7 @@
                 out:fly={{ duration: 500, easing: expoOut, x: 100, y: 0 }}
                 oncontextmenu={(e) => {
                     e.preventDefault();
-                    openCtxMenu(e, song, null, "queue");
+                    openCtxMenu(e, user?.id, song, null, "queue");
                 }}
                 class="flex w-full items-center justify-center gap-2 rounded-lg p-2 transition-colors duration-200 hover:bg-slate-800"
             >

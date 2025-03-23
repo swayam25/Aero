@@ -167,15 +167,17 @@
                             Remove from Queue
                         </CtxButton>
                     {/if}
-                    <CtxButton
-                        onclick={(e) => {
-                            e.stopPropagation();
-                            $store.showPlaylistMenu = true;
-                        }}
-                    >
-                        <SolarMusicLibraryLinear class="size-5" />
-                        Add To Playlist
-                    </CtxButton>
+                    {#if $store.loginUserID}
+                        <CtxButton
+                            onclick={(e) => {
+                                e.stopPropagation();
+                                $store.showPlaylistMenu = true;
+                            }}
+                        >
+                            <SolarMusicLibraryLinear class="size-5" />
+                            Add To Playlist
+                        </CtxButton>
+                    {/if}
                 {:else if $store.type === "playlist" && $store.playlistData}
                     <!-- Delete PLaylist -->
                     <CtxButton
@@ -210,7 +212,7 @@
                             }}
                         >
                             <SolarPlaylist2Linear class="size-5" />
-                            Add to Queue
+                            Add To Queue
                         </CtxButton>
                     {/if}
                     {#if $store.loginUserID && $store.accessedUserID && $store.loginUserID === $store.accessedUserID}

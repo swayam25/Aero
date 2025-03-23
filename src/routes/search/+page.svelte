@@ -70,7 +70,7 @@
                     }}
                     oncontextmenu={(e) => {
                         e.preventDefault();
-                        openCtxMenu(e, songs[0]);
+                        openCtxMenu(e, data.user?.id, songs[0]);
                     }}
                     class="flex cursor-pointer flex-col items-center justify-center gap-2 rounded-lg bg-slate-800 p-5 transition-colors duration-200 hover:bg-slate-700 md:size-full md:items-start"
                 >
@@ -95,7 +95,7 @@
                             }}
                             oncontextmenu={(e) => {
                                 e.preventDefault();
-                                openCtxMenu(e, song);
+                                openCtxMenu(e, data.user?.id, song);
                             }}
                             class="flex w-full items-center justify-center gap-2 rounded-lg p-2 transition-colors duration-200 hover:bg-slate-800"
                         >
@@ -124,7 +124,7 @@
                         }}
                         oncontextmenu={(e) => {
                             e.preventDefault();
-                            openCtxMenu(e, song);
+                            openCtxMenu(e, data.user?.id, song);
                         }}
                     >
                         <img src={thumb} alt="{song.name}'s Thumbnail" class="size-40 rounded-lg md:size-50" />

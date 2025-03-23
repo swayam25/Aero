@@ -8,6 +8,6 @@ export interface CtxStore {
     type: "song" | "queue" | "playlist" | "playlistSong";
     song?: SongDetailed | null; // Only defined if type === "song" or "playlistSong"
     playlistData?: { name: string; id: number } | null; // Only defined if type === "playlist" or "playlistSong"
-    loginUserID?: string | null;
+    loginUserID: string | null | undefined;
     accessedUserID?: string | null;
 }
