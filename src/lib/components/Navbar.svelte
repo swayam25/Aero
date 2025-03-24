@@ -38,7 +38,7 @@
         <img src="/aero.webp" alt="Aero" class="size-8 md:size-10" />
     </a>
     <div class="absolute right-0 left-0 flex flex-1 items-center justify-center">
-        <Input bind:value={inputValue} class="md:w-[60%] lg:w-[50%]" placeholder="Search" icon={SolarMagniferLinear} bind:ref={input} />
+        <Input bind:value={inputValue} class="w-[60%] lg:w-[50%]" placeholder="Search" icon={SolarMagniferLinear} bind:ref={input} />
     </div>
 
     <UserButton {user} />
