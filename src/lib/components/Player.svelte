@@ -79,7 +79,7 @@
 
     <!-- Main Controls -->
     <div
-        class="flex flex-col items-center justify-center gap-1 transition-all"
+        class="flex md:flex-1 md:absolute md:left-0 md:right-0 flex-col items-center justify-center gap-1 transition-all"
         class:opacity-80={$store.state === "buffering" || $store.state === "unstarted"}
         class:pointer-events-none={$store.state === "unstarted"}
     >
