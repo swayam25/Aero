@@ -75,7 +75,7 @@
             </div>
         </div>
     {/if}
-    <div class="fixed bottom-15 md:bottom-0 w-full p-2 md:relative md:col-span-3 md:p-0">
+    <div class="fixed bottom-15 w-full p-2 md:relative md:bottom-0 md:col-span-3 md:p-0">
         <div class="rounded-lg bg-slate-900 md:rounded-none md:bg-transparent">
             <Player user={data.user} />
         </div>

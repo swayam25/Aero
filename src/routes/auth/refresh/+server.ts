@@ -29,7 +29,7 @@ export const GET: RequestHandler = async ({ cookies, locals }) => {
             httpOnly: true
         });
 
-        const userData = await getUserData(newToken.access_token);
+        const userData = await getUserData(locals.db, newToken.access_token);
         const token = await signData(userData, JWT_SECRET, `${newToken.expires_in}s`);
 
         cookies.set("user", token, {

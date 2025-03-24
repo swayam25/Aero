@@ -16,7 +16,7 @@ export const load: PageServerLoad = async ({ params, locals }) => {
     } else if (userID == locals.user?.id) {
         user = locals.user;
     } else {
-        const resp = await fetchUser(PUBLIC_DISCORD_URL, DISCORD_BOT_TOKEN, userID);
+        const resp = await fetchUser(locals.db, PUBLIC_DISCORD_URL, DISCORD_BOT_TOKEN, userID);
         if ("error" in resp) {
             return error(404, "User not found");
         }

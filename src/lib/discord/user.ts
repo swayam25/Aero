@@ -1,7 +1,7 @@
 import { PUBLIC_DISCORD_URL } from "$env/static/public";
+import { fetchSettings, type DB } from "$lib/db";
 import { error } from "@sveltejs/kit";
 import type { UserData } from "./types";
-import type { APIUser } from "discord-api-types/v10";
 
 export async function getNewAccessToken(url: string, refreshToken: string, clienID: string, clientSecret: string) {
     const resp = await fetch(`${url}/oauth2/token`, {
@@ -24,7 +24,7 @@ export async function getNewAccessToken(url: string, refreshToken: string, clien
     }
 }
 
-export async function getUserData(access_token: string): Promise<UserData> {
+export async function getUserData(db: DB, access_token: string): Promise<UserData> {
     const userDataResponse = await fetch(`${PUBLIC_DISCORD_URL}/users/@me`, {
         headers: {
             Authorization: `Bearer ${access_token}`
@@ -33,11 +33,20 @@ export async function getUserData(access_token: string): Promise<UserData> {
     if (!userDataResponse.ok) {
         error(userDataResponse.status, userDataResponse.statusText);
     }
-    const userData: UserData = await userDataResponse.json();
+
+    const ownerIDs = (await fetchSettings(db, "ownerIDs"))?.value || [];
+    const devIDs = (await fetchSettings(db, "devIDs"))?.value || [];
+
+    let userData: UserData = await userDataResponse.json();
+    if (ownerIDs.includes(userData.id)) {
+        userData = { ...userData, owner: true };
+    } else if (devIDs.includes(userData.id)) {
+        userData = { ...userData, dev: true };
+    }
     return userData;
 }
 
-export async function fetchUser(baseURI: string, botToken: string, id: string) {
+export async function fetchUser(db: DB, baseURI: string, botToken: string, id: string) {
     const resp = await fetch(`${baseURI}/users/${id}`, {
         headers: {
             Authorization: `Bot ${botToken}`
@@ -46,5 +55,15 @@ export async function fetchUser(baseURI: string, botToken: string, id: string) {
     if (!resp.ok) {
         return { error: true };
     }
-    return (await resp.json()) as APIUser;
+
+    const ownerIDs = (await fetchSettings(db, "ownerIDs"))?.value || [];
+    const devIDs = (await fetchSettings(db, "devIDs"))?.value || [];
+
+    let userData: UserData = await resp.json();
+    if (ownerIDs.includes(userData.id)) {
+        userData = { ...userData, owner: true };
+    } else if (devIDs.includes(userData.id)) {
+        userData = { ...userData, dev: true };
+    }
+    return userData;
 }

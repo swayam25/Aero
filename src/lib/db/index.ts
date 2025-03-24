@@ -3,7 +3,7 @@ import { eq } from "drizzle-orm";
 import type { NeonHttpDatabase } from "drizzle-orm/neon-http";
 import * as schema from "./schema";
 
-type DB = NeonHttpDatabase<typeof schema> & {
+export type DB = NeonHttpDatabase<typeof schema> & {
     $client: NeonQueryFunction<false, false>;
 };
 
@@ -17,6 +17,10 @@ export async function deleteUser(db: DB, id: string) {
 
 export async function checkUser(db: DB, id: string) {
     return db.query.userTable.findFirst({ where: eq(schema.userTable.userID, id) });
+}
+
+export async function fetchSettings(db: DB, key: string) {
+    return db.query.settingsTable.findFirst({ where: eq(schema.settingsTable.key, key), columns: { value: true } });
 }
 
 export async function createPlaylist(db: DB, userID: string, name: string) {

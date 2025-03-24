@@ -52,9 +52,6 @@
     )}
 >
     <Switch.Thumb
-        class={cn(
-            "pointer-events-none block shrink-0 rounded-full bg-gray-50 transition-all data-[state=unchecked]:translate-x-0",
-            thumbSizeClass
-        )}
+        class={cn("pointer-events-none block shrink-0 rounded-full bg-gray-50 transition-all data-[state=unchecked]:translate-x-0", thumbSizeClass)}
     />
 </Switch.Root>

@@ -44,7 +44,7 @@ export const GET: RequestHandler = async ({ fetch, url, cookies, locals }) => {
                 httpOnly: true
             });
 
-            const userData = await getUserData(access_token);
+            const userData = await getUserData(locals.db, access_token);
             const token = await signData(userData, JWT_SECRET, `${expires_in}s`);
 
             if (userData) {
