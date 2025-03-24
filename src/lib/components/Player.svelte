@@ -55,21 +55,21 @@
     <!-- Song Info -->
     <div class="flex items-center justify-center gap-2 transition-opacity">
         <div
-            class="size-10 rounded-lg bg-slate-800 md:bg-slate-900 bg-cover transition-all md:size-15"
+            class="size-10 rounded-lg bg-slate-800 bg-cover transition-all md:size-15 md:bg-slate-900"
             style="background-image: url({$store.state !== 'unstarted' ? $store.meta?.thumbnails[0].url.replace('=w60-h60-l90-rj', '') : ''});"
         ></div>
         {#if $store.state === "unstarted"}
             <div class="flex max-w-40 flex-col items-start justify-center gap-2">
-                <span class="h-3 w-40 rounded-lg bg-slate-800 md:bg-slate-900 md:h-4"></span>
-                <span class="h-3 w-40 rounded-lg bg-slate-800 md:bg-slate-900 md:h-4"></span>
+                <span class="h-3 w-40 rounded-lg bg-slate-800 md:h-4 md:bg-slate-900"></span>
+                <span class="h-3 w-40 rounded-lg bg-slate-800 md:h-4 md:bg-slate-900"></span>
             </div>
         {:else}
             <button
                 in:fly={{ duration: 100 }}
                 onclick={() => {
-                    showMobilePlayer = true;
+                    if (window.innerWidth < 768) showMobilePlayer = true;
                 }}
-                class="flex max-w-40 flex-col items-start justify-center"
+                class="flex max-w-40 flex-col items-start justify-center text-left"
             >
                 <MarqueeText text={$store.meta?.name || ""} class="text-sm font-semibold" />
                 <span class="w-20 truncate text-xs text-slate-400 md:w-40">{$store.meta?.artist.name}</span>
