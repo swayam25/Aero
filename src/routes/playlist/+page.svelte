@@ -45,6 +45,10 @@
     }
 </script>
 
+<svelte:head>
+    <title>Aero | Playlists</title>
+</svelte:head>
+
 <!-- Delete Alert Popup (triggered via context menu) -->
 <AlertPopup title="ARE YOU SURE?" bind:open={$popupStore.showPlDeletePopup}>
     {#snippet trigger()}{/snippet}

@@ -21,6 +21,10 @@
     }
 </script>
 
+<svelte:head>
+    <title>Aero | Search</title>
+</svelte:head>
+
 <div class="">
     {#await data.songs}
         <div class="flex items-start justify-between gap-5">

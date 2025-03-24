@@ -44,6 +44,10 @@
     }
 </script>
 
+<svelte:head>
+    <title>Aero | {data.playlist.name} Playlist</title>
+</svelte:head>
+
 <div class="flex w-full flex-col items-center justify-center gap-4 md:flex-row md:justify-start">
     <div class="size-40 shrink-0 rounded-lg bg-slate-800 bg-cover md:size-50" style="background-image: url({data.playlist.cover});"></div>
     <div class="flex flex-col items-center justify-center gap-2 md:items-start">
