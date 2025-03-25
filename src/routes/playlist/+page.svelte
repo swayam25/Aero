@@ -36,15 +36,18 @@
     let input: HTMLInputElement | null = $state(null);
     let inputValue: string = $state("");
 
-    function renamePlaylist() {
+    async function renamePlaylist() {
         const plID = $popupStore.playlistData?.id;
         const newName = inputValue.trim();
         hidePlRenamePopup();
         inputValue = "";
-        const resp = fetch(`/api/playlist`, {
+        const resp = await fetch(`/api/playlist`, {
             body: JSON.stringify({ key: "rename_pl", value: { playlistID: plID, name: newName } }),
             method: "POST"
         });
+        const respData = await resp.json();
+        if (resp.ok) toast.success("Playlist renamed successfully");
+        else toast.error(respData.error);
         invalidateAll();
     }
 </script>
@@ -99,7 +102,7 @@
     <div in:fade={{ duration: 100 }} class="mb-2 flex size-fit items-center justify-center gap-2 md:mb-5">
         <h1 class="text-3xl font-bold md:text-4xl">Playlists</h1>
         <NewPlaylistPopup>
-            <Button class="size-fit rounded-lg p-2" size="">
+            <Button class="size-fit rounded-lg p-2" size="" type="div">
                 <MaterialSymbolsAdd2Rounded class="size-5" />
             </Button>
         </NewPlaylistPopup>

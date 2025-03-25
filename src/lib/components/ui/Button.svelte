@@ -5,13 +5,22 @@
     interface Props {
         class?: string;
         size?: "sm" | "md" | "lg" | "xl" | "";
+        type?: "default" | "div";
         href?: string;
         disabled?: boolean;
         onclick?: () => void;
         children?: Snippet;
     }
 
-    let { class: className = "", size = "md", href = "", disabled = $bindable(false), onclick = () => {}, children }: Props = $props();
+    let {
+        class: className = "",
+        size = "md",
+        type = "default",
+        href = "",
+        disabled = $bindable(false),
+        onclick = () => {},
+        children
+    }: Props = $props();
 
     let sizeClass: string = $derived.by(() => {
         switch (size) {
@@ -30,8 +39,8 @@
 </script>
 
 <svelte:element
-    this={href ? "a" : "button"}
-    role={href ? "link" : "button"}
+    this={type === "default" ? (href ? "a" : "button") : type}
+    role={type === "default" ? (href ? "link" : "button") : type}
     tabindex="0"
     class={cn(
         "flex cursor-pointer items-center justify-center gap-2 rounded-lg bg-slate-800 transition-all duration-200 hover:brightness-80",

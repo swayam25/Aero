@@ -17,7 +17,7 @@
 <div class="fixed bottom-0 flex h-15 w-full items-center justify-evenly gap-2 rounded-t-lg bg-slate-950/50 p-5 px-10">
     {#each links as link}
         {@const Icon = link.icon}
-        <a href={link.href} class="flex flex-col items-center justify-center gap-1 text-slate-200" class:hidden={link.hidden}>
+        <a href={link.href} class="flex cursor-pointer flex-col items-center justify-center gap-1 text-slate-200" class:hidden={link.hidden}>
             <Icon class="size-6" />
             <p class="text-xs font-bold">{link.name}</p>
         </a>
