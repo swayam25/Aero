@@ -8,6 +8,7 @@
     import { openCtxMenu } from "$lib/ctxmenu";
     import { hidePlDeletePopup, hidePlRenamePopup, store as popupStore } from "$lib/popups";
     import { AlertDialog, Dialog } from "bits-ui";
+    import { toast } from "svelte-sonner";
     import { expoOut } from "svelte/easing";
     import { fade, fly } from "svelte/transition";
     import MaterialSymbolsAdd2Rounded from "~icons/material-symbols/add-2-rounded";
@@ -26,6 +27,9 @@
             body: JSON.stringify({ id: plID }),
             method: "DELETE"
         });
+        const respData = await resp.json();
+        if (resp.ok) toast.success("Playlist deleted successfully");
+        else toast.error(respData.error);
         invalidateAll();
     }
 

@@ -4,6 +4,7 @@
     import Input from "$lib/components/ui/Input.svelte";
     import { Dialog } from "bits-ui";
     import { onMount, type Snippet } from "svelte";
+    import { toast } from "svelte-sonner";
     import MaterialSymbolsAdd2Rounded from "~icons/material-symbols/add-2-rounded";
     import SolarPlaylist2Linear from "~icons/solar/playlist-2-linear";
 
@@ -27,6 +28,10 @@
             },
             body: JSON.stringify({ key: "create_pl", value: plName })
         });
+        const respData = await resp.json();
+
+        if (resp.ok) toast.success("Playlist created successfully");
+        else toast.error(respData.error);
         invalidateAll();
     }
 

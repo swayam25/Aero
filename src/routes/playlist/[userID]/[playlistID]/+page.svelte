@@ -4,6 +4,7 @@
     import Tooltip from "$lib/components/ui/Tooltip.svelte";
     import { openCtxMenu } from "$lib/ctxmenu";
     import { playPlaylist, store } from "$lib/player";
+    import { toast } from "svelte-sonner";
     import { expoOut } from "svelte/easing";
     import { fade, fly } from "svelte/transition";
     import type { SongDetailed, SongFull } from "ytmusic-api";
@@ -35,8 +36,12 @@
             body: JSON.stringify({ key: "toggle_view", value: { playlistID: data.playlist.id } }),
             headers: { "Content-Type": "application/json" }
         });
+        const respData = await resp.json();
         if (resp.ok) {
-            isPublic = (await resp.json()).isPublic;
+            isPublic = respData.isPublic;
+            toast.success(`Playlist is now ${isPublic ? "public" : "private"}`);
+        } else {
+            toast.error(respData.error);
         }
         setTimeout(() => {
             enableToggleBtn = true;

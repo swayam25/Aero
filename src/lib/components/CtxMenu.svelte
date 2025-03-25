@@ -4,6 +4,7 @@
     import type { InsertPlaylist } from "$lib/db/schema";
     import { addToQueue, play, store as playerStore, removeFromQueue, togglePause } from "$lib/player";
     import { showPlDeletePopup, showPlRenamePopup } from "$lib/popups";
+    import { toast } from "svelte-sonner";
     import { fade } from "svelte/transition";
     import SolarAltArrowLeftLinear from "~icons/solar/alt-arrow-left-linear";
     import SolarConfoundedCircleLinear from "~icons/solar/confounded-circle-linear";
@@ -110,6 +111,9 @@
                                                 }),
                                                 method: "POST"
                                             });
+                                            const respData = await resp.json();
+                                            if (resp.ok) toast.success("Added song to playlist");
+                                            else toast.error(respData.error);
                                         }
                                     }}
                                 >
@@ -248,6 +252,9 @@
                                     }),
                                     method: "POST"
                                 });
+                                const respData = await resp.json();
+                                if (resp.ok) toast.success("Removed song from playlist");
+                                else toast.error(respData.error);
                                 invalidateAll();
                             }}
                         >

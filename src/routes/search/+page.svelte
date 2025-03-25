@@ -27,7 +27,7 @@
 
 <div class="">
     {#await data.songs}
-        <div class="flex items-start justify-between gap-5">
+        <div class="flex flex-col items-start justify-between gap-5 md:flex-row">
             <div class="flex size-full flex-col items-center justify-center gap-2 md:items-start">
                 <p class="hidden text-4xl font-bold md:block">Top Result</p>
                 <div class="flex flex-col items-center justify-center gap-2 rounded-lg bg-slate-800 p-5 md:size-full md:items-start">
@@ -38,8 +38,8 @@
                     </div>
                 </div>
             </div>
-            <div class="hidden size-full flex-col items-start justify-center gap-2 md:flex">
-                <p class="text-4xl font-bold">Songs</p>
+            <div class="size-full flex-col items-start justify-center gap-2 md:flex">
+                <p class="hidden text-4xl font-bold md:block">Songs</p>
                 <div class="flex size-full flex-col items-center justify-start gap-2">
                     {#each Array(4) as _}
                         <div class="flex w-full items-center justify-center gap-2 rounded-lg bg-slate-800 p-2 transition-colors duration-200">
