@@ -3,6 +3,8 @@
 
 @theme {
     --font-rubik: Rubik, sans-serif;
+
+    --breakpoint-xs: 30rem;
 }
 
 body {
