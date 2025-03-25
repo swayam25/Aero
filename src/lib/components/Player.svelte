@@ -51,11 +51,11 @@
     <MobilePlayer bind:show={showMobilePlayer} />
 {/if}
 
-<div id="player" class="relative flex h-16 w-full items-center justify-end gap-2 rounded-lg px-4 sm:justify-center">
+<div id="player" class="relative flex h-15 w-full items-center justify-end gap-2 rounded-lg px-4 sm:justify-center">
     <!-- Song Info -->
-    <div class="absolute left-0 flex items-center justify-center gap-2 transition-opacity md:left-4">
+    <div class="absolute left-0 flex items-center justify-center gap-2 transition-opacity md:left-5">
         <div
-            class="size-16 rounded-l-lg bg-slate-800 bg-cover transition-all md:rounded-lg md:bg-slate-900"
+            class="size-15 rounded-l-lg bg-slate-800 bg-cover transition-all md:rounded-lg md:bg-slate-900"
             style="background-image: url({$store.state !== 'unstarted' ? $store.meta?.thumbnails[0].url.replace('=w60-h60-l90-rj', '') : ''});"
         ></div>
         {#if $store.state === "unstarted"}
@@ -118,7 +118,7 @@
 
     <!-- Other Controls -->
     <div
-        class="absolute right-4 hidden items-center justify-center gap-4 transition-all *:cursor-pointer sm:flex"
+        class="absolute right-5 hidden items-center justify-center gap-4 transition-all *:cursor-pointer sm:flex"
         class:opacity-80={$store.state === "buffering" || $store.state === "unstarted"}
         class:pointer-events-none={$store.state === "unstarted"}
     >
