@@ -51,11 +51,11 @@
     <MobilePlayer bind:show={showMobilePlayer} />
 {/if}
 
-<div id="player" class="flex size-full h-15 w-full items-center justify-between rounded-lg px-8 md:px-5">
+<div id="player" class="relative flex h-16 w-full items-center justify-end gap-2 rounded-lg px-4 sm:justify-center">
     <!-- Song Info -->
-    <div class="flex items-center justify-center gap-2 transition-opacity">
+    <div class="absolute left-0 flex items-center justify-center gap-2 transition-opacity md:left-4">
         <div
-            class="size-10 rounded-lg bg-slate-800 bg-cover transition-all md:size-15 md:bg-slate-900"
+            class="size-16 rounded-l-lg bg-slate-800 bg-cover transition-all md:rounded-lg md:bg-slate-900"
             style="background-image: url({$store.state !== 'unstarted' ? $store.meta?.thumbnails[0].url.replace('=w60-h60-l90-rj', '') : ''});"
         ></div>
         {#if $store.state === "unstarted"}
@@ -83,14 +83,14 @@
         class:opacity-80={$store.state === "buffering" || $store.state === "unstarted"}
         class:pointer-events-none={$store.state === "unstarted"}
     >
-        <div class="flex items-center justify-center gap-2 transition-all *:cursor-pointer md:gap-4">
+        <div class="flex items-center justify-center gap-2 transition-all *:cursor-pointer">
             <!-- Previous -->
-            <button onclick={previous} class="size-4 opacity-80 transition-opacity hover:opacity-100 md:size-5">
+            <button onclick={previous} class="size-5 opacity-80 transition-opacity hover:opacity-100">
                 <SolarSkipPreviousBold class="size-full" />
             </button>
 
             <!-- Play/Pause -->
-            <button class="size-8 transition-colors duration-200 hover:text-sky-500 md:size-10" onclick={togglePause}>
+            <button class="size-10 transition-colors duration-200 hover:text-sky-500" onclick={togglePause}>
                 {#if $store.state === "playing"}
                     <SolarPauseCircleBold class="size-full" />
                 {:else}
@@ -101,7 +101,7 @@
             <!-- Next -->
             <button
                 onclick={skip}
-                class="size-4 opacity-80 transition-opacity not-disabled:hover:opacity-100 md:size-5"
+                class="size-5 opacity-80 transition-opacity not-disabled:hover:opacity-100"
                 class:!cursor-not-allowed={$store.queue.length < 2}
                 disabled={$store.queue.length < 2}
             >
@@ -111,14 +111,14 @@
         <!-- Player Slider -->
         <div class="hidden items-center justify-center gap-2 md:flex">
             <p class="text-xs text-slate-400">{formatTime(currentTime)}</p>
-            <Slider max={$store.totalDuration} value={currentTime} class="w-20 md:w-50 lg:w-80" onChange={handleSeek} />
+            <Slider max={$store.totalDuration} value={currentTime} class="w-20 md:w-40 lg:w-80" onChange={handleSeek} />
             <p class="text-xs text-slate-400">{formatTime($store.totalDuration)}</p>
         </div>
     </div>
 
     <!-- Other Controls -->
     <div
-        class="hidden items-center justify-center transition-all *:cursor-pointer md:flex md:gap-4"
+        class="absolute right-4 hidden items-center justify-center gap-4 transition-all *:cursor-pointer sm:flex"
         class:opacity-80={$store.state === "buffering" || $store.state === "unstarted"}
         class:pointer-events-none={$store.state === "unstarted"}
     >

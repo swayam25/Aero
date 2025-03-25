@@ -67,7 +67,7 @@
         class="col-span-3 row-span-1 size-full overflow-x-hidden overflow-y-auto rounded-lg p-2 md:col-span-1 md:bg-slate-900 md:p-5"
         class:md:!col-span-2={!$store.showQueue}
     >
-        <div class="container mb-60 size-full md:m-auto md:mb-0">
+        <div class="container mx-auto mb-60 size-full md:m-auto md:mb-0">
             {@render children()}
         </div>
     </div>
