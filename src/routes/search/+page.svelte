@@ -3,6 +3,7 @@
     import MarqueeText from "$lib/components/ui/MarqueeText.svelte";
     import { openCtxMenu } from "$lib/ctxmenu";
     import { play } from "$lib/player";
+    import { formatTime } from "$lib/utils/time";
     import { fade } from "svelte/transition";
     import SolarAltArrowLeftLinear from "~icons/solar/alt-arrow-left-linear";
     import SolarAltArrowRightLinear from "~icons/solar/alt-arrow-right-linear";
@@ -100,13 +101,14 @@
                             e.preventDefault();
                             openCtxMenu(e, data.user?.id, song);
                         }}
-                        class="flex h-auto w-full items-center justify-center gap-2 rounded-lg p-2 transition-colors duration-200 hover:bg-slate-800"
+                        class="flex h-auto w-full items-center justify-between gap-2 rounded-lg p-2 transition-colors duration-200 hover:bg-slate-800"
                     >
                         <img src={song.thumbnails[0].url.replace("=w60-h60-l90-rj", "")} alt="{song.name}'s Thumbnail" class="size-15 rounded-lg" />
                         <div class="flex w-full flex-col items-center justify-center text-left">
-                            <MarqueeText class="w-10 font-bold" text={song.name} />
+                            <MarqueeText class="w-10" text={song.name} />
                             <MarqueeText class="w-10 text-sm text-slate-400" text={song.artist.name} />
                         </div>
+                        <p class="text-sm text-slate-400">{formatTime(song.duration ?? 0)}</p>
                     </button>
                 {/each}
             </div>
