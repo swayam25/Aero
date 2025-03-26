@@ -21,7 +21,7 @@
             <div class="flex size-full flex-col items-start justify-between gap-2 rounded-lg bg-slate-800 p-5">
                 <div class="size-30 shrink-0 animate-pulse rounded-lg bg-slate-900 md:size-45"></div>
                 <div class="flex size-full flex-col items-start justify-start gap-1">
-                    <div class="h-10 w-[80%] animate-pulse rounded-lg bg-slate-900"></div>
+                    <div class="h-10 w-full animate-pulse rounded-lg bg-slate-900"></div>
                     <div class="h-10 w-[50%] animate-pulse truncate rounded-lg bg-slate-900"></div>
                 </div>
             </div>
