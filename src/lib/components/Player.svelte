@@ -150,7 +150,7 @@
                         $store.loop = "single";
                         break;
                     case "single":
-                        $store.loop = "queue";
+                        $store.loop = $store.queue.length >= 2 ? "queue" : "none";
                         break;
                     case "queue":
                         $store.loop = "none";
