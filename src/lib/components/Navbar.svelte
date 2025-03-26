@@ -10,25 +10,27 @@
 
     let input: HTMLInputElement | null = $state(null);
     let inputValue: string = $state("");
-    $effect(() => {
-        if (inputValue) goto("/search?q=" + inputValue, { keepFocus: true });
-    });
+    let searchTimeout: NodeJS.Timeout | null = $state(null);
 
     onMount(() => {
-        $effect(() => {
-            document.addEventListener("keydown", (e) => {
-                if (e.key === "/" && document.activeElement !== input) {
-                    e.preventDefault();
-                    input?.focus();
-                }
-                if (e.key === "Escape" && document.activeElement === input) {
-                    input?.blur();
-                }
-                if (!inputValue && document.activeElement === input && e.key === "Backspace") {
-                    goto("/");
-                    input?.blur();
-                }
-            });
+        document.addEventListener("keydown", (e) => {
+            if (e.key === "/" && document.activeElement !== input) {
+                e.preventDefault();
+                input?.focus();
+            }
+        });
+        input?.addEventListener("keydown", (e) => {
+            if (e.key === "Escape") {
+                input?.blur();
+            }
+            if (!inputValue && e.key === "Backspace") {
+                goto("/");
+                input?.blur();
+            }
+            if (searchTimeout) clearTimeout(searchTimeout);
+            searchTimeout = setTimeout(() => {
+                if (inputValue) goto("/search?q=" + inputValue, { keepFocus: true });
+            }, 100);
         });
     });
 </script>
