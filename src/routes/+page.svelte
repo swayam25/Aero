@@ -3,16 +3,6 @@
     import type { PageData } from "./$types";
 
     let { data }: { data: PageData } = $props();
-
-    function scrollSection(idx: number, direction: "left" | "right") {
-        const section = document.getElementById(`sec-${idx}`);
-        if (section) {
-            section.scrollTo({
-                left: direction === "left" ? section.scrollLeft - 1000 : section.scrollLeft + 1000,
-                behavior: "smooth"
-            });
-        }
-    }
 </script>
 
 <svelte:head>
