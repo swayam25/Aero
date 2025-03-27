@@ -19,6 +19,7 @@
     import MarqueeText from "./ui/MarqueeText.svelte";
     import Popover from "./ui/Popover.svelte";
     import Slider from "./ui/Slider.svelte";
+    import { onMount } from "svelte";
 
     let { user }: { user: UserData } = $props();
 
@@ -42,9 +43,18 @@
 
     // Update volume
     let volume: number = $state(100);
+    $effect(() => {
+        setVolume(volume);
+    });
     function handleVol(value: number) {
+        if (localStorage) localStorage.setItem("volume", value.toString());
         setVolume(value);
     }
+    onMount(() => {
+        if (localStorage) {
+            volume = localStorage.getItem("volume") ? Number(localStorage.getItem("volume")) : 100;
+        }
+    });
 </script>
 
 {#if showMobilePlayer}
