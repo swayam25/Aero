@@ -42,7 +42,7 @@
             </div>
         {/each}
     </div>
-{:else if user && songs}
+{:else if songs}
     <div class={cn("group relative", className)}>
         <div
             in:fade={{ duration: 100 }}
