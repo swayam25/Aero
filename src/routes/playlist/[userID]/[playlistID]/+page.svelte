@@ -4,6 +4,7 @@
     import Tooltip from "$lib/components/ui/Tooltip.svelte";
     import { openCtxMenu } from "$lib/ctxmenu";
     import { playPlaylist, store } from "$lib/player";
+    import { formatTime } from "$lib/utils/time";
     import { toast } from "svelte-sonner";
     import { expoOut } from "svelte/easing";
     import { fade, fly } from "svelte/transition";
@@ -51,6 +52,8 @@
             enableToggleBtn = true;
         }, 500);
     }
+
+    let userDecorElement: HTMLImageElement | null = $state(null);
 </script>
 
 <svelte:head>
@@ -80,7 +83,47 @@
                 </Tooltip>
             {/if}
         </div>
-        <p class="text-slate-400 md:text-lg">Created At {new Date(data.playlist.createdAt).toLocaleDateString()}</p>
+        <div class="flex w-full flex-col items-center justify-center gap-1 text-sm text-slate-400 md:items-start">
+            <p>Created At {new Date(data.playlist.createdAt).toLocaleDateString()}, {data.playlist.songs.length} songs</p>
+            <div class="flex items-center justify-start gap-2">
+                <p>By</p>
+                <a
+                    href="/profile/{data.user?.id}"
+                    class="flex items-center justify-start gap-1 hover:underline"
+                    onmouseenter={() => {
+                        if (userDecorElement) {
+                            userDecorElement.src = userDecorElement.src.includes(".webp")
+                                ? userDecorElement.src.replace(".webp", "")
+                                : `${userDecorElement.src}.webp`;
+                        }
+                    }}
+                    onmouseleave={() => {
+                        if (userDecorElement) {
+                            userDecorElement.src = userDecorElement.src.includes(".webp")
+                                ? userDecorElement.src.replace(".webp", "")
+                                : `${userDecorElement.src}.webp`;
+                        }
+                    }}
+                >
+                    <div class="relative flex size-8 items-center justify-center">
+                        <img
+                            src={`https://cdn.discordapp.com/avatars/${data.user?.id}/${data.user?.avatar}?size=4096`}
+                            alt="{data.user?.global_name}'s Avatar"
+                            class="size-6 rounded-full bg-slate-800"
+                        />
+                        {#if data.user?.avatar_decoration_data?.asset}
+                            <img
+                                src={`https://cdn.discordapp.com/avatar-decoration-presets/${data.user?.avatar_decoration_data?.asset}.webp`}
+                                alt="Avatar Decoration"
+                                class="absolute size-8"
+                                bind:this={userDecorElement}
+                            />
+                        {/if}
+                    </div>
+                    <p>{data.user?.global_name}</p>
+                </a>
+            </div>
+        </div>
     </div>
 </div>
 
@@ -136,6 +179,7 @@
                         <MarqueeText class="w-10 font-bold" text={song.name} />
                         <MarqueeText class="w-10 text-sm text-slate-400" text={song.artist.name} />
                     </div>
+                    <p class="text-sm text-slate-400">{formatTime(song.duration ?? 0)}</p>
                 </button>
             {/await}
         {/each}

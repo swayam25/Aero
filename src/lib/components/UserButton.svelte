@@ -32,7 +32,7 @@
     {#if user}
         <Popover side="bottom">
             {#snippet trigger()}
-                <div class="flex items-center justify-center">
+                <div class="relative flex size-10 items-center justify-center md:size-12">
                     <img
                         src={`https://cdn.discordapp.com/avatars/${user.id}/${user.avatar}`}
                         alt="User Avatar"

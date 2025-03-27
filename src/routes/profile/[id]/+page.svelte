@@ -37,7 +37,7 @@
             <img
                 src={`https://cdn.discordapp.com/avatar-decoration-presets/${data.user?.avatar_decoration_data?.asset}`}
                 alt="Avatar Decoration"
-                class="absolute size-25 rounded-full md:size-30"
+                class="absolute size-27 rounded-full md:size-30"
             />
         {/if}
         <div class="mt-14 flex flex-col items-start justify-center">
