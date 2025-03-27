@@ -43,30 +43,23 @@
     class="fixed inset-0 z-200 h-screen w-screen bg-slate-950 bg-cover bg-center"
     style="background-image: url({$store.meta?.thumbnails[0].url.replace('=w60-h60-l90-rj', '')});"
 >
-    <div
-        class="fixed inset-0 z-200 flex h-screen w-screen flex-col items-center justify-between gap-10 bg-slate-950/80 bg-cover bg-center px-2 py-5 backdrop-blur-2xl"
-    >
-        <div class="flex w-full items-center justify-between px-5">
+    <div class="z-200 h-screen w-screen gap-10 bg-slate-950/80 bg-cover bg-center px-2 py-5 backdrop-blur-2xl *:not-first:mt-10">
+        <div class="p8-5 flex w-full items-center justify-center">
             <Button
-                class="size-8 bg-slate-900 p-2 {$store.state === 'unstarted' ? 'pointer-events-none opacity-0' : 'opacity-100'}"
+                class="absolute left-5 size-8 bg-slate-900 p-2 {$store.state === 'unstarted' ? 'pointer-events-none opacity-0' : 'opacity-100'}"
                 size=""
                 onclick={() => (show = false)}
             >
                 <SolarAltArrowDownLinear class="size-full" />
             </Button>
-            <div class="flex flex-col items-center justify-center">
-                <p class="text-xl font-bold">Now Playing</p>
-            </div>
-            <div></div>
+            <p class="text-xl font-bold">Now Playing</p>
         </div>
 
         <div class="flex w-full flex-col items-center justify-center gap-10">
-            <div class="flex flex-col items-center justify-center gap-2">
-                <img src={$store.meta?.thumbnails[0].url.replace("=w60-h60-l90-rj", "")} alt="thumbnail" class="size-40 rounded-lg" />
-                <div class="flex flex-col items-start justify-center">
-                    <div class="max-w-50">
-                        <MarqueeText text={$store.meta?.name || ""} class="text-lg font-semibold" />
-                    </div>
+            <div class="flex w-full flex-col items-center justify-center gap-2">
+                <img src={$store.meta?.thumbnails[0].url.replace("=w60-h60-l90-rj", "")} alt="thumbnail" class="size-80 rounded-lg" />
+                <div class="flex w-80 flex-col items-start justify-center">
+                    <MarqueeText text={$store.meta?.name || ""} class="text-lg font-semibold" />
                     <span class="text-sm text-slate-400">{$store.meta?.artist.name}</span>
                 </div>
             </div>
@@ -125,7 +118,7 @@
                             break;
                     }
                 }}
-                class="size-6 opacity-80 transition-opacity hover:opacity-100"
+                class="size-8 opacity-80 transition-opacity hover:opacity-100"
             >
                 {#if $store.loop === "none"}
                     <SolarRepeatLinear class="size-full" />
@@ -139,7 +132,7 @@
             <!-- Queue -->
             <button
                 onclick={toggleQueue}
-                class="size-6 opacity-80 transition-opacity not-disabled:hover:opacity-100"
+                class="size-8 opacity-80 transition-opacity not-disabled:hover:opacity-100"
                 class:!cursor-not-allowed={$store.queue.length < 2}
                 disabled={$store.queue.length < 2}
             >
@@ -151,7 +144,7 @@
                 onclick={() => {
                     $store.shuffle = !$store.shuffle;
                 }}
-                class="size-5 transition-opacity not-disabled:hover:opacity-100"
+                class="size-8 transition-opacity not-disabled:hover:opacity-100"
                 class:opacity-80={!$store.shuffle}
                 class:!cursor-not-allowed={$store.queue.length < 2}
                 disabled={$store.queue.length < 2}
@@ -159,7 +152,5 @@
                 <SolarShuffleLinear class="size-full {$store.shuffle ? 'text-sky-500' : ''}" />
             </button>
         </div>
-        <div></div>
-        <div></div>
     </div>
 </div>
