@@ -17,6 +17,10 @@
     let enableToggleBtn: boolean = $state(true);
     let songDetailedList: SongDetailed[] = [];
 
+    $effect(() => {
+        isPublic = data.playlist.isPublic;
+    });
+
     function fetchSongDetailed(song: SongFull): SongDetailed {
         return {
             type: song.type,
