@@ -1,6 +1,8 @@
 <script lang="ts">
     import { cn } from "$lib/utils/cn";
     import type { Component } from "svelte";
+    import { fade } from "svelte/transition";
+    import MaterialSymbolsCloseRounded from "~icons/material-symbols/close-rounded";
 
     interface Props {
         value: string;
@@ -24,8 +26,23 @@
     class:!border-slate-400={inputFocus}
 >
     {#if icon}
-        {@const Icon = icon}
-        <Icon class="size-6 text-slate-400" />
+        {#if !value}
+            {@const Icon = icon}
+            <span in:fade={{ duration: 100 }} class="size-6 text-slate-400">
+                <Icon class="size-full" />
+            </span>
+        {:else}
+            <button
+                in:fade={{ duration: 100 }}
+                class="size-6 cursor-pointer text-slate-400 transition-opacity duration-200 hover:opacity-80"
+                onclick={() => {
+                    value = "";
+                    ref?.focus();
+                }}
+            >
+                <MaterialSymbolsCloseRounded class="size-full" />
+            </button>
+        {/if}
     {/if}
     <input
         type="text"
