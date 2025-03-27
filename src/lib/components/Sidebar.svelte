@@ -7,10 +7,10 @@
     let { user, playlists }: { user: UserData; playlists: InsertPlaylist[] } = $props();
 </script>
 
-<div class="flex size-full w-20 flex-col items-center justify-start gap-5 rounded-lg bg-slate-900 *:cursor-pointer">
-    <Tooltip side="right" class="p-5">
+<div class="flex size-full w-20 flex-col items-center justify-start gap-5 rounded-lg bg-slate-900">
+    <Tooltip side="right" class="my-5">
         {#snippet trigger()}
-            <a href="/playlist" class="opacity-80 transition-opacity hover:opacity-100">
+            <a href="/playlist" class="cursor-pointer opacity-80 transition-opacity hover:opacity-100">
                 <SolarMusicLibraryLinear class="size-8" />
             </a>
         {/snippet}
