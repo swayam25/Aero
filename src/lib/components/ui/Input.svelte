@@ -7,10 +7,11 @@
         class?: string;
         placeholder?: string;
         icon?: Component;
+        max?: number;
         onEnter?: () => void;
         ref?: HTMLInputElement | null;
     }
-    let { value = $bindable(""), class: className, placeholder, icon, onEnter = () => {}, ref = $bindable() }: Props = $props();
+    let { value = $bindable(""), class: className, placeholder, icon, max, onEnter = () => {}, ref = $bindable() }: Props = $props();
 
     let inputFocus: boolean = $state(false);
 </script>
@@ -38,10 +39,14 @@
         }}
         bind:this={ref}
         bind:value
+        maxlength={max}
         onkeydown={(e) => {
             if (e.key === "Enter") {
                 onEnter();
             }
         }}
     />
+    {#if max}
+        <span class="text-slate-400">{value.length}/{max}</span>
+    {/if}
 </div>

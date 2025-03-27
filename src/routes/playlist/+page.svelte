@@ -86,6 +86,7 @@
                 placeholder="Playlist Name"
                 icon={SolarPlaylist2Linear}
                 onEnter={renamePlaylist}
+                max={10}
                 bind:ref={input}
             />
         </div>

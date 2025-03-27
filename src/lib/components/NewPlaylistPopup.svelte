@@ -54,6 +54,7 @@
                 class="w-full"
                 placeholder="Playlist Name"
                 icon={SolarPlaylist2Linear}
+                max={10}
                 onEnter={createPlaylist}
                 bind:ref={input}
             />
