@@ -32,6 +32,8 @@ export const POST: RequestHandler = async ({ locals, request }) => {
     } else if (key === "toggle_view") {
         const isPublic = await toggleView(locals.db, value.playlistID);
         return json({ success: true, isPublic });
+    } else if (key === "fetch") {
+        return json(playlistExists);
     }
 
     return json({ success: true });

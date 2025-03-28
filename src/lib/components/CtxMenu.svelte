@@ -14,6 +14,7 @@
     import SolarPlayLinear from "~icons/solar/play-linear";
     import SolarPlaylist2Linear from "~icons/solar/playlist-2-linear";
     import SolarRestartLinear from "~icons/solar/restart-linear";
+    import SolarShareLinear from "~icons/solar/share-linear";
     import SolarTrashBinTrashLinear from "~icons/solar/trash-bin-trash-linear";
     import CtxButton from "./CtxButton.svelte";
 
@@ -208,6 +209,40 @@
                         </CtxButton>
                     {/if}
                 {:else if $store.type === "playlist" && $store.playlistData}
+                    <!-- Share -->
+                    <CtxButton
+                        onclick={async () => {
+                            const resp = await fetch("/api/playlist/" + $store.playlistData?.id, {
+                                method: "POST",
+                                body: JSON.stringify({
+                                    key: "fetch",
+                                    value: {
+                                        playlistID: $store.playlistData?.id
+                                    }
+                                }),
+                                headers: {
+                                    "Content-Type": "application/json"
+                                }
+                            });
+                            const plData = await resp.json();
+                            if (!resp.ok) toast.error(plData.error);
+                            else if (plData.isPublic) {
+                                const playlistURL = `${window.location.origin}/playlist/${$store.loginUserID}/${$store.playlistData?.id}`;
+                                navigator.clipboard.writeText(playlistURL);
+                                toast.success("Copied Playlist URL to clipboard");
+                            } else {
+                                toast.error("Playlist is private");
+                            }
+                        }}
+                    >
+                        <SolarShareLinear class="size-5" />
+                        Share
+                    </CtxButton>
+                    <!-- Rename Playlist -->
+                    <CtxButton onclick={() => showPlRenamePopup($store?.playlistData)}>
+                        <SolarRestartLinear class="size-5" />
+                        Rename Playlist
+                    </CtxButton>
                     <!-- Delete PLaylist -->
                     <CtxButton
                         type="error"
@@ -217,11 +252,6 @@
                     >
                         <SolarTrashBinTrashLinear class="size-5" />
                         Delete Playlist
-                    </CtxButton>
-                    <!-- Rename Playlist -->
-                    <CtxButton onclick={() => showPlRenamePopup($store?.playlistData)}>
-                        <SolarRestartLinear class="size-5" />
-                        Rename Playlist
                     </CtxButton>
                 {:else if $store.type === "playlistSong" && $store.song && $store.playlistData}
                     <!-- Play -->
