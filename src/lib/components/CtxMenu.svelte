@@ -1,6 +1,6 @@
 <script lang="ts">
     import { invalidateAll } from "$app/navigation";
-    import { store } from "$lib/ctxmenu";
+    import { openCtxMenu, store } from "$lib/ctxmenu";
     import type { InsertPlaylist } from "$lib/db/schema";
     import { addToQueue, play, store as playerStore, removeFromQueue, togglePause } from "$lib/player";
     import { showPlDeletePopup, showPlRenamePopup } from "$lib/popups";
@@ -26,19 +26,17 @@
         }
     });
 
-    let ctxMenu: HTMLDivElement | null = $state(null);
+    let ctxMenu: HTMLDivElement = $state(null!);
     let x: number = $state(0);
     let y: number = $state(0);
+    let dropdownOffset: boolean = $state(false);
 
     $effect(() => {
         if ($store.isOpen && ctxMenu) {
             const { offsetHeight: menuHeight, offsetWidth: menuWidth } = ctxMenu;
-            const playerRect = document.getElementById("player")?.getBoundingClientRect();
 
             // Adjust vertical position
-            if ($store.y + menuHeight > window.innerHeight) {
-                y = Math.max($store.y - menuHeight, 50);
-            } else if (playerRect && $store.y + menuHeight > playerRect.top) {
+            if ($store.y + menuHeight > window.innerHeight - 72) {
                 y = Math.max($store.y - menuHeight, 50);
             } else {
                 y = $store.y;
@@ -46,8 +44,6 @@
 
             // Adjust horizontal position
             if ($store.x + menuWidth > window.innerWidth) {
-                x = Math.max($store.x - menuWidth, 50);
-            } else if (playerRect && $store.x + menuWidth > playerRect.left) {
                 x = Math.max($store.x - menuWidth, 50);
             } else {
                 x = $store.x;
@@ -73,6 +69,12 @@
                 <CtxButton
                     onclick={(e) => {
                         e.stopPropagation();
+
+                        if (dropdownOffset) {
+                            dropdownOffset = false;
+                            $store.y += 228;
+                        }
+
                         $store.showPlaylistMenu = false;
                     }}
                 >
@@ -89,7 +91,7 @@
                         {/each}
                     </div>
                 {:then playlists}
-                    <div in:fade={{ duration: 100 }} class="flex w-full flex-col items-start justify-center">
+                    <div in:fade={{ duration: 100 }} class="flex max-h-[260px] w-full flex-col items-start justify-start overflow-y-auto">
                         {#if playlists.length === 0}
                             <div class="flex w-full items-center justify-center gap-2 p-2 text-slate-400">
                                 <SolarConfoundedCircleLinear class="size-5" />
@@ -193,7 +195,13 @@
                         <CtxButton
                             onclick={(e) => {
                                 e.stopPropagation();
+
                                 $store.showPlaylistMenu = true;
+
+                                if (y > window.innerHeight - 300) {
+                                    dropdownOffset = true;
+                                    $store.y -= 228;
+                                }
                             }}
                         >
                             <SolarMusicLibraryLinear class="size-5" />
