@@ -163,7 +163,7 @@
                         e.preventDefault();
                         openCtxMenu(e, data.loginUser?.id, fetchSongDetailed(song), data.playlist, "playlistSong", data.user?.id);
                     }}
-                    class="flex w-full items-center justify-center gap-2 rounded-lg p-2 transition-colors duration-200 hover:bg-slate-800"
+                    class="flex w-full cursor-pointer items-center justify-center gap-2 rounded-lg p-2 transition-colors duration-200 hover:bg-slate-800"
                 >
                     <div class="flex size-10 items-center justify-center p-1 text-lg">
                         {#if song.videoId === $store.meta?.videoId}

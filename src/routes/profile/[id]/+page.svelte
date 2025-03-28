@@ -63,7 +63,7 @@
 {#if data.playlists.length > 0}
     <h1 class="mt-10 text-3xl font-bold md:text-4xl">Public Playlists</h1>
 
-    <div class="mt-2 flex flex-wrap items-center justify-start gap-2 p-2">
+    <div class="flex flex-wrap items-center justify-start gap-2 py-2 md:py-5">
         {#each data.playlists as playlist}
             <a
                 in:fly={{ duration: 500, easing: expoOut, x: -100, y: 0 }}
