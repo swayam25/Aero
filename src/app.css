@@ -12,6 +12,7 @@ body {
     background-color: var(--color-slate-950);
     color: var(--color-slate-50);
     scroll-behavior: smooth;
+    overflow: hidden;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
 }

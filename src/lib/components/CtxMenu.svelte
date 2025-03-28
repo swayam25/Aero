@@ -1,6 +1,6 @@
 <script lang="ts">
     import { invalidateAll } from "$app/navigation";
-    import { openCtxMenu, store } from "$lib/ctxmenu";
+    import { store } from "$lib/ctxmenu";
     import type { InsertPlaylist } from "$lib/db/schema";
     import { addToQueue, play, store as playerStore, removeFromQueue, togglePause } from "$lib/player";
     import { showPlDeletePopup, showPlRenamePopup } from "$lib/popups";
@@ -61,7 +61,7 @@
     <div
         transition:fade={{ duration: 100 }}
         bind:this={ctxMenu}
-        class="absolute z-1000 flex min-w-45 flex-col items-start justify-center rounded-lg border border-slate-700 bg-slate-900 p-2 text-sm transition-all duration-200"
+        class="absolute z-1000 flex min-w-45 flex-col items-start justify-center rounded-lg border border-slate-700 bg-slate-900 p-2 text-sm transition-all duration-200 ease-in-out"
         style="top: {y}px; left: {x}px;"
     >
         {#if $store.showPlaylistMenu}
@@ -69,12 +69,10 @@
                 <CtxButton
                     onclick={(e) => {
                         e.stopPropagation();
-
                         if (dropdownOffset) {
                             dropdownOffset = false;
-                            $store.y += 228;
+                            $store.y += 300;
                         }
-
                         $store.showPlaylistMenu = false;
                     }}
                 >
@@ -195,12 +193,10 @@
                         <CtxButton
                             onclick={(e) => {
                                 e.stopPropagation();
-
                                 $store.showPlaylistMenu = true;
-
-                                if (y > window.innerHeight - 300) {
+                                if (y > window.innerHeight - 372) {
                                     dropdownOffset = true;
-                                    $store.y -= 228;
+                                    $store.y -= 300;
                                 }
                             }}
                         >

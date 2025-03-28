@@ -1,7 +1,9 @@
 <script lang="ts">
+    import { openCtxMenu } from "$lib/ctxmenu";
     import type { UserData } from "$lib/discord/types";
     import { previous, seekTo, setVolume, skip, store, togglePause, toggleQueue } from "$lib/player";
     import { formatTime } from "$lib/utils/time";
+    import { onMount } from "svelte";
     import { fly } from "svelte/transition";
     import SolarMutedLinear from "~icons/solar/muted-linear";
     import SolarPauseCircleBold from "~icons/solar/pause-circle-bold";
@@ -19,13 +21,10 @@
     import MarqueeText from "./ui/MarqueeText.svelte";
     import Popover from "./ui/Popover.svelte";
     import Slider from "./ui/Slider.svelte";
-    import { onMount } from "svelte";
 
     let { user }: { user: UserData } = $props();
 
     let showMobilePlayer: boolean = $state(false);
-
-    // Update currentTime
     let currentTime: number = $state($store.currentTime);
     let isSeeking: boolean = $state(false);
 
@@ -63,7 +62,16 @@
 
 <div id="player" class="relative flex h-15 w-full items-center justify-end gap-2 rounded-lg px-4 sm:justify-center">
     <!-- Song Info -->
-    <div class="absolute left-0 flex items-center justify-center gap-2 transition-opacity md:left-5">
+    <div
+        class="absolute left-0 flex items-center justify-center gap-2 transition-opacity md:left-5"
+        oncontextmenu={(e) => {
+            if ($store.state === "unstarted") return;
+            e.preventDefault();
+            openCtxMenu(e, user?.id, $store.meta, null, "queue");
+        }}
+        role="button"
+        tabindex="0"
+    >
         <div
             class="size-15 rounded-l-lg bg-slate-800 bg-cover transition-all md:rounded-lg md:bg-slate-900"
             style="background-image: url({$store.state !== 'unstarted' ? $store.meta?.thumbnails[0].url.replace('=w60-h60-l90-rj', '') : ''});"
