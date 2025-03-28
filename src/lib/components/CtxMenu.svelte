@@ -109,7 +109,10 @@
                                                         songCover: $store.song.thumbnails[0].url.replace("=w60-h60-l90-rj", "")
                                                     }
                                                 }),
-                                                method: "POST"
+                                                method: "POST",
+                                                headers: {
+                                                    "Content-Type": "application/json"
+                                                }
                                             });
                                             const respData = await resp.json();
                                             if (resp.ok) toast.success("Added song to playlist");
@@ -254,7 +257,10 @@
                                             songID: $store.song?.videoId
                                         }
                                     }),
-                                    method: "POST"
+                                    method: "POST",
+                                    headers: {
+                                        "Content-Type": "application/json"
+                                    }
                                 });
                                 const respData = await resp.json();
                                 if (resp.ok) toast.success("Removed song from playlist");

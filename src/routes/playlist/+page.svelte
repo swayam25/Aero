@@ -25,7 +25,10 @@
         hidePlDeletePopup();
         const resp = await fetch(`/api/playlist`, {
             body: JSON.stringify({ id: plID }),
-            method: "DELETE"
+            method: "DELETE",
+            headers: {
+                "Content-Type": "application/json"
+            }
         });
         const respData = await resp.json();
         if (resp.ok) toast.success("Playlist deleted successfully");
@@ -43,7 +46,10 @@
         inputValue = "";
         const resp = await fetch(`/api/playlist`, {
             body: JSON.stringify({ key: "rename_pl", value: { playlistID: plID, name: newName } }),
-            method: "POST"
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            }
         });
         const respData = await resp.json();
         if (resp.ok) toast.success("Playlist renamed successfully");

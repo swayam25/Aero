@@ -23,7 +23,12 @@
 
     async function deleteAcc() {
         deletePopupOpen = false;
-        await fetch("/auth/delete", { method: "POST" });
+        await fetch("/auth/delete", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            }
+        });
         invalidateAll();
     }
 </script>
