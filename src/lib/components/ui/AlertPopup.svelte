@@ -18,7 +18,7 @@
         {@render trigger()}
     </AlertDialog.Trigger>
     <AlertDialog.Portal>
-        <AlertDialog.Overlay class="fixed inset-0 z-100 flex size-full items-center justify-center backdrop-blur-md" forceMount>
+        <AlertDialog.Overlay class="fixed inset-0 z-100 flex size-full items-center justify-center backdrop-blur-xs" forceMount>
             {#snippet child({ props, open })}
                 {#if open}
                     <div {...props} transition:fade={{ duration: 100 }}>

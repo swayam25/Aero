@@ -20,7 +20,7 @@
         {@render trigger()}
     </Dialog.Trigger>
     <Dialog.Portal>
-        <Dialog.Overlay class="fixed inset-0 z-100 flex size-full items-center justify-center backdrop-blur-md" forceMount>
+        <Dialog.Overlay class="fixed inset-0 z-100 flex size-full items-center justify-center backdrop-blur-xs" forceMount>
             {#snippet child({ props, open })}
                 {#if open}
                     <div {...props} transition:fade={{ duration: 100 }}>
