@@ -10,7 +10,7 @@ import type { PageServerLoad } from "./$types";
 
 export const load: PageServerLoad = async ({ params, locals }) => {
     const userID = params.userID;
-    const playlistID = Number(params.playlistID);
+    const playlistID = String(params.playlistID);
 
     const userExists = await checkUser(locals.db, userID);
     let loginUser: UserData | null = locals.user;

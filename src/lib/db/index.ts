@@ -27,11 +27,11 @@ export async function createPlaylist(db: DB, userID: string, name: string) {
     await db.insert(schema.playlistTable).values({ userID, name, songs: [] });
 }
 
-export async function renamePlaylist(db: DB, playlistID: number, name: string) {
+export async function renamePlaylist(db: DB, playlistID: string, name: string) {
     await db.update(schema.playlistTable).set({ name }).where(eq(schema.playlistTable.id, playlistID));
 }
 
-export async function deletePlaylist(db: DB, playlistID: number) {
+export async function deletePlaylist(db: DB, playlistID: string) {
     await db.delete(schema.playlistTable).where(eq(schema.playlistTable.id, playlistID));
 }
 
@@ -43,30 +43,30 @@ export async function getPublicPlaylists(db: DB, userID: string) {
     return db.query.playlistTable.findMany({ where: eq(schema.playlistTable.userID, userID) && eq(schema.playlistTable.isPublic, true) });
 }
 
-export async function checkPlaylist(db: DB, userID: string, playlistID: number) {
+export async function checkPlaylist(db: DB, userID: string, playlistID: string) {
     return db.query.playlistTable.findFirst({
         where: (fields) => eq(fields.userID, userID) && eq(fields.id, playlistID)
     });
 }
 
-export async function addSongToPlaylist(db: DB, playlistID: number, songID: string) {
+export async function addSongToPlaylist(db: DB, playlistID: string, songID: string) {
     const pl = await db.query.playlistTable.findFirst({ where: eq(schema.playlistTable.id, playlistID) });
     const newSongs = pl?.songs.filter((storedSongID) => storedSongID !== songID) || [];
     newSongs.push(songID);
     await db.update(schema.playlistTable).set({ songs: newSongs }).where(eq(schema.playlistTable.id, playlistID));
 }
 
-export async function removeSongFromPlaylist(db: DB, playlistID: number, songID: string) {
+export async function removeSongFromPlaylist(db: DB, playlistID: string, songID: string) {
     const pl = await db.query.playlistTable.findFirst({ where: eq(schema.playlistTable.id, playlistID) });
     const newSongs = pl?.songs.filter((storedSongID) => storedSongID !== songID) || [];
     await db.update(schema.playlistTable).set({ songs: newSongs }).where(eq(schema.playlistTable.id, playlistID));
 }
 
-export async function setPlaylistCover(db: DB, playlistID: number, cover: string) {
+export async function setPlaylistCover(db: DB, playlistID: string, cover: string) {
     await db.update(schema.playlistTable).set({ cover }).where(eq(schema.playlistTable.id, playlistID));
 }
 
-export async function toggleView(db: DB, playlistID: number) {
+export async function toggleView(db: DB, playlistID: string) {
     const pl = await db.query.playlistTable.findFirst({ where: eq(schema.playlistTable.id, playlistID) });
     await db.update(schema.playlistTable).set({ isPublic: !pl!.isPublic }).where(eq(schema.playlistTable.id, playlistID));
     return !pl!.isPublic;
