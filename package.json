@@ -18,6 +18,7 @@
         "gen-secret": "node -e \"console.log(require('crypto').randomBytes(32).toString('hex'))\""
     },
     "devDependencies": {
+        "@supabase/supabase-js": "^2.49.4",
         "@sveltejs/adapter-node": "^5.2.12",
         "@sveltejs/kit": "^2.20.2",
         "@sveltejs/vite-plugin-svelte": "^5.0.3",
