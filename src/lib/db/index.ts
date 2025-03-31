@@ -1,10 +1,10 @@
-import type { NeonQueryFunction } from "@neondatabase/serverless";
 import { eq } from "drizzle-orm";
-import type { NeonHttpDatabase } from "drizzle-orm/neon-http";
+import type { PostgresJsDatabase } from "drizzle-orm/postgres-js";
+import type postgres from "postgres";
 import * as schema from "./schema";
 
-export type DB = NeonHttpDatabase<typeof schema> & {
-    $client: NeonQueryFunction<false, false>;
+export type DB = PostgresJsDatabase<typeof schema> & {
+    $client: postgres.Sql<{}>;
 };
 
 export async function addUser(db: DB, id: string) {

@@ -28,7 +28,7 @@ Aero makes listening to music feel light and breezy
     <summary>ENV Vars</summary>
 
     - Get `DATABASE_URL` from Supabase.
-        ![Neon DB](./assets/db_url.png)
+        ![Supabase](./assets/db_url.png)
     - Get `SUPABASE_URL` and `SUPABASE_KEY` from Supabase API Settings.
         ![Supabase](./assets/api_info.png)
     - Get `JWT_SECRET` by running the following command.
