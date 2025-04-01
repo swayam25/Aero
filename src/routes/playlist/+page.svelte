@@ -10,6 +10,7 @@
     import { hidePlDeletePopup, hidePlRenamePopup, store as popupStore } from "$lib/popups";
     import { supabase } from "$lib/supabase";
     import { AlertDialog, Dialog } from "bits-ui";
+    import { onDestroy } from "svelte";
     import { toast } from "svelte-sonner";
     import { expoOut } from "svelte/easing";
     import { fade, fly } from "svelte/transition";
@@ -27,7 +28,7 @@
     });
 
     // Sync playlist data with db
-    supabase
+    const channel = supabase
         .channel("playlist-changes-playlists")
         .on(
             "postgres_changes",
@@ -48,6 +49,9 @@
             }
         )
         .subscribe();
+    onDestroy(() => {
+        channel.unsubscribe();
+    });
 
     async function deletePlaylist() {
         const plID = $popupStore.playlistData?.id;

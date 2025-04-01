@@ -7,6 +7,7 @@
     import { playPlaylist, store } from "$lib/player";
     import { supabase } from "$lib/supabase";
     import { formatTime } from "$lib/utils/time";
+    import { onDestroy } from "svelte";
     import { toast } from "svelte-sonner";
     import { expoOut } from "svelte/easing";
     import { fade, fly } from "svelte/transition";
@@ -24,7 +25,7 @@
     });
 
     // Sync playlist data with db
-    supabase
+    const channel = supabase
         .channel("playlist-changes-playlists")
         .on(
             "postgres_changes",
@@ -37,6 +38,9 @@
             () => invalidateAll()
         )
         .subscribe();
+    onDestroy(() => {
+        channel.unsubscribe();
+    });
 
     // Convert SongFull to SongDetailed
     // This is a workaround to avoid type errors
