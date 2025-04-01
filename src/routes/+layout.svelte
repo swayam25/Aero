@@ -7,7 +7,9 @@
     import Queue from "$lib/components/Queue.svelte";
     import Sidebar from "$lib/components/Sidebar.svelte";
     import { closeCtxMenu } from "$lib/ctxmenu";
+    import type { InsertPlaylist } from "$lib/db/schema";
     import { store } from "$lib/player";
+    import { supabase } from "$lib/supabase";
     import { type Snippet } from "svelte";
     import { Toaster } from "svelte-sonner";
     import { expoOut } from "svelte/easing";
@@ -21,7 +23,12 @@
     }
 
     let { data, children }: Props = $props();
+    let playlists: InsertPlaylist[] = $state(data.playlists);
+    $effect(() => {
+        playlists = data.playlists;
+    });
 
+    // Show transition when navigating
     onNavigate((navigation) => {
         if (!document.startViewTransition) return;
 
@@ -32,6 +39,29 @@
             });
         });
     });
+
+    // Sync playlist data with db
+    supabase
+        .channel("playlist-changes-layout")
+        .on(
+            "postgres_changes",
+            {
+                event: "UPDATE",
+                schema: "public",
+                table: "playlist",
+                filter: `user_id=eq.${data.user.id}`
+            },
+            (payload) => {
+                const { new: newPlaylist } = payload;
+                playlists = playlists.map((playlist: InsertPlaylist) => {
+                    if (playlist.id === newPlaylist.id) {
+                        return { ...playlist, ...newPlaylist };
+                    }
+                    return playlist;
+                });
+            }
+        )
+        .subscribe();
 </script>
 
 <svelte:window
@@ -60,7 +90,7 @@
         <Navbar user={data.user} />
     </div>
     <div class="col-span-1 row-span-1 hidden md:block">
-        <Sidebar user={data.user} playlists={data.playlists} />
+        <Sidebar user={data.user} {playlists} />
     </div>
     <div
         id="body"

@@ -6,7 +6,9 @@
     import DialogPopup from "$lib/components/ui/DialogPopup.svelte";
     import Input from "$lib/components/ui/Input.svelte";
     import { openCtxMenu } from "$lib/ctxmenu";
+    import type { InsertPlaylist } from "$lib/db/schema";
     import { hidePlDeletePopup, hidePlRenamePopup, store as popupStore } from "$lib/popups";
+    import { supabase } from "$lib/supabase";
     import { AlertDialog, Dialog } from "bits-ui";
     import { toast } from "svelte-sonner";
     import { expoOut } from "svelte/easing";
@@ -19,6 +21,33 @@
     import type { PageData } from "./$types";
 
     let { data }: { data: PageData } = $props();
+    let playlists: InsertPlaylist[] = $state(data.playlists);
+    $effect(() => {
+        playlists = data.playlists;
+    });
+
+    // Sync playlist data with db
+    supabase
+        .channel("playlist-changes-playlists")
+        .on(
+            "postgres_changes",
+            {
+                event: "UPDATE",
+                schema: "public",
+                table: "playlist",
+                filter: `user_id=eq.${data.user.id}`
+            },
+            (payload) => {
+                const { new: newPlaylist } = payload;
+                playlists = playlists.map((playlist: InsertPlaylist) => {
+                    if (playlist.id === newPlaylist.id) {
+                        return { ...playlist, ...newPlaylist };
+                    }
+                    return playlist;
+                });
+            }
+        )
+        .subscribe();
 
     async function deletePlaylist() {
         const plID = $popupStore.playlistData?.id;
@@ -105,7 +134,7 @@
     {/snippet}
 </DialogPopup>
 
-{#if data.playlists.length > 0}
+{#if playlists.length > 0}
     <div in:fade={{ duration: 100 }} class="mb-2 flex size-fit items-center justify-center gap-2 md:mb-5">
         <h1 class="text-3xl font-bold md:text-4xl">Playlists</h1>
         <NewPlaylistPopup>
@@ -116,7 +145,7 @@
     </div>
 {/if}
 
-{#if data.playlists.length <= 0}
+{#if playlists.length <= 0}
     <div in:fade={{ duration: 100 }} class="flex size-full items-center justify-center">
         <div class="flex flex-col items-center justify-center gap-2">
             <SolarConfoundedCircleLinear class="size-10 text-slate-400 md:size-15" />
@@ -131,14 +160,14 @@
     </div>
 {:else}
     <div in:fade={{ duration: 100 }} class="flex flex-wrap items-center justify-start gap-2">
-        {#each data.playlists as playlist}
+        {#each playlists as playlist}
             <a
                 in:fly={{ duration: 500, easing: expoOut, x: -100, y: 0 }}
                 out:fly={{ duration: 500, easing: expoOut, x: 100, y: 0 }}
                 href={`/playlist/${data.user?.id}/${playlist.id}`}
                 oncontextmenu={(e) => {
                     e.preventDefault();
-                    openCtxMenu(e, data.user?.id, null, { name: playlist.name, id: playlist.id }, "playlist");
+                    openCtxMenu(e, data.user?.id, null, { name: playlist.name, id: playlist.id ?? "" }, "playlist");
                 }}
                 class="group flex size-fit cursor-pointer flex-col items-start justify-center gap-2 rounded-lg p-3 transition-colors duration-200 hover:bg-slate-800"
             >

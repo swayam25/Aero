@@ -1,9 +1,11 @@
 <script lang="ts">
+    import { invalidateAll } from "$app/navigation";
     import MarqueeText from "$lib/components/ui/MarqueeText.svelte";
     import Switch from "$lib/components/ui/Switch.svelte";
     import Tooltip from "$lib/components/ui/Tooltip.svelte";
     import { openCtxMenu } from "$lib/ctxmenu";
     import { playPlaylist, store } from "$lib/player";
+    import { supabase } from "$lib/supabase";
     import { formatTime } from "$lib/utils/time";
     import { toast } from "svelte-sonner";
     import { expoOut } from "svelte/easing";
@@ -17,11 +19,27 @@
     let isPublic: boolean = $state(data.playlist.isPublic);
     let enableToggleBtn: boolean = $state(true);
     let songDetailedList: SongDetailed[] = [];
-
     $effect(() => {
         isPublic = data.playlist.isPublic;
     });
 
+    // Sync playlist data with db
+    supabase
+        .channel("playlist-changes-playlists")
+        .on(
+            "postgres_changes",
+            {
+                event: "UPDATE",
+                schema: "public",
+                table: "playlist",
+                filter: `user_id=eq.${data.user.id}`
+            },
+            () => invalidateAll()
+        )
+        .subscribe();
+
+    // Convert SongFull to SongDetailed
+    // This is a workaround to avoid type errors
     function fetchSongDetailed(song: SongFull): SongDetailed {
         return {
             type: song.type,
