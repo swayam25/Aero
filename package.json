@@ -54,7 +54,9 @@
     },
     "dependencies": {
         "@iconify/json": "^2.2.319",
+        "@types/sortablejs": "^1.15.8",
         "clsx": "^2.1.1",
+        "sortablejs": "^1.15.6",
         "svelte-range-slider-pips": "^3.2.2",
         "tailwind-merge": "^3.0.2"
     }

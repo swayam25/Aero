@@ -41,27 +41,31 @@
     });
 
     // Sync playlist data with db
-    supabase
-        .channel("playlist-changes-layout")
-        .on(
-            "postgres_changes",
-            {
-                event: "UPDATE",
-                schema: "public",
-                table: "playlist",
-                filter: `user_id=eq.${data.user.id}`
-            },
-            (payload) => {
-                const { new: newPlaylist } = payload;
-                playlists = playlists.map((playlist: InsertPlaylist) => {
-                    if (playlist.id === newPlaylist.id) {
-                        return { ...playlist, ...newPlaylist };
+    $effect(() => {
+        if (data.user) {
+            supabase
+                .channel("playlist-changes-layout")
+                .on(
+                    "postgres_changes",
+                    {
+                        event: "UPDATE",
+                        schema: "public",
+                        table: "playlist",
+                        filter: `user_id=eq.${data.user.id}`
+                    },
+                    (payload) => {
+                        const { new: newPlaylist } = payload;
+                        playlists = playlists.map((playlist: InsertPlaylist) => {
+                            if (playlist.id === newPlaylist.id) {
+                                return { ...playlist, ...newPlaylist };
+                            }
+                            return playlist;
+                        });
                     }
-                    return playlist;
-                });
-            }
-        )
-        .subscribe();
+                )
+                .subscribe();
+        }
+    });
 </script>
 
 <svelte:window

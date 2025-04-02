@@ -11,9 +11,15 @@ importers:
       '@iconify/json':
         specifier: ^2.2.319
         version: 2.2.319
+      '@types/sortablejs':
+        specifier: ^1.15.8
+        version: 1.15.8
       clsx:
         specifier: ^2.1.1
         version: 2.1.1
+      sortablejs:
+        specifier: ^1.15.6
+        version: 1.15.6
       svelte-range-slider-pips:
         specifier: ^3.2.2
         version: 3.2.2(svelte@5.25.2)
@@ -1030,6 +1036,9 @@ packages:
   '@types/resolve@1.20.2':
     resolution: {integrity: sha512-60BCwRFOZCQhDncwQdxxeOEEkbc5dIMccYLwbxsS4TUNeVECQ/pBJ0j09mrHOl/JJvpRPGwO9SvE4nR2Nb/a4Q==}
 
+  '@types/sortablejs@1.15.8':
+    resolution: {integrity: sha512-b79830lW+RZfwaztgs1aVPgbasJ8e7AXtZYHTELNXZPsERt4ymJdjV4OccDbHQAvHrCcFpbF78jkm0R6h/pZVg==}
+
   '@types/ws@8.18.0':
     resolution: {integrity: sha512-8svvI3hMyvN0kKCJMvTJP/x6Y/EoQbepff882wL+Sn5QsXb3etnamgrJq4isrBxSJj5L2AuXcI0+bgkoAXGUJw==}
 
@@ -1694,6 +1703,9 @@ packages:
 
   sister@3.0.2:
     resolution: {integrity: sha512-p19rtTs+NksBRKW9qn0UhZ8/TUI9BPw9lmtHny+Y3TinWlOa9jWh9xB0AtPSdmOy49NJJJSSe0Ey4C7h0TrcYA==}
+
+  sortablejs@1.15.6:
+    resolution: {integrity: sha512-aNfiuwMEpfBM/CN6LY0ibyhxPfPbyFeBTYJKCvzkJ2GkUpazIt3H+QIPAMHwqQ7tMKaHz1Qj+rJJCqljnf4p3A==}
 
   source-map-js@1.2.1:
     resolution: {integrity: sha512-UXWMKhLOwVKb728IUtQPXxfYU+usdybtUrK/8uGE8CQMvrhOpwvzDBwj0QhSL7MQc7vIsISBG8VQ8+IDQxpfQA==}
@@ -2566,6 +2578,8 @@ snapshots:
 
   '@types/resolve@1.20.2': {}
 
+  '@types/sortablejs@1.15.8': {}
+
   '@types/ws@8.18.0':
     dependencies:
       '@types/node': 22.13.11
@@ -3142,6 +3156,8 @@ snapshots:
       totalist: 3.0.1
 
   sister@3.0.2: {}
+
+  sortablejs@1.15.6: {}
 
   source-map-js@1.2.1: {}
 
