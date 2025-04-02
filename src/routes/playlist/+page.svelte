@@ -36,7 +36,7 @@
                 event: "UPDATE",
                 schema: "public",
                 table: "playlist",
-                filter: `user_id=eq.${data.user.id}`
+                filter: `user_id=eq.${data.user?.id}`
             },
             (payload) => {
                 const { new: newPlaylist } = payload;

@@ -3,7 +3,7 @@ import type { RequestHandler } from "./$types";
 
 export const POST: RequestHandler = async ({ cookies, locals }) => {
     if (locals.user) {
-        await deleteUser(locals.db, locals.user.id);
+        await deleteUser(locals.db, locals.user?.id);
     } else {
         return new Response(JSON.stringify({ message: "User not logged in" }), {
             status: 401,

@@ -39,13 +39,13 @@
             {#snippet trigger()}
                 <div class="relative flex size-10 cursor-pointer items-center justify-center md:size-12">
                     <img
-                        src={`https://cdn.discordapp.com/avatars/${user.id}/${user.avatar}`}
+                        src={`https://cdn.discordapp.com/avatars/${user?.id}/${user?.avatar}`}
                         alt="User Avatar"
                         class="size-8 rounded-full md:size-10"
                     />
-                    {#if user.avatar_decoration_data?.asset}
+                    {#if user?.avatar_decoration_data?.asset}
                         <img
-                            src={`https://cdn.discordapp.com/avatar-decoration-presets/${user.avatar_decoration_data?.asset}.webp`}
+                            src={`https://cdn.discordapp.com/avatar-decoration-presets/${user?.avatar_decoration_data?.asset}.webp`}
                             alt="Avatar Decoration"
                             class="absolute size-10 rounded-full md:size-12"
                             onmouseenter={(e) => {
@@ -62,10 +62,10 @@
             {/snippet}
             {#snippet content()}
                 <div class="flex flex-col items-start justify-center gap-1">
-                    <p class="text-lg font-bold">{user.global_name || user.username}</p>
+                    <p class="text-lg font-bold">{user?.global_name || user?.username}</p>
                     <span class="w-full border-t border-slate-700"></span>
                     <!-- Profile -->
-                    <CtxButton href="/profile/{user.id}">
+                    <CtxButton href="/profile/{user?.id}">
                         <SolarUserCircleLinear class="size-5" />
                         Profile
                     </CtxButton>

@@ -8,7 +8,7 @@ export const load: LayoutServerLoad = async ({ locals }) => {
 
     let playlists: InsertPlaylist[] = [];
     if (user) {
-        playlists = await getPlaylists(locals.db, user.id);
+        playlists = await getPlaylists(locals.db, user?.id);
     }
 
     return { user, playlists };

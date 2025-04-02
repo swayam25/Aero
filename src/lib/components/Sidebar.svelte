@@ -28,7 +28,7 @@
                         class="size-15 cursor-pointer rounded-lg bg-slate-800 bg-cover"
                         style="background-image: url({playlist.cover});"
                     >
-                        <a href="/playlist/{user.id}/{playlist.id}" class="block size-full bg-transparent" aria-label={playlist.name}></a>
+                        <a href="/playlist/{user?.id}/{playlist.id}" class="block size-full bg-transparent" aria-label={playlist.name}></a>
                     </div>
                 {/snippet}
                 {#snippet content()}

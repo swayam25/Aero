@@ -23,7 +23,7 @@ export const load: PageServerLoad = async ({ params, locals }) => {
         user = resp;
     }
 
-    const playlists = await getPublicPlaylists(locals.db, user.id);
+    const playlists = await getPublicPlaylists(locals.db, user?.id);
 
     return { user, playlists };
 };

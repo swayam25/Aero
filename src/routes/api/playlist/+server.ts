@@ -9,7 +9,7 @@ export const POST: RequestHandler = async ({ locals, request }) => {
     if (!user) return json({ error: "Unauthorized" }, { status: 401 });
 
     if (key === "create_pl") {
-        await createPlaylist(locals.db, user.id, value);
+        await createPlaylist(locals.db, user?.id, value);
     } else if (key === "rename_pl") {
         await renamePlaylist(locals.db, value.playlistID, value.name);
     }

@@ -37,7 +37,7 @@ export const load: PageServerLoad = async ({ params, locals }) => {
             return error(404, "Playlist not found");
         } else {
             playlist = playlistExists;
-            if (!playlist.isPublic && loginUser?.id !== user.id) return error(404, "Playlist not found");
+            if (!playlist.isPublic && loginUser?.id !== user?.id) return error(404, "Playlist not found");
             playlistSongs = [];
             playlist.songs.forEach(async (song) => {
                 playlistSongs.push(locals.ytmusic.getSong(song));
