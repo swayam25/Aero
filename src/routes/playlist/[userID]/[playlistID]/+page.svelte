@@ -5,6 +5,7 @@
     import Tooltip from "$lib/components/ui/Tooltip.svelte";
     import { openCtxMenu } from "$lib/ctxmenu";
     import { playPlaylist, store } from "$lib/player";
+    import { reorder, useSortable } from "$lib/sortable/index.svelte";
     import { supabase } from "$lib/supabase";
     import { formatTime } from "$lib/utils/time";
     import { onDestroy } from "svelte";
@@ -17,11 +18,40 @@
     import type { PageData } from "./$types";
 
     let { data }: { data: PageData } = $props();
-    let isPublic: boolean = $state(data.playlist.isPublic);
+    let isPublic: boolean = $derived(data.playlist.isPublic);
     let enableToggleBtn: boolean = $state(true);
-    let songDetailedList: SongDetailed[] = [];
+    let playlistSongs: Promise<SongFull>[] = $derived(data.playlistSongs);
+    let songDetailed: SongDetailed[] = $state([]);
     $effect(() => {
-        isPublic = data.playlist.isPublic;
+        (async () => {
+            const songs = await Promise.all(playlistSongs);
+            songDetailed = songs.map((song) => fetchSongDetailed(song));
+        })();
+    });
+
+    // Sortable
+    let sortable: HTMLElement | null = $state(null);
+    useSortable(() => sortable, {
+        animation: 150,
+        handle: ".pl-song-handle",
+        onEnd(event) {
+            songDetailed = reorder(songDetailed, event);
+            (async () => {
+                const resp = await fetch(`/api/playlist/${data.playlist.id}`, {
+                    method: "POST",
+                    body: JSON.stringify({
+                        key: "reorder",
+                        value: { playlistID: data.playlist.id, songIDs: $state.snapshot(songDetailed.map((s) => s.videoId)) }
+                    }),
+                    headers: { "Content-Type": "application/json" }
+                });
+                if (resp.ok) {
+                    toast.success("Playlist order synced");
+                } else {
+                    toast.error("Failed to sync playlist order");
+                }
+            })();
+        }
     });
 
     // Sync playlist data with db
@@ -149,8 +179,12 @@
     </div>
 </div>
 
-<div class="mt-2 flex flex-col items-start justify-center gap-2 p-2 md:mt-5" class:!mt-20={data.playlistSongs.length <= 0}>
-    {#if data.playlistSongs.length <= 0}
+<ul
+    bind:this={sortable}
+    class="mt-2 flex list-none flex-col items-start justify-center gap-2 py-2 md:mt-5 md:py-5"
+    class:!mt-20={playlistSongs.length <= 0}
+>
+    {#if playlistSongs.length <= 0}
         <div in:fade={{ duration: 100 }} class="flex size-full items-center justify-center">
             <div in:fade={{ duration: 100 }} class="flex flex-col items-center justify-center gap-2">
                 <SolarConfoundedCircleLinear class="size-10 text-slate-400 md:size-15" />
@@ -158,7 +192,7 @@
             </div>
         </div>
     {:else}
-        {#each data.playlistSongs as song, idx}
+        {#each playlistSongs as song, idx}
             {#await song}
                 <div
                     in:fade={{ duration: 100 }}
@@ -174,36 +208,37 @@
                     </div>
                 </div>
             {:then song}
-                {@const NaN = songDetailedList.push(fetchSongDetailed(song))}
-                <button
-                    onclick={async () => {
-                        await playPlaylist(fetchSongDetailed(song), songDetailedList);
-                    }}
-                    in:fly={{ duration: 500, easing: expoOut, x: -100, y: 0 }}
-                    out:fly={{ duration: 500, easing: expoOut, x: 100, y: 0 }}
-                    oncontextmenu={(e) => {
-                        e.preventDefault();
-                        openCtxMenu(e, data.loginUser?.id, fetchSongDetailed(song), data.playlist, "playlistSong", data.user?.id);
-                    }}
-                    class="flex w-full cursor-pointer items-center justify-center gap-2 rounded-lg p-2 transition-colors duration-200 hover:bg-slate-800"
-                >
-                    <div class="flex size-10 items-center justify-center p-1 text-lg">
-                        {#if song.videoId === $store.meta?.videoId}
-                            <span in:fade={{ duration: 100 }} class="size-full">
-                                <HugeiconsCd class="size-full animate-spin text-sky-500" />
-                            </span>
-                        {:else}
-                            <span in:fade={{ duration: 100 }} class="text-slate-200">{idx + 1}</span>
-                        {/if}
-                    </div>
-                    <img src={song.thumbnails[0].url.replace("=w60-h60-l90-rj", "")} alt="{song.name}'s Thumbnail" class="size-15 rounded-lg" />
-                    <div class="flex w-full flex-col items-center justify-center text-left">
-                        <MarqueeText class="w-10 font-bold" text={song.name} />
-                        <MarqueeText class="w-10 text-sm text-slate-400" text={song.artist.name} />
-                    </div>
-                    <p class="text-sm text-slate-400">{formatTime(song.duration ?? 0)}</p>
-                </button>
+                <li class="w-full">
+                    <button
+                        onclick={async () => {
+                            await playPlaylist(fetchSongDetailed(song), songDetailed);
+                        }}
+                        in:fly={{ duration: 500, easing: expoOut, x: -100, y: 0 }}
+                        out:fly={{ duration: 500, easing: expoOut, x: 100, y: 0 }}
+                        oncontextmenu={(e) => {
+                            e.preventDefault();
+                            openCtxMenu(e, data.loginUser?.id, fetchSongDetailed(song), data.playlist, "playlistSong", data.user?.id);
+                        }}
+                        class="pl-song-handle flex w-full cursor-pointer items-center justify-center gap-2 rounded-lg p-2 transition-colors duration-200 hover:bg-slate-800"
+                    >
+                        <div class="flex size-10 items-center justify-center p-1 text-lg">
+                            {#if song.videoId === $store.meta?.videoId}
+                                <span in:fade={{ duration: 100 }} class="size-full">
+                                    <HugeiconsCd class="size-full animate-spin text-sky-500" />
+                                </span>
+                            {:else}
+                                <span in:fade={{ duration: 100 }} class="text-slate-200">{idx + 1}</span>
+                            {/if}
+                        </div>
+                        <img src={song.thumbnails[0].url.replace("=w60-h60-l90-rj", "")} alt="{song.name}'s Thumbnail" class="size-15 rounded-lg" />
+                        <div class="flex w-full flex-col items-center justify-center text-left">
+                            <MarqueeText class="w-10 font-bold" text={song.name} />
+                            <MarqueeText class="w-10 text-sm text-slate-400" text={song.artist.name} />
+                        </div>
+                        <p class="text-sm text-slate-400">{formatTime(song.duration ?? 0)}</p>
+                    </button>
+                </li>
             {/await}
         {/each}
     {/if}
-</div>
+</ul>

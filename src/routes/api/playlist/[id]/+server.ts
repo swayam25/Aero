@@ -1,4 +1,4 @@
-import { addSongToPlaylist, checkPlaylist, removeSongFromPlaylist, setPlaylistCover, toggleView } from "$lib/db";
+import { addSongToPlaylist, checkPlaylist, removeSongFromPlaylist, reorderPlaylist, setPlaylistCover, toggleView } from "$lib/db";
 import { json, type RequestHandler } from "@sveltejs/kit";
 
 export const POST: RequestHandler = async ({ locals, request }) => {
@@ -34,6 +34,13 @@ export const POST: RequestHandler = async ({ locals, request }) => {
         return json({ success: true, isPublic });
     } else if (key === "fetch") {
         return json(playlistExists);
+    } else if (key === "reorder") {
+        await reorderPlaylist(locals.db, value.playlistID, value.songIDs);
+        await setPlaylistCover(
+            locals.db,
+            value.playlistID,
+            (await locals.ytmusic.getSong(value.songIDs.slice(-1)[0])).thumbnails[0].url.replace("=w60-h60-l90-rj", "")
+        );
     }
 
     return json({ success: true });

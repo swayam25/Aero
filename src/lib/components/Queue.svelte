@@ -37,7 +37,7 @@
     </div>
     <ul bind:this={sortable} id="queue" class="flex h-60 list-none flex-col overflow-x-hidden overflow-y-auto px-5 pb-5 md:h-[calc(100vh-232px)]">
         {#each queue as song, idx}
-            <li class="w-full cursor-pointer">
+            <li class="w-full">
                 <button
                     onclick={async () => {
                         await play(song, true);
@@ -48,7 +48,7 @@
                         e.preventDefault();
                         openCtxMenu(e, user?.id, song, null, "queue");
                     }}
-                    class="song-handle flex w-full items-center justify-center gap-2 rounded-lg p-2 transition-colors duration-200 hover:bg-slate-800"
+                    class="song-handle flex w-full cursor-pointer items-center justify-center gap-2 rounded-lg p-2 transition-colors duration-200 hover:bg-slate-800"
                 >
                     <div class="size-10 p-1 text-lg">
                         {#if song.videoId === $store.meta?.videoId}

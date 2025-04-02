@@ -71,3 +71,7 @@ export async function toggleView(db: DB, playlistID: string) {
     await db.update(schema.playlistTable).set({ isPublic: !pl!.isPublic }).where(eq(schema.playlistTable.id, playlistID));
     return !pl!.isPublic;
 }
+
+export async function reorderPlaylist(db: DB, playlistID: string, songs: string[]) {
+    await db.update(schema.playlistTable).set({ songs }).where(eq(schema.playlistTable.id, playlistID));
+}
