@@ -112,7 +112,11 @@
     </div>
     {#if $store.showQueue || $store.showLyrics}
         <!-- Here "window.innerWidth >= 768" refers to "md" breakpoint -->
-        <div class="fixed bottom-0 z-300 size-full bg-slate-900/50 md:relative md:z-0 md:col-span-1 md:row-span-1 md:block">
+        <div
+            in:fly={{ duration: 200, easing: expoOut }}
+            out:fly={{ duration: 200, easing: expoOut }}
+            class="fixed bottom-0 z-300 size-full bg-slate-900/50 md:relative md:z-0 md:col-span-1 md:row-span-1 md:block"
+        >
             <div
                 in:fly={{ duration: 500, easing: expoOut, x: window.innerWidth >= 768 ? 100 : 0, y: window.innerWidth < 768 ? 100 : 0 }}
                 out:fly={{ duration: window.innerWidth >= 768 ? 0 : 500, easing: expoOut, x: 0, y: window.innerWidth < 768 ? 100 : 0 }}

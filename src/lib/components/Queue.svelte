@@ -24,7 +24,7 @@
     });
 </script>
 
-<div in:fade={{ duration: 200 }} class="h-80 w-full rounded-lg bg-slate-900 md:h-full">
+<div in:fade={{ duration: 200 }} class="w-full rounded-lg bg-slate-900 md:h-full">
     <div class="flex w-full items-center justify-start gap-2 p-5">
         <Button class="size-8 bg-slate-800 p-2 md:hidden" size="" onclick={() => ($store.showQueue = false)}>
             <SolarAltArrowDownLinear class="size-full" />
@@ -34,7 +34,7 @@
     <ul
         bind:this={sortable}
         id="queue"
-        class="flex h-60 list-none flex-col overflow-x-hidden overflow-y-auto px-2 pb-2 md:h-[calc(100vh-232px)] md:px-5 md:pb-5"
+        class="flex h-[calc(100vh-232px)] list-none flex-col overflow-x-hidden overflow-y-auto px-2 pb-2 md:px-5 md:pb-5"
     >
         {#each queue as song, idx}
             <li class="w-full">

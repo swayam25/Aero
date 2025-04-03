@@ -1,9 +1,10 @@
 <script lang="ts">
-    import { previous, seekTo, skip, store, togglePause, toggleQueue } from "$lib/player";
+    import { previous, seekTo, skip, store, toggleLyrics, togglePause, toggleQueue } from "$lib/player";
     import { formatTime } from "$lib/utils/time";
     import { expoOut } from "svelte/easing";
     import { fly } from "svelte/transition";
     import SolarAltArrowDownLinear from "~icons/solar/alt-arrow-down-linear";
+    import SolarMicrophoneLargeLinear from "~icons/solar/microphone-large-linear";
     import SolarPauseCircleBold from "~icons/solar/pause-circle-bold";
     import SolarPlayCircleBold from "~icons/solar/play-circle-bold";
     import SolarPlaylist2Linear from "~icons/solar/playlist-2-linear";
@@ -137,6 +138,16 @@
                 disabled={$store.queue.length < 2}
             >
                 <SolarPlaylist2Linear class="size-full" />
+            </button>
+
+            <!-- Lyrics -->
+            <button
+                onclick={toggleLyrics}
+                class="size-8 opacity-80 transition-opacity not-disabled:hover:opacity-100"
+                class:!cursor-not-allowed={!$store.meta}
+                disabled={!$store.meta}
+            >
+                <SolarMicrophoneLargeLinear class="size-full" />
             </button>
 
             <!-- Shuffle -->
