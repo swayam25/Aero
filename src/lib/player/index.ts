@@ -13,7 +13,7 @@ export const store = writable<PlayerStore>({
     totalDuration: 0,
     currentTime: 0,
     showQueue: false,
-    lyrics: null,
+    lyrics: { data: null, error: null },
     showLyrics: false
 });
 
@@ -44,15 +44,15 @@ export async function init() {
 async function fetchLyrics() {
     const storeData = get(store);
     if (!storeData.meta?.videoId) {
-        store.update((state) => ({ ...state, lyrics: null }));
+        store.update((state) => ({ ...state, lyrics: { data: null, error: "Lyrics Not Found" } }));
         return;
     }
     const resp = await fetch("/api/lyrics?songID=" + encodeURIComponent(storeData.meta?.videoId));
     const data = await resp.json();
     if (resp.ok) {
-        store.update((state) => ({ ...state, lyrics: data.lyrics }));
+        store.update((state) => ({ ...state, lyrics: { data: data.lyrics, error: null } }));
     } else {
-        store.update((state) => ({ ...state, lyrics: null }));
+        store.update((state) => ({ ...state, lyrics: { data: null, error: data.error } }));
     }
 }
 
