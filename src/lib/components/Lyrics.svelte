@@ -14,7 +14,7 @@
         <h1 class="text-3xl font-bold md:text-4xl">Lyrics</h1>
     </div>
 
-    <div class="h-[calc(100vh-232px)] overflow-y-auto px-2 pb-2 md:px-5 md:pb-5">
+    <div class="{$store.lyrics.error ? 'h-[calc(100vh-232px)]' : 'max-h-[calc(100vh-232px)]'} overflow-y-auto px-2 pb-2 md:px-5 md:pb-5">
         {#if $store.lyrics.data}
             <p in:fade={{ duration: 100 }}>
                 {$store.lyrics.data}

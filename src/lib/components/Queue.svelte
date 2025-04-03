@@ -34,7 +34,7 @@
     <ul
         bind:this={sortable}
         id="queue"
-        class="flex h-[calc(100vh-232px)] list-none flex-col overflow-x-hidden overflow-y-auto px-2 pb-2 md:px-5 md:pb-5"
+        class="flex max-h-[calc(100vh-232px)] list-none flex-col overflow-x-hidden overflow-y-auto px-2 pb-2 md:px-5 md:pb-5"
     >
         {#each queue as song, idx}
             <li class="w-full">
