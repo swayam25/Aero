@@ -11,4 +11,6 @@ export interface PlayerStore {
     totalDuration: number;
     currentTime: number;
     showQueue: boolean;
+    lyrics: string | null;
+    showLyrics: boolean;
 }

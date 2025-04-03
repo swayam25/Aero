@@ -12,7 +12,9 @@ export const store = writable<PlayerStore>({
     meta: null,
     totalDuration: 0,
     currentTime: 0,
-    showQueue: false
+    showQueue: false,
+    lyrics: null,
+    showLyrics: false
 });
 
 export async function init() {
@@ -39,6 +41,21 @@ export async function init() {
     store.update((state) => ({ ...state, player: newPlayer }));
 }
 
+async function fetchLyrics() {
+    const storeData = get(store);
+    if (!storeData.meta?.videoId) {
+        store.update((state) => ({ ...state, lyrics: null }));
+        return;
+    }
+    const resp = await fetch("/api/lyrics?songID=" + encodeURIComponent(storeData.meta?.videoId));
+    const data = await resp.json();
+    if (resp.ok) {
+        store.update((state) => ({ ...state, lyrics: data.lyrics }));
+    } else {
+        store.update((state) => ({ ...state, lyrics: null }));
+    }
+}
+
 export async function play(song: SongDetailed, fromQueue: boolean = false) {
     let { player } = get(store);
 
@@ -63,6 +80,7 @@ export async function play(song: SongDetailed, fromQueue: boolean = false) {
         }
         requestAnimationFrame(updateTime);
     };
+    await fetchLyrics();
     updateTime();
 }
 
@@ -159,6 +177,7 @@ export async function previous() {
             player.playVideo();
         }
     }
+    await fetchLyrics();
 }
 
 export async function skip() {
@@ -196,6 +215,7 @@ export async function skip() {
         }
     }
     if (get(store).queue.length < 2) store.update((state) => ({ ...state, showQueue: false }));
+    await fetchLyrics();
 }
 
 export async function setLoop(loop: PlayerStore["loop"]) {
@@ -214,5 +234,9 @@ export async function seekTo(time: number) {
 }
 
 export async function toggleQueue() {
-    store.update((state) => ({ ...state, showQueue: !state.showQueue }));
+    store.update((state) => ({ ...state, showQueue: !state.showQueue, showLyrics: false }));
+}
+
+export async function toggleLyrics() {
+    store.update((state) => ({ ...state, showQueue: false, showLyrics: !state.showLyrics }));
 }

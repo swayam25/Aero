@@ -24,18 +24,18 @@
     });
 </script>
 
-<div class="h-80 w-full rounded-lg bg-slate-900 md:h-full md:w-[30vw]">
+<div in:fade={{ duration: 200 }} class="h-80 w-full rounded-lg bg-slate-900 md:h-full">
     <div class="flex w-full items-center justify-start gap-2 p-5">
-        <Button
-            class="size-8 bg-slate-800 p-2 md:hidden {$store.state === 'unstarted' ? 'pointer-events-none opacity-0' : 'opacity-100'}"
-            size=""
-            onclick={() => ($store.showQueue = false)}
-        >
+        <Button class="size-8 bg-slate-800 p-2 md:hidden" size="" onclick={() => ($store.showQueue = false)}>
             <SolarAltArrowDownLinear class="size-full" />
         </Button>
         <h1 class="text-3xl font-bold md:text-4xl">Queue</h1>
     </div>
-    <ul bind:this={sortable} id="queue" class="flex h-60 list-none flex-col overflow-x-hidden overflow-y-auto px-5 pb-5 md:h-[calc(100vh-232px)]">
+    <ul
+        bind:this={sortable}
+        id="queue"
+        class="flex h-60 list-none flex-col overflow-x-hidden overflow-y-auto px-2 pb-2 md:h-[calc(100vh-232px)] md:px-5 md:pb-5"
+    >
         {#each queue as song, idx}
             <li class="w-full">
                 <button

@@ -1,10 +1,11 @@
 <script lang="ts">
     import { openCtxMenu } from "$lib/ctxmenu";
     import type { UserData } from "$lib/discord/types";
-    import { previous, seekTo, setVolume, skip, store, togglePause, toggleQueue } from "$lib/player";
+    import { previous, seekTo, setVolume, skip, store, toggleLyrics, togglePause, toggleQueue } from "$lib/player";
     import { formatTime } from "$lib/utils/time";
     import { onMount } from "svelte";
     import { fly } from "svelte/transition";
+    import SolarMicrophoneLargeLinear from "~icons/solar/microphone-large-linear";
     import SolarMutedLinear from "~icons/solar/muted-linear";
     import SolarPauseCircleBold from "~icons/solar/pause-circle-bold";
     import SolarPlayCircleBold from "~icons/solar/play-circle-bold";
@@ -195,6 +196,16 @@
             disabled={$store.queue.length < 2}
         >
             <SolarPlaylist2Linear class="size-full" />
+        </button>
+
+        <!-- Lyrics -->
+        <button
+            onclick={toggleLyrics}
+            class="size-5 opacity-80 transition-opacity not-disabled:hover:opacity-100"
+            class:!cursor-not-allowed={!$store.meta}
+            disabled={!$store.meta}
+        >
+            <SolarMicrophoneLargeLinear class="size-full" />
         </button>
 
         <!-- Shuffle -->

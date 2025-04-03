@@ -2,6 +2,7 @@
     import { onNavigate } from "$app/navigation";
     import BottomBar from "$lib/components/BottomBar.svelte";
     import CtxMenu from "$lib/components/CtxMenu.svelte";
+    import Lyrics from "$lib/components/Lyrics.svelte";
     import Navbar from "$lib/components/Navbar.svelte";
     import Player from "$lib/components/Player.svelte";
     import Queue from "$lib/components/Queue.svelte";
@@ -13,7 +14,7 @@
     import { type Snippet } from "svelte";
     import { Toaster } from "svelte-sonner";
     import { expoOut } from "svelte/easing";
-    import { fade, fly } from "svelte/transition";
+    import { fly } from "svelte/transition";
     import "../app.css";
     import type { PageData } from "./$types";
 
@@ -99,7 +100,7 @@
     <div
         id="body"
         class="col-span-3 row-span-1 size-full overflow-x-hidden overflow-y-auto rounded-lg p-2 md:col-span-1 md:bg-slate-900 md:p-5"
-        class:md:!col-span-2={!$store.showQueue}
+        class:md:!col-span-2={!$store.showQueue && !$store.showLyrics}
     >
         <div class="container m-auto size-full">
             {@render children()}
@@ -109,18 +110,19 @@
     <div class="md:hidden">
         <BottomBar user={data.user} />
     </div>
-    {#if $store.showQueue}
+    {#if $store.showQueue || $store.showLyrics}
         <!-- Here "window.innerWidth >= 768" refers to "md" breakpoint -->
-        <div
-            transition:fade={{ duration: window.innerWidth < 768 ? 100 : 0 }}
-            class="fixed bottom-0 z-300 size-full bg-slate-900/50 md:relative md:z-0 md:col-span-1 md:row-span-1 md:block"
-        >
+        <div class="fixed bottom-0 z-300 size-full bg-slate-900/50 md:relative md:z-0 md:col-span-1 md:row-span-1 md:block">
             <div
                 in:fly={{ duration: 500, easing: expoOut, x: window.innerWidth >= 768 ? 100 : 0, y: window.innerWidth < 768 ? 100 : 0 }}
                 out:fly={{ duration: window.innerWidth >= 768 ? 0 : 500, easing: expoOut, x: 0, y: window.innerWidth < 768 ? 100 : 0 }}
                 class="flex size-full items-end justify-center"
             >
-                <Queue user={data.user} />
+                {#if $store.showQueue}
+                    <Queue user={data.user} />
+                {:else if $store.showLyrics}
+                    <Lyrics />
+                {/if}
             </div>
         </div>
     {/if}
