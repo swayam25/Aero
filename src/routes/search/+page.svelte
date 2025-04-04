@@ -67,7 +67,7 @@
                 </div>
             </button>
         </div>
-        <div class="flex w-full flex-initial flex-col items-start justify-center gap-2">
+        <div class="justify flex w-full flex-initial flex-col items-start gap-2">
             <p class="block text-4xl font-bold">Songs</p>
             <div class="flex w-full flex-col items-center justify-between rounded-lg transition-colors duration-200 *:cursor-pointer">
                 {#each songs.slice(1, 6) as song}

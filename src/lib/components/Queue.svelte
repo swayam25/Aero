@@ -3,25 +3,59 @@
     import { openCtxMenu } from "$lib/ctxmenu";
     import type { UserData } from "$lib/discord/types";
     import { play, store } from "$lib/player";
-    import { reorder, useSortable } from "$lib/sortable/index.svelte";
-    import { expoOut } from "svelte/easing";
-    import { fade, fly } from "svelte/transition";
-    import type { SongDetailed } from "ytmusic-api";
+    import { fade } from "svelte/transition";
     import HugeiconsCd from "~icons/hugeicons/cd";
     import SolarAltArrowDownLinear from "~icons/solar/alt-arrow-down-linear";
     import Button from "./ui/Button.svelte";
+    import { draggable, type DragOptions } from "@neodrag/svelte";
+    import { flip } from "svelte/animate";
 
     let { user }: { user: UserData } = $props();
-    let queue: SongDetailed[] = $derived($store.queue);
 
-    let sortable: HTMLElement | null = $state(null);
-    useSortable(() => sortable, {
-        animation: 150,
-        handle: ".song-handle",
-        onEnd(event) {
-            $store.queue = reorder($store.queue, event);
+    let currentDragIndex = $state(0);
+    let translateY = $state(0);
+    let lastOffsetY = $state(0);
+    let dragging = $state(false);
+
+    const options: DragOptions = {
+        axis: "y",
+        bounds: "parent",
+        recomputeBounds: {
+            drag: true
+        },
+        onDragStart({ rootNode, offsetY }) {
+            currentDragIndex = [...rootNode.parentNode!.children].indexOf(rootNode);
+            lastOffsetY = offsetY;
+            translateY = 0;
+            dragging = true;
+        },
+        onDrag({ rootNode, offsetY }) {
+            translateY += offsetY - lastOffsetY;
+            lastOffsetY = offsetY;
+            if (translateY > 0.5 * rootNode.clientHeight && currentDragIndex != $store.queue.length - 1) {
+                shiftItem(rootNode, 1);
+            } else if (translateY < -0.5 * rootNode.clientHeight && currentDragIndex != 0) {
+                shiftItem(rootNode, -1);
+            }
+        },
+        onDragEnd({ rootNode }) {
+            rootNode.style.transform = `translate3d(0,0,0)`;
+            translateY = 0;
+            dragging = false;
+        },
+        transform() {
+            return `translate3d(0,${translateY}px,0)`;
         }
-    });
+    };
+
+    function shiftItem(item: HTMLElement, shift: number) {
+        store.update((s) => {
+            s.queue.splice(currentDragIndex + shift, 0, $store.queue.splice(currentDragIndex, 1)[0]);
+            return { ...s };
+        });
+        currentDragIndex += shift;
+        translateY -= shift * item.offsetHeight;
+    }
 </script>
 
 <div in:fade={{ duration: 200 }} class="w-full rounded-lg bg-slate-900 md:h-full">
@@ -31,19 +65,19 @@
         </Button>
         <h1 class="text-3xl font-bold md:text-4xl">Queue</h1>
     </div>
-    <ul
-        bind:this={sortable}
-        id="queue"
-        class="flex h-[calc(100vh-232px)] list-none flex-col overflow-x-hidden overflow-y-auto px-2 pb-2 md:px-5 md:pb-5"
-    >
-        {#each queue as song, idx}
-            <li class="w-full">
+    <div id="queue" class="h-[calc(100vh-232px)] overflow-x-hidden overflow-y-auto px-2 pb-2 md:px-5 md:pb-5">
+        {#each $store.queue as { id, song }, idx (id)}
+            <div
+                class="w-full"
+                animate:flip={{
+                    duration: idx === currentDragIndex + 1 || idx === currentDragIndex - 1 || !dragging ? 250 : 0
+                }}
+                use:draggable={options}
+            >
                 <button
                     onclick={async () => {
                         await play(song, true);
                     }}
-                    in:fly={{ duration: 500, easing: expoOut, x: -100, y: 0 }}
-                    out:fly={{ duration: 500, easing: expoOut, x: 100, y: 0 }}
                     oncontextmenu={(e) => {
                         e.preventDefault();
                         openCtxMenu(e, user?.id, song, null, "queue");
@@ -65,7 +99,7 @@
                         <MarqueeText class="w-10 text-sm text-slate-400" text={song.artist.name} />
                     </div>
                 </button>
-            </li>
+            </div>
         {/each}
-    </ul>
+    </div>
 </div>

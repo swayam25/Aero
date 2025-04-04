@@ -11,6 +11,9 @@ importers:
       '@iconify/json':
         specifier: ^2.2.319
         version: 2.2.319
+      '@neodrag/svelte':
+        specifier: ^2.3.2
+        version: 2.3.2(svelte@5.25.2)
       '@types/sortablejs':
         specifier: ^1.15.8
         version: 1.15.8
@@ -637,6 +640,11 @@ packages:
 
   '@jridgewell/trace-mapping@0.3.25':
     resolution: {integrity: sha512-vNk6aEwybGtawWmy/PzwnGDOjCkLWSD2wqvjGGAgOAwCGWySYXfYoxt00IJkTF+8Lb57DwOb3Aa0o9CApepiYQ==}
+
+  '@neodrag/svelte@2.3.2':
+    resolution: {integrity: sha512-1aPgnv2LqikkPEoTVgCPCqtXUXOD7OjCHLAIssTv0hkmyHLG9i697Cu+Tzco4/Q4KgOQXCDnLsa4Fvya5wXP9g==}
+    peerDependencies:
+      svelte: ^3.0.0 || ^4.0.0 || ^5.0.0
 
   '@neondatabase/serverless@0.10.4':
     resolution: {integrity: sha512-2nZuh3VUO9voBauuh+IGYRhGU/MskWHt1IuZvHcJw6GLjDgtqj/KViKo7SIrLdGLdot7vFbiRRw+BgEy3wT9HA==}
@@ -2236,6 +2244,10 @@ snapshots:
     dependencies:
       '@jridgewell/resolve-uri': 3.1.2
       '@jridgewell/sourcemap-codec': 1.5.0
+
+  '@neodrag/svelte@2.3.2(svelte@5.25.2)':
+    dependencies:
+      svelte: 5.25.2
 
   '@neondatabase/serverless@0.10.4':
     dependencies:

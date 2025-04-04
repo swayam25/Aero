@@ -54,6 +54,7 @@
     },
     "dependencies": {
         "@iconify/json": "^2.2.319",
+        "@neodrag/svelte": "^2.3.2",
         "@types/sortablejs": "^1.15.8",
         "clsx": "^2.1.1",
         "sortablejs": "^1.15.6",

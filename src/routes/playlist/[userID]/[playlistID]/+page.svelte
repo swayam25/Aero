@@ -5,7 +5,6 @@
     import Tooltip from "$lib/components/ui/Tooltip.svelte";
     import { openCtxMenu } from "$lib/ctxmenu";
     import { playPlaylist, store } from "$lib/player";
-    import { reorder, useSortable } from "$lib/sortable/index.svelte";
     import { supabase } from "$lib/supabase";
     import { formatTime } from "$lib/utils/time";
     import { onDestroy } from "svelte";
@@ -16,42 +15,69 @@
     import HugeiconsCd from "~icons/hugeicons/cd";
     import SolarConfoundedCircleLinear from "~icons/solar/confounded-circle-linear";
     import type { PageData } from "./$types";
+    import { draggable, type DragOptions } from "@neodrag/svelte";
 
     let { data }: { data: PageData } = $props();
     let isPublic: boolean = $derived(data.playlist.isPublic);
     let enableToggleBtn: boolean = $state(true);
     let playlistSongs: Promise<SongFull>[] = $derived(data.playlistSongs);
     let songDetailed: SongDetailed[] = $state([]);
+
+    let playlistObject: { id: number; song: Promise<SongFull> }[] = $state([]);
+
+    let currentDragIndex = $state(0);
+    let translateY = $state(0);
+    let lastOffsetY = $state(0);
+    let dragging = $state(false);
+
+    const options: DragOptions = {
+        axis: "y",
+        bounds: "parent",
+        recomputeBounds: {
+            drag: true
+        },
+        onDragStart({ rootNode, offsetY }) {
+            currentDragIndex = [...rootNode.parentNode!.children].indexOf(rootNode);
+            lastOffsetY = offsetY;
+            translateY = 0;
+            dragging = true;
+        },
+        onDrag({ rootNode, offsetY }) {
+            translateY += offsetY - lastOffsetY;
+            lastOffsetY = offsetY;
+            if (translateY > 0.5 * rootNode.clientHeight && currentDragIndex != playlistObject.length - 1) {
+                shiftItem(rootNode, 1);
+            } else if (translateY < -0.5 * rootNode.clientHeight && currentDragIndex != 0) {
+                shiftItem(rootNode, -1);
+            }
+        },
+        onDragEnd({ rootNode }) {
+            rootNode.style.transform = `translate3d(0,0,0)`;
+            translateY = 0;
+            dragging = false;
+        },
+        transform() {
+            return `translate3d(0,${translateY}px,0)`;
+        }
+    };
+
+    function shiftItem(item: HTMLElement, shift: number) {
+        playlistObject.splice(currentDragIndex + shift, 0, playlistObject.splice(currentDragIndex, 1)[0]);
+
+        currentDragIndex += shift;
+        translateY -= shift * item.offsetHeight;
+    }
+
     $effect(() => {
         (async () => {
             const songs = await Promise.all(playlistSongs);
             songDetailed = songs.map((song) => fetchSongDetailed(song));
-        })();
-    });
 
-    // Sortable
-    let sortable: HTMLElement | null = $state(null);
-    useSortable(() => sortable, {
-        animation: 150,
-        handle: ".pl-song-handle",
-        onEnd(event) {
-            songDetailed = reorder(songDetailed, event);
-            (async () => {
-                const resp = await fetch(`/api/playlist/${data.playlist.id}`, {
-                    method: "POST",
-                    body: JSON.stringify({
-                        key: "reorder",
-                        value: { playlistID: data.playlist.id, songIDs: $state.snapshot(songDetailed.map((s) => s.videoId)) }
-                    }),
-                    headers: { "Content-Type": "application/json" }
-                });
-                if (resp.ok) {
-                    toast.success("Playlist order synced");
-                } else {
-                    toast.error("Failed to sync playlist order");
-                }
-            })();
-        }
+            playlistObject = playlistSongs.map((item, index) => ({
+                id: index,
+                song: item
+            }));
+        })();
     });
 
     // Sync playlist data with db
@@ -179,11 +205,7 @@
     </div>
 </div>
 
-<ul
-    bind:this={sortable}
-    class="mt-2 flex list-none flex-col items-start justify-center gap-2 py-2 md:mt-5 md:py-5"
-    class:!mt-20={playlistSongs.length <= 0}
->
+<ul class="mt-2 flex list-none flex-col items-start justify-center gap-2 py-2 md:mt-5 md:py-5" class:!mt-20={playlistSongs.length <= 0}>
     {#if playlistSongs.length <= 0}
         <div in:fade={{ duration: 100 }} class="flex size-full items-center justify-center">
             <div in:fade={{ duration: 100 }} class="flex flex-col items-center justify-center gap-2">
@@ -192,7 +214,7 @@
             </div>
         </div>
     {:else}
-        {#each playlistSongs as song, idx}
+        {#each playlistObject as { id, song }, idx (id)}
             {#await song}
                 <div
                     in:fade={{ duration: 100 }}
@@ -208,7 +230,7 @@
                     </div>
                 </div>
             {:then song}
-                <li class="w-full">
+                <li class="w-full" use:draggable={options}>
                     <button
                         onclick={async () => {
                             await playPlaylist(fetchSongDetailed(song), songDetailed);
