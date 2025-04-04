@@ -142,7 +142,7 @@ export async function removeFromQueue(song: SongDetailed) {
         state.queue = state.queue.filter((queuedItem) => queuedItem.song.videoId !== song.videoId);
         return state;
     });
-    if (get(store).queue.length < 2) store.update((state) => ({ ...state, showQueue: false }));
+    if (get(store).queue.length < 2) store.update((state) => ({ ...state, shuffle: false, showQueue: false }));
 }
 
 export async function togglePause() {
@@ -206,7 +206,9 @@ export async function skip() {
             let next; // Next video ID
             if (get(store).shuffle) {
                 // Shuffle queue if enabled
-                next = queue[Math.floor(Math.random() * queue.length)];
+                do {
+                    next = queue[Math.floor(Math.random() * queue.length)];
+                } while (next.videoId === currentID);
             } else {
                 // Otherwise, play next video in queue
                 next = queue[currentIndex + 1] || queue[0];
@@ -225,7 +227,7 @@ export async function skip() {
             player.playVideo();
         }
     }
-    if (get(store).queue.length < 2) store.update((state) => ({ ...state, showQueue: false }));
+    if (get(store).queue.length < 2) store.update((state) => ({ ...state, shuffle: false, showQueue: false }));
     await fetchLyrics();
 }
 
