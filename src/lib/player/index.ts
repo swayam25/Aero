@@ -106,8 +106,16 @@ export async function playPlaylist(song: SongDetailed, songs: SongDetailed[]) {
     console.log(reorderedPlaylist);
 
     // Update the queue with the reordered playlist
-    store.update((state) => ({ ...state, queue: reorderedPlaylist }));
+    store.update((state) => ({
+        ...state,
+        queue: reorderedPlaylist.map((item, index) => ({
+            id: index,
+            song: item
+        }))
+    }));
 }
+
+let nextId = 1;
 
 export async function addToQueue(song: SongDetailed) {
     const player = get(store).player;
@@ -115,10 +123,13 @@ export async function addToQueue(song: SongDetailed) {
 
     store.update((state) => {
         // Filter out the song if already in the queue
-        state.queue = state.queue.filter((queuedSong) => queuedSong.videoId !== song.videoId);
+        state.queue = state.queue.filter((queuedSong) => queuedSong.song.videoId !== song.videoId);
 
         // Add the song at the end of the queue
-        state.queue.push(song);
+        state.queue.push({
+            id: nextId++,
+            song: song
+        });
         return state;
     });
 }
@@ -128,10 +139,10 @@ export async function removeFromQueue(song: SongDetailed) {
     if (!player) return { error: "No player instance" };
 
     store.update((state) => {
-        state.queue = state.queue.filter((queuedSong) => queuedSong.videoId !== song.videoId);
+        state.queue = state.queue.filter((queuedItem) => queuedItem.song.videoId !== song.videoId);
         return state;
     });
-    if (get(store).queue.length < 2) store.update((state) => ({ ...state, showQueue: false }));
+    if (get(store).queue.length < 2) store.update((state) => ({ ...state, shuffle: false, showQueue: false }));
 }
 
 export async function togglePause() {
@@ -160,7 +171,7 @@ export async function previous() {
         const queue = get(store).queue;
         const currentID = get(store).meta?.videoId; // Current video ID
         if (currentID) {
-            const currentIndex = queue.findIndex((song) => song.videoId === currentID); // Current video index
+            const currentIndex = queue.findIndex((item) => item.song.videoId === currentID); // Current video index
             let prev; // Previous video ID
             if (get(store).shuffle) {
                 // Shuffle queue if enabled
@@ -170,10 +181,10 @@ export async function previous() {
                 prev = queue[currentIndex - 1] || queue[queue.length - 1];
             }
             store.update((state) => {
-                state.meta = state.queue.find((song) => song.videoId === prev.videoId) || null;
+                state.meta = state.queue.find((item) => item.song.videoId === prev.song.videoId)?.song || null;
                 return state;
             });
-            player.loadVideoById(prev);
+            player.loadVideoById(prev.song.videoId);
             player.playVideo();
         }
     }
@@ -191,30 +202,32 @@ export async function skip() {
         const queue = get(store).queue;
         const currentID = get(store).meta?.videoId; // Current video ID
         if (currentID) {
-            const currentIndex = queue.findIndex((song) => song.videoId === currentID); // Current video index
+            const currentIndex = queue.findIndex((item) => item.song.videoId === currentID); // Current video index
             let next; // Next video ID
             if (get(store).shuffle) {
                 // Shuffle queue if enabled
-                next = queue[Math.floor(Math.random() * queue.length)];
+                do {
+                    next = queue[Math.floor(Math.random() * queue.length)];
+                } while (next.videoId === currentID);
             } else {
                 // Otherwise, play next video in queue
                 next = queue[currentIndex + 1] || queue[0];
             }
             store.update((state) => {
-                state.meta = state.queue.find((song) => song.videoId === next.videoId) || null;
+                state.meta = state.queue.find((item) => item.song.videoId === next.song.videoId)?.song || null;
                 return state;
             });
             if (get(store).loop !== "queue") {
                 store.update((state) => {
-                    state.queue = state.queue.filter((song) => song.videoId !== currentID);
+                    state.queue = state.queue.filter((item) => item.song.videoId !== currentID);
                     return state;
                 });
             }
-            player.loadVideoById(next);
+            player.loadVideoById(next.song.videoId);
             player.playVideo();
         }
     }
-    if (get(store).queue.length < 2) store.update((state) => ({ ...state, showQueue: false }));
+    if (get(store).queue.length < 2) store.update((state) => ({ ...state, shuffle: false, showQueue: false }));
     await fetchLyrics();
 }
 
