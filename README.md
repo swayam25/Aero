@@ -54,14 +54,15 @@ Aero makes listening to music feel light and breezy
 
 1. Follow steps 1-4 from the [installation](#-installing) section.
 
-2. Build docker image
-    ```sh
-    docker build -t aero .
+2. Change `ORIGIN` in [`docker-compose.yml`](./docker-compose.yml) to your domain name.
+    ```yml
+    environment:
+      - ORIGIN=http://your-domain.com
     ```
 
-3. Run docker container
+3. Run docker container (*via `docker compose`*)
     ```sh
-    docker run --name aero -d -p 3000:3000 -e ORIGIN="http://localhost:3000" aero
+    docker compose up -d
     ```
 
 ## ❤️ Contributing

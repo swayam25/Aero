@@ -1,0 +1,15 @@
+name: aero
+
+services:
+  app:
+    build: .
+    container_name: "aero"
+    restart: unless-stopped
+    tty: true
+    env_file: ".env"
+    environment:
+      - ORIGIN=http://localhost:3000 # Change this to your desired origin
+    expose:
+      - 3000
+    ports:
+      - "3000:3000"
