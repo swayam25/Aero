@@ -3,12 +3,12 @@
     import { openCtxMenu } from "$lib/ctxmenu";
     import type { UserData } from "$lib/discord/types";
     import { play, store } from "$lib/player";
+    import { draggable, type DragOptions } from "@neodrag/svelte";
+    import { flip } from "svelte/animate";
     import { fade } from "svelte/transition";
     import HugeiconsCd from "~icons/hugeicons/cd";
     import SolarAltArrowDownLinear from "~icons/solar/alt-arrow-down-linear";
     import Button from "./ui/Button.svelte";
-    import { draggable, type DragOptions } from "@neodrag/svelte";
-    import { flip } from "svelte/animate";
 
     let { user }: { user: UserData } = $props();
 
@@ -67,7 +67,7 @@
     </div>
 
     <div id="queue" class="h-[calc(100vh-232px)] overflow-x-hidden overflow-y-auto px-2 pb-2 md:px-5 md:pb-5">
-        {#each $store.queue as { id, song }, idx (id)}
+        {#each $store.queue as song, idx (song.videoId)}
             <div
                 class="w-full"
                 animate:flip={{

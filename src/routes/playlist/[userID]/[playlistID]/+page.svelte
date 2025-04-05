@@ -4,25 +4,23 @@
     import Switch from "$lib/components/ui/Switch.svelte";
     import Tooltip from "$lib/components/ui/Tooltip.svelte";
     import { openCtxMenu } from "$lib/ctxmenu";
-    import { playPlaylist, store } from "$lib/player";
+    import { fetchSongDetailed, playPlaylist, store } from "$lib/player";
     import { supabase } from "$lib/supabase";
     import { formatTime } from "$lib/utils/time";
+    import { draggable, type DragOptions } from "@neodrag/svelte";
     import { onDestroy } from "svelte";
     import { toast } from "svelte-sonner";
     import { expoOut } from "svelte/easing";
     import { fade, fly } from "svelte/transition";
-    import type { SongDetailed, SongFull } from "ytmusic-api";
+    import type { SongFull } from "ytmusic-api";
     import HugeiconsCd from "~icons/hugeicons/cd";
     import SolarConfoundedCircleLinear from "~icons/solar/confounded-circle-linear";
     import type { PageData } from "./$types";
-    import { draggable, type DragOptions } from "@neodrag/svelte";
 
     let { data }: { data: PageData } = $props();
     let isPublic: boolean = $derived(data.playlist.isPublic);
     let enableToggleBtn: boolean = $state(true);
     let playlistSongs: Promise<SongFull>[] = $derived(data.playlistSongs);
-    let songDetailed: SongDetailed[] = $state([]);
-
     let playlistObject: { id: number; song: Promise<SongFull> }[] = $state([]);
 
     let currentDragIndex = $state(0);
@@ -69,15 +67,10 @@
     }
 
     $effect(() => {
-        (async () => {
-            const songs = await Promise.all(playlistSongs);
-            songDetailed = songs.map((song) => fetchSongDetailed(song));
-
-            playlistObject = playlistSongs.map((item, index) => ({
-                id: index,
-                song: item
-            }));
-        })();
+        playlistObject = playlistSongs.map((item, index) => ({
+            id: index,
+            song: item
+        }));
     });
 
     // Sync playlist data with db
@@ -97,20 +90,6 @@
     onDestroy(() => {
         channel.unsubscribe();
     });
-
-    // Convert SongFull to SongDetailed
-    // This is a workaround to avoid type errors
-    function fetchSongDetailed(song: SongFull): SongDetailed {
-        return {
-            type: song.type,
-            name: song.name,
-            videoId: song.videoId,
-            artist: song.artist,
-            album: { name: "", albumId: "" },
-            duration: song.duration,
-            thumbnails: song.thumbnails
-        };
-    }
 
     async function togglePlaylistView() {
         enableToggleBtn = false;
@@ -233,7 +212,10 @@
                 <li class="w-full" use:draggable={options}>
                     <button
                         onclick={async () => {
-                            await playPlaylist(fetchSongDetailed(song), songDetailed);
+                            await playPlaylist(
+                                fetchSongDetailed(song),
+                                playlistObject.map((item) => item.song)
+                            );
                         }}
                         in:fly={{ duration: 500, easing: expoOut, x: -100, y: 0 }}
                         out:fly={{ duration: 500, easing: expoOut, x: 100, y: 0 }}
