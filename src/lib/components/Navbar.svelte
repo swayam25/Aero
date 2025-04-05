@@ -30,7 +30,7 @@
             if (searchTimeout) clearTimeout(searchTimeout);
             searchTimeout = setTimeout(() => {
                 if (inputValue) goto("/search?q=" + inputValue, { keepFocus: true });
-            }, 100);
+            }, 500);
         });
     });
 </script>
