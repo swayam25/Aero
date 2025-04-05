@@ -28,6 +28,8 @@
     let lastOffsetY = $state(0);
     let dragging = $state(false);
 
+    let plSyncTimeout: NodeJS.Timeout | null = $state(null);
+
     const options: DragOptions = {
         axis: "y",
         bounds: "parent",
@@ -49,10 +51,41 @@
                 shiftItem(rootNode, -1);
             }
         },
-        onDragEnd({ rootNode }) {
+        async onDragEnd({ rootNode }) {
             rootNode.style.transform = `translate3d(0,0,0)`;
             translateY = 0;
             dragging = false;
+            if (plSyncTimeout) {
+                clearTimeout(plSyncTimeout);
+            }
+            plSyncTimeout = setTimeout(async () => {
+                toast.promise(
+                    async () => {
+                        const resp = await fetch(`/api/playlist/${data.playlist.id}`, {
+                            method: "POST",
+                            body: JSON.stringify({
+                                key: "reorder",
+                                value: {
+                                    playlistID: data.playlist.id,
+                                    songIDs: (await Promise.all(playlistObject.map((item) => item.song))).map((item) => item.videoId)
+                                }
+                            }),
+                            headers: { "Content-Type": "application/json" }
+                        });
+                        if (!resp.ok) {
+                            const respData = await resp.json();
+                            throw new Error(respData.error);
+                        }
+                    },
+                    {
+                        loading: "Syncing playlist...",
+                        success: "Playlist synced successfully",
+                        error: (e) => {
+                            return `${e}`;
+                        }
+                    }
+                );
+            }, 500);
         },
         transform() {
             return `translate3d(0,${translateY}px,0)`;
