@@ -208,7 +208,7 @@ export async function skip() {
                 // Shuffle queue if enabled
                 do {
                     next = queue[Math.floor(Math.random() * queue.length)];
-                } while (next.videoId === currentID);
+                } while (next.song.videoId === currentID);
             } else {
                 // Otherwise, play next video in queue
                 next = queue[currentIndex + 1] || queue[0];

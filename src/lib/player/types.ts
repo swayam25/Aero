@@ -1,6 +1,10 @@
-import type { PlayerQueue } from "$lib/queue/types";
 import YouTubePlayer from "youtube-player";
 import type { SongDetailed } from "ytmusic-api";
+
+export type PlayerQueue = {
+    id: number;
+    song: SongDetailed;
+}[];
 
 export interface PlayerStore {
     player: ReturnType<typeof YouTubePlayer> | null;
