@@ -6,7 +6,7 @@ Aero makes listening to music feel light and breezy
 
 </div>
 
-## 🚩 Installing
+## 🚩 Installation
 
 1. Clone this repository
     ```sh
