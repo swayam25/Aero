@@ -85,7 +85,7 @@
                         }
                     }
                 );
-            }, 500);
+            }, 1000);
         },
         transform() {
             return `translate3d(0,${translateY}px,0)`;
