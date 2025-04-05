@@ -25,15 +25,13 @@ export function openCtxMenu(
 }
 
 export function closeCtxMenu() {
-    store.set({
+    store.update((state) => ({
+        ...state,
         isOpen: false,
         showPlaylistMenu: false,
         x: 0,
         y: 0,
         type: "song",
-        song: null,
-        playlistData: null,
-        loginUserID: null,
         accessedUserID: null
-    });
+    }));
 }

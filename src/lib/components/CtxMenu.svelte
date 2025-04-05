@@ -228,6 +228,7 @@
                             if (!resp.ok) toast.error(plData.error);
                             else if (plData.isPublic) {
                                 const playlistURL = `${window.location.origin}/playlist/${$store.loginUserID}/${$store.playlistData?.id}`;
+                                console.log(playlistURL);
                                 navigator.clipboard.writeText(playlistURL);
                                 toast.success("Copied Playlist URL to clipboard");
                             } else {
