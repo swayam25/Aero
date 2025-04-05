@@ -8,7 +8,7 @@ export const userTable = pgTable("user", {
 });
 
 export const playlistTable = pgTable("playlist", {
-    id: uuid("id").defaultRandom().primaryKey(),
+    id: uuid("id").defaultRandom().unique().primaryKey(),
     userID: text("user_id")
         .notNull()
         .references(() => userTable.userID, { onDelete: "cascade" }),
