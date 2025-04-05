@@ -57,8 +57,11 @@ Aero makes listening to music feel light and breezy
 2. Change `ORIGIN` in [`docker-compose.yml`](./docker-compose.yml) to your domain name.
     ```yml
     environment:
-      - ORIGIN=http://your-domain.com
+      - ORIGIN=https://your-domain.com
     ```
+
+> [!IMPORTANT]
+> Make sure to add the Redirect URL in the Discord Developer Portal as well. (See step 5 in the [installation](#-installing) section)
 
 3. Run docker container (*via `docker compose`*)
     ```sh
