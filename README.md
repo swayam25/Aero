@@ -111,4 +111,4 @@ Aero makes listening to music feel light and breezy
     - Card/Container Background Color: `slate-900` (*For cards add `border-slate-700`*)
     - For other colors use `<color>-500` as text color and `<color>-500/10` as background color on hover (*make sure to have bg color as `slate-800`/`slate-900`/`slate-950` before hover*).
     - Border radius: `rounded-lg` (*For every possible card/container*)
-    - For buttons and links, we strictly use the [`<Button />`](./src/lib/components/Button.svelte) component.
+    - For buttons and links, we strictly use the [`<Button />`](./src/lib/components/ui/Button.svelte) component.
