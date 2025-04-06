@@ -61,8 +61,8 @@ Aero makes listening to music feel light and breezy
 10. Navigate to **Table Editor** in Supabase Dashboard and enable **Realtime** for `playlist` table.
     ![Playlist Realtime](./assets/playlist_realtime.png)
 
-    > [!IMPORTANT]
-    > Check the [Supabase Docs](https://supabase.com/docs/guides/realtime/postgres-changes) for more information on enabling Realtime.
+> [!IMPORTANT]
+> Check the [Supabase Docs](https://supabase.com/docs/guides/realtime/postgres-changes) for more information on enabling Realtime.
 
 11. Start the app
     ```sh
@@ -79,8 +79,8 @@ Aero makes listening to music feel light and breezy
       - ORIGIN=https://your-domain.com
     ```
 
-    > [!IMPORTANT]
-    > Make sure to add the Redirect URL in the Discord Developer Portal as well. (See step 5 in the [installation](#-installation) section)
+> [!IMPORTANT]
+> Make sure to add the Redirect URL in the Discord Developer Portal as well. (See step 5 in the [installation](#-installation) section)
 
 3. Run docker container (*via `docker compose`*)
     ```sh
