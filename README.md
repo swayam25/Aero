@@ -45,14 +45,30 @@ Aero makes listening to music feel light and breezy
 5. Add redirect url at the Discord Developer Portal.
     ![Discord Developer Portal](./assets/redirect_url.png)
 
-6. Start the app
+6. Push the database schema to Supabase.
+    ```sh
+    pnpm run db:push
+    ```
+
+7. Navigate to **Table Editor** in Supabase Dashboard and enable **RLS** for all the tables.
+
+8. Navigate to **Authentication** > **Policies** in Supabase Dashboard and create policies for all the tables.
+    ![Policies](./assets/policies.png)
+
+9.  Navigate to **Database** > **Publications** in Supabase Dashboard. Then click on `supabase_realtime` and enable the `playlist` table.
+    ![Realtime Publication](./assets/realtime_publication.png)
+
+10. Navigate to **Table Editor** in Supabase Dashboard and enable **Realtime** for `playlist` table.
+    ![Playlist Realtime](./assets/playlist_realtime.png)
+
+11. Start the app
     ```sh
     pnpm run dev
     ```
 
 ## 🚀 Production
 
-1. Follow steps 1-4 from the [installation](#-installing) section.
+1. Follow steps 1-10 from the [installation](#-installation) section.
 
 2. Change `ORIGIN` in [`docker-compose.yml`](./docker-compose.yml) to your domain name.
     ```yml
@@ -61,7 +77,7 @@ Aero makes listening to music feel light and breezy
     ```
 
 > [!IMPORTANT]
-> Make sure to add the Redirect URL in the Discord Developer Portal as well. (See step 5 in the [installation](#-installing) section)
+> Make sure to add the Redirect URL in the Discord Developer Portal as well. (See step 5 in the [installation](#-installation) section)
 
 3. Run docker container (*via `docker compose`*)
     ```sh
@@ -91,5 +107,5 @@ Aero makes listening to music feel light and breezy
     - Tertiary Background Color: `slate-800` (*For cards/options on hover*)
     - Card/Container Background Color: `slate-900` (*For cards add `border-slate-700`*)
     - For other colors use `<color>-500` as text color and `<color>-500/10` as background color on hover (*make sure to have bg color as `slate-800`/`slate-900`/`slate-950` before hover*).
-    - Rounded Corners: `rounded-lg` (*For every possible card/container*)
+    - Border radius: `rounded-lg` (*For every possible card/container*)
     - For buttons and links, we strictly use the [`<Button />`](./src/lib/components/Button.svelte) component.
