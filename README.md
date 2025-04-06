@@ -84,8 +84,7 @@ Aero makes listening to music feel light and breezy
 >
 > Check the [SvelteKit Docs](https://svelte.dev/docs/kit/adapter-node#Environment-variables) for more information.
 
-
-1. Run docker container (*via `docker compose`*)
+3. Run docker container (*via `docker compose`*)
     ```sh
     docker compose up -d
     ```
