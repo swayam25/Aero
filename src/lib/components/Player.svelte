@@ -54,6 +54,17 @@
         if (localStorage) {
             volume = localStorage.getItem("volume") ? Number(localStorage.getItem("volume")) : 100;
         }
+        document.addEventListener("keydown", (e: KeyboardEvent) => {
+            if (document.activeElement && document.activeElement.tagName.toLowerCase() === "input") {
+                return;
+            }
+            if ($store.meta) {
+                if (e.key === " " || e.key === "k") {
+                    e.preventDefault();
+                    togglePause();
+                }
+            }
+        });
     });
 </script>
 

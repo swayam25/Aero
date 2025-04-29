@@ -13,13 +13,13 @@
     let searchTimeout: NodeJS.Timeout | null = $state(null);
 
     onMount(() => {
-        document.addEventListener("keydown", (e) => {
+        document.addEventListener("keydown", (e: KeyboardEvent) => {
             if (e.key === "/" && document.activeElement !== input) {
                 e.preventDefault();
                 input?.focus();
             }
         });
-        input?.addEventListener("keydown", (e) => {
+        input?.addEventListener("keydown", (e: KeyboardEvent) => {
             if (e.key === "Escape") {
                 input?.blur();
             }
