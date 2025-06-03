@@ -33,7 +33,7 @@
     }
 </script>
 
-<div>
+<div class="flex items-center justify-center">
     {#if user}
         <Popover side="bottom">
             {#snippet trigger()}
