@@ -199,13 +199,13 @@
                         <img
                             src={`https://cdn.discordapp.com/avatars/${data.user?.id}/${data.user?.avatar}?size=4096`}
                             alt="{data.user?.global_name}'s Avatar"
-                            class="size-6 rounded-full bg-slate-800"
+                            class="rounded-full bg-slate-800"
                         />
                         {#if data.user?.avatar_decoration_data?.asset}
                             <img
                                 src={`https://cdn.discordapp.com/avatar-decoration-presets/${data.user?.avatar_decoration_data?.asset}.webp`}
                                 alt="Avatar Decoration"
-                                class="absolute size-8"
+                                class="absolute"
                                 bind:this={userDecorElement}
                             />
                         {/if}

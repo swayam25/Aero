@@ -38,16 +38,12 @@
         <Popover side="bottom">
             {#snippet trigger()}
                 <div class="relative flex size-10 cursor-pointer items-center justify-center md:size-12">
-                    <img
-                        src={`https://cdn.discordapp.com/avatars/${user?.id}/${user?.avatar}`}
-                        alt="User Avatar"
-                        class="size-8 rounded-full md:size-10"
-                    />
+                    <img src={`https://cdn.discordapp.com/avatars/${user?.id}/${user?.avatar}`} alt="User Avatar" class="size-full rounded-full" />
                     {#if user?.avatar_decoration_data?.asset}
                         <img
                             src={`https://cdn.discordapp.com/avatar-decoration-presets/${user?.avatar_decoration_data?.asset}.webp`}
                             alt="Avatar Decoration"
-                            class="absolute size-10 rounded-full md:size-12"
+                            class="absolute size-full rounded-full"
                             onmouseenter={(e) => {
                                 const img = e.target as HTMLImageElement;
                                 img.src = img.src.includes(".webp") ? img.src.replace(".webp", "") : `${img.src}.webp`;

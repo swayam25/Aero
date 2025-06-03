@@ -27,19 +27,21 @@
             ></div>
         {/if}
     </div>
-    <div class="relative -mt-12 ml-10 flex w-full items-center justify-start gap-4">
-        <img
-            src={`https://cdn.discordapp.com/avatars/${data.user?.id}/${data.user?.avatar}?size=4096`}
-            alt="User Avatar"
-            class="size-25 rounded-full border-8 border-slate-950 bg-slate-950 md:size-30 md:border-slate-900 md:bg-slate-900"
-        />
-        {#if data.user?.avatar_decoration_data?.asset}
+    <div class="-mt-12 ml-10 flex w-full items-center justify-start gap-4">
+        <div class="relative flex size-25 shrink-0 items-center justify-center md:size-30">
             <img
-                src={`https://cdn.discordapp.com/avatar-decoration-presets/${data.user?.avatar_decoration_data?.asset}`}
-                alt="Avatar Decoration"
-                class="absolute size-27 rounded-full md:size-30"
+                src={`https://cdn.discordapp.com/avatars/${data.user?.id}/${data.user?.avatar}?size=4096`}
+                alt="User Avatar"
+                class="rounded-full border-8 border-slate-950 bg-slate-950 md:border-slate-900 md:bg-slate-900"
             />
-        {/if}
+            {#if data.user?.avatar_decoration_data?.asset}
+                <img
+                    src={`https://cdn.discordapp.com/avatar-decoration-presets/${data.user?.avatar_decoration_data?.asset}`}
+                    alt="Avatar Decoration"
+                    class="absolute rounded-full"
+                />
+            {/if}
+        </div>
         <div class="mt-14 flex flex-col items-start justify-center">
             <div class="flex items-center justify-center gap-1">
                 <p class="text-3xl font-bold md:text-4xl">{data.user?.global_name || data.user?.username}</p>
