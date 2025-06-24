@@ -39,7 +39,10 @@ Aero makes listening to music feel light and breezy
         ![Client Info](./assets/client_info.png)
     - Get `DISCORD_BOT_TOKEN` from the Discord Developer Portal.
         ![Bot Token](./assets/bot_token.png)
-
+    - Set `DOMAIN` to your domain name or `https://localhost` for local development. The variable is required for production.
+        ```env
+        DOMAIN="https://your-domain.com"
+        ```
     </details>
 
 5. Add redirect url at the Discord Developer Portal.
@@ -73,18 +76,20 @@ Aero makes listening to music feel light and breezy
 
 1. Follow steps 1-10 from the [installation](#-installation) section.
 
-2. Change `ORIGIN` in [`docker-compose.yml`](./docker-compose.yml) to your domain name.
-    ```yml
-    environment:
-      - ORIGIN=https://your-domain.com
+2. Change `DOMAIN` in `.env` file to your domain name.
+    ```env
+    DOMAIN="https://your-domain.com"
     ```
 
 > [!IMPORTANT]
-> `ORIGIN` is the URL you will use to access the app. If running behind a reverse proxy, set it to the URL of the reverse proxy (e.g., `https://your-domain.com`). For local development, use `http://localhost:3000` or your local server's IP address (e.g., `http://192.XXX.X.XX:3000`). Ensure this matches the Redirect URL in the Discord Developer Portal (*see step 5 in the [installation](#-installation) section*).
+> `DOMAIN` is the URL you will use to access the app.
+> This dynamically sets `ORIGIN` during `node build` and configure the Caddy server's domain (*for the reverse proxy*).
+> For local development, you can set it to `https://localhost`.
+> Ensure this matches the Redirect URL in the Discord Developer Portal (*see step 5 in the [installation](#-installation) section*).
 >
-> Check the [SvelteKit Docs](https://svelte.dev/docs/kit/adapter-node#Environment-variables) for more information.
+> Check the [SvelteKit Docs](https://svelte.dev/docs/kit/adapter-node#Environment-variables) for more information about the `ORIGIN` variable.
 
-3. Run docker container (*via `docker compose`*)
+1. Run docker container (*via `docker compose`*)
     ```sh
     docker compose up -d
     ```
