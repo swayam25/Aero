@@ -1,4 +1,4 @@
-import { eq } from "drizzle-orm";
+import { and, eq } from "drizzle-orm";
 import type { PostgresJsDatabase } from "drizzle-orm/postgres-js";
 import type postgres from "postgres";
 import * as schema from "./schema";
@@ -40,12 +40,12 @@ export async function getPlaylists(db: DB, userID: string) {
 }
 
 export async function getPublicPlaylists(db: DB, userID: string) {
-    return db.query.playlistTable.findMany({ where: eq(schema.playlistTable.userID, userID) && eq(schema.playlistTable.isPublic, true) });
+    return db.query.playlistTable.findMany({ where: and(eq(schema.playlistTable.userID, userID), eq(schema.playlistTable.isPublic, true)) });
 }
 
 export async function checkPlaylist(db: DB, userID: string, playlistID: string) {
     return db.query.playlistTable.findFirst({
-        where: (fields) => eq(fields.userID, userID) && eq(fields.id, playlistID)
+        where: (fields) => and(eq(fields.userID, userID), eq(fields.id, playlistID))
     });
 }
 
