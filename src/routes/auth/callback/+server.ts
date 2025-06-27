@@ -60,19 +60,36 @@ export const GET: RequestHandler = async ({ fetch, url, cookies, locals }) => {
                     await addUser(locals.db, userData.id);
                 }
 
-                return new Response("Returning to homepage", {
-                    status: 302,
-                    headers: {
-                        Location: "/"
+                return new Response(
+                    `
+                    <!DOCTYPE html>
+                    <html>
+                    <head><title>Login Successful</title></head>
+                    <body>
+                        <script>
+                            if (window.opener) {
+                                window.opener.postMessage({ type: 'LOGIN_SUCCESS' }, window.location.origin);
+                                window.close();
+                            } else {
+                                window.location.href = '/';
+                            }
+                        </script>
+                        <p>Login successful! This window will close automatically...</p>
+                    </body>
+                    </html>
+                    `,
+                    {
+                        headers: { "Content-Type": "text/html" }
                     }
-                });
+                );
             } else {
                 error(500, "Failed to get user data");
             }
         } else {
             error(resp.status, await resp.text());
         }
-    } catch {
+    } catch (e) {
+        console.error(e);
         error(500, "Failed to get tokens");
     }
 };

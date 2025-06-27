@@ -13,6 +13,29 @@
 
     let { user }: { user: UserData | null } = $props();
     let deletePopupOpen = $state(false);
+    let loginPopup: Window | null = null;
+
+    function handleMessage(event: MessageEvent) {
+        if (event.origin !== window.location.origin) return;
+
+        if (event.data.type === "LOGIN_SUCCESS") {
+            if (loginPopup) {
+                loginPopup.close();
+                loginPopup = null;
+            }
+            invalidateAll();
+        }
+    }
+
+    $effect(() => {
+        window.addEventListener("message", handleMessage);
+        return () => {
+            window.removeEventListener("message", handleMessage);
+            if (loginPopup && !loginPopup.closed) {
+                loginPopup.close();
+            }
+        };
+    });
 
     async function logout() {
         try {
@@ -30,6 +53,26 @@
             }
         });
         invalidateAll();
+    }
+
+    async function handleLogin() {
+        try {
+            const response = await fetch("/auth/login");
+            const data = await response.json();
+            if (data.url) {
+                loginPopup = window.open(
+                    data.url,
+                    "discord-login",
+                    "width=500,height=700,scrollbars=yes,resizable=yes,status=yes,location=yes,toolbar=no,menubar=no"
+                );
+
+                if (loginPopup) {
+                    loginPopup.focus();
+                }
+            }
+        } catch (error) {
+            console.error("Login failed:", error);
+        }
     }
 </script>
 
@@ -94,7 +137,7 @@
             {/snippet}
         </Popover>
     {:else}
-        <Button href="/auth/login" class="font-bold">
+        <Button onclick={handleLogin} class="font-bold">
             <SolarLogin2Linear class="size-5" />
             LOGIN
         </Button>
