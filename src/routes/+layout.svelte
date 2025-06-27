@@ -90,32 +90,38 @@
     }}
 />
 
-<div class="grid h-screen w-screen grid-cols-3 grid-rows-[auto_1fr_auto] overflow-hidden md:grid-cols-[5rem_auto_30vw] md:gap-2 md:p-2">
-    <div class="col-span-3">
+<div
+    class="grid h-screen w-screen grid-rows-[auto_1fr_auto] overflow-hidden md:gap-2 md:p-2"
+    class:md:grid-cols-[5rem_1fr_30vw]={data.user && ($store.showQueue || $store.showLyrics)}
+    class:md:grid-cols-[5rem_1fr]={data.user && !($store.showQueue || $store.showLyrics)}
+    class:md:grid-cols-[1fr_30vw]={!data.user && ($store.showQueue || $store.showLyrics)}
+    class:md:grid-cols-[1fr]={!data.user && !($store.showQueue || $store.showLyrics)}
+>
+    <div class="md:col-span-full">
         <Navbar user={data.user} />
     </div>
-    <div class="col-span-1 row-span-1 hidden md:block">
-        <Sidebar user={data.user} {playlists} />
-    </div>
-    <div
-        id="body"
-        class="col-span-3 row-span-1 size-full overflow-x-hidden overflow-y-auto rounded-lg p-2 md:col-span-1 md:bg-slate-900 md:p-5"
-        class:md:!col-span-2={!$store.showQueue && !$store.showLyrics}
-    >
+    {#if data.user}
+        <div class="hidden md:row-start-2 md:block">
+            <Sidebar user={data.user} {playlists} />
+        </div>
+    {/if}
+    <div id="body" class="size-full overflow-x-hidden overflow-y-auto rounded-lg p-2 md:row-start-2 md:bg-slate-900 md:p-5">
         <div class="container m-auto size-full">
             {@render children()}
-            <div class="h-40 md:hidden"></div>
+            <div class="{data.user ? 'h-40' : 'h-20'} md:hidden"></div>
         </div>
     </div>
-    <div class="md:hidden">
-        <BottomBar user={data.user} />
-    </div>
+    {#if data.user}
+        <div class="md:hidden">
+            <BottomBar user={data.user} />
+        </div>
+    {/if}
     {#if $store.showQueue || $store.showLyrics}
         <!-- Here "window.innerWidth >= 768" refers to "md" breakpoint -->
         <div
             in:fly={{ duration: window.innerWidth >= 768 ? 0 : 200, easing: expoOut }}
             out:fly={{ duration: window.innerWidth >= 768 ? 0 : 200, easing: expoOut }}
-            class="fixed bottom-0 z-300 size-full bg-slate-900/50 md:relative md:z-0 md:col-span-1 md:row-span-1 md:block"
+            class="fixed bottom-0 z-300 size-full bg-slate-900/50 md:relative md:z-0 md:row-start-2"
         >
             <div
                 in:fly={{ duration: 500, easing: expoOut, x: window.innerWidth >= 768 ? 100 : 0, y: window.innerWidth < 768 ? 100 : 0 }}
@@ -130,7 +136,7 @@
             </div>
         </div>
     {/if}
-    <div class="fixed bottom-15 w-full p-2 md:relative md:bottom-0 md:col-span-3 md:p-0">
+    <div class="fixed {data.user ? 'bottom-15' : 'bottom-2'} w-full p-2 md:relative md:bottom-0 md:col-span-full md:row-start-3 md:p-0">
         <div class="rounded-lg bg-slate-900 md:rounded-none md:bg-transparent">
             <Player user={data.user} />
         </div>
