@@ -28,7 +28,7 @@
     <meta property="og:image" content={image} />
 
     <!-- Twitter -->
-    <meta property="twitter:card" content="summary_large_image" />
+    <meta property="twitter:card" content="summary" />
     <meta property="twitter:title" content="Aero {title ? `| ${title}` : ''}" />
     <meta property="twitter:description" content={description} />
     <meta property="twitter:image" content={image} />
