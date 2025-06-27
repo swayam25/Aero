@@ -23,7 +23,29 @@
                 loginPopup.close();
                 loginPopup = null;
             }
-            invalidateAll();
+
+            // Set cookies on the main window if tokens are provided
+            if (event.data.tokens) {
+                const { access_token, refresh_token, user_token, expires_in } = event.data.tokens;
+
+                // Set cookies via fetch to the server
+                fetch("/auth/set-cookies", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify({
+                        access_token,
+                        refresh_token,
+                        user_token,
+                        expires_in
+                    })
+                }).then(() => {
+                    invalidateAll();
+                });
+            } else {
+                invalidateAll();
+            }
         }
     }
 
