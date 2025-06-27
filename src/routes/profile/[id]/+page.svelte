@@ -1,4 +1,5 @@
 <script lang="ts">
+    import Seo from "$lib/components/ui/Seo.svelte";
     import { expoOut } from "svelte/easing";
     import { fly } from "svelte/transition";
     import SolarCode2Linear from "~icons/solar/code-2-linear";
@@ -8,9 +9,10 @@
     let { data }: { data: PageData } = $props();
 </script>
 
-<svelte:head>
-    <title>Aero | {data.user?.global_name || data.user?.username}'s Profile</title>
-</svelte:head>
+<Seo
+    title={`${data.user?.global_name || data.user?.username}'s Profile`}
+    image={`https://cdn.discordapp.com/avatars/${data.user?.id}/${data.user?.avatar}?size=4096`}
+/>
 
 <div class="flex flex-col items-center justify-start">
     <div class="w-full">

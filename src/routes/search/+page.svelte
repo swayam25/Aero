@@ -1,6 +1,8 @@
 <script lang="ts">
+    import { page } from "$app/state";
     import SongListX from "$lib/components/SongListX.svelte";
     import MarqueeText from "$lib/components/ui/MarqueeText.svelte";
+    import Seo from "$lib/components/ui/Seo.svelte";
     import { openCtxMenu } from "$lib/ctxmenu";
     import { play } from "$lib/player";
     import { formatTime } from "$lib/utils/time";
@@ -10,9 +12,7 @@
     let { data }: { data: PageData } = $props();
 </script>
 
-<svelte:head>
-    <title>Aero | Search</title>
-</svelte:head>
+<Seo title={page.url.searchParams.get("q") || "Search"} />
 
 {#await data.songs}
     <div class="flex h-min flex-col items-stretch justify-between gap-5 md:flex-row">

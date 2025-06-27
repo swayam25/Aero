@@ -5,6 +5,7 @@
     import Button from "$lib/components/ui/Button.svelte";
     import DialogPopup from "$lib/components/ui/DialogPopup.svelte";
     import Input from "$lib/components/ui/Input.svelte";
+    import Seo from "$lib/components/ui/Seo.svelte";
     import { openCtxMenu } from "$lib/ctxmenu";
     import type { InsertPlaylist } from "$lib/db/schema";
     import { hidePlDeletePopup, hidePlRenamePopup, store as popupStore } from "$lib/popups";
@@ -91,9 +92,7 @@
     }
 </script>
 
-<svelte:head>
-    <title>Aero | Playlists</title>
-</svelte:head>
+<Seo title="Playlists" />
 
 <!-- Delete Alert Popup (triggered via context menu) -->
 <AlertPopup title="ARE YOU SURE?" bind:open={$popupStore.showPlDeletePopup}>

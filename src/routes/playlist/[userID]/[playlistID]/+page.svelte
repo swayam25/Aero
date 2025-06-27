@@ -1,6 +1,7 @@
 <script lang="ts">
     import { invalidateAll } from "$app/navigation";
     import MarqueeText from "$lib/components/ui/MarqueeText.svelte";
+    import Seo from "$lib/components/ui/Seo.svelte";
     import Switch from "$lib/components/ui/Switch.svelte";
     import Tooltip from "$lib/components/ui/Tooltip.svelte";
     import { openCtxMenu } from "$lib/ctxmenu";
@@ -146,9 +147,11 @@
     let userDecorElement: HTMLImageElement | null = $state(null);
 </script>
 
-<svelte:head>
-    <title>Aero | {data.playlist.name} Playlist</title>
-</svelte:head>
+<Seo
+    title="{data.playlist.name} Playlist"
+    description={`Created By ${data.user.global_name}`}
+    image={data.playlist.cover || `https://cdn.discordapp.com/avatars/${data.user?.id}/${data.user?.avatar}?size=4096`}
+/>
 
 <div class="flex w-full flex-col items-center justify-center gap-4 md:flex-row md:justify-start">
     <div class="size-40 shrink-0 rounded-lg bg-slate-800 bg-cover md:size-50" style="background-image: url({data.playlist.cover});"></div>
