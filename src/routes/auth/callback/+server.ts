@@ -29,10 +29,35 @@ export const GET: RequestHandler = async ({ fetch, url, cookies, locals }) => {
 
         if (resp.ok) {
             const { access_token, refresh_token, expires_in } = await resp.json();
+
+            cookies.set("access_token", access_token, {
+                path: "/",
+                maxAge: expires_in,
+                sameSite: "none",
+                httpOnly: true,
+                secure: true
+            });
+
+            cookies.set("refresh_token", refresh_token, {
+                path: "/",
+                maxAge: 60 * 60 * 24 * 365, // 1 year
+                sameSite: "none",
+                httpOnly: true,
+                secure: true
+            });
+
             const userData = await getUserData(locals.db, access_token);
-            const userToken = await signData(userData, JWT_SECRET, `${expires_in}s`);
+            const token = await signData(userData, JWT_SECRET, `${expires_in}s`);
 
             if (userData) {
+                cookies.set("user", token, {
+                    path: "/",
+                    maxAge: expires_in,
+                    sameSite: "none",
+                    httpOnly: true,
+                    secure: true
+                });
+
                 const dbUser = await checkUser(locals.db, userData.id);
                 if (!dbUser) {
                     await addUser(locals.db, userData.id);
@@ -45,24 +70,9 @@ export const GET: RequestHandler = async ({ fetch, url, cookies, locals }) => {
                     <head><title>Login Successful</title></head>
                     <body>
                         <script>
-                            const tokens = {
-                                access_token: ${JSON.stringify(access_token)},
-                                refresh_token: ${JSON.stringify(refresh_token)},
-                                user_token: ${JSON.stringify(userToken)},
-                                expires_in: ${expires_in}
-                            };
-
                             if (window.opener) {
-                                window.opener.postMessage({
-                                    type: 'LOGIN_SUCCESS',
-                                    tokens: tokens
-                                }, window.location.origin);
+                                window.opener.postMessage({ type: 'LOGIN_SUCCESS' }, window.location.origin);
                                 window.close();
-                            } else if (window.parent && window.parent !== window) {
-                                window.parent.postMessage({
-                                    type: 'LOGIN_SUCCESS',
-                                    tokens: tokens
-                                }, window.location.origin);
                             } else {
                                 window.location.href = '/';
                             }
