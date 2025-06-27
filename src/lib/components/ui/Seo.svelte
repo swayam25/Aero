@@ -23,13 +23,13 @@
 
     <!-- Open Graph / Facebook -->
     <meta property="og:type" content="website" />
-    <meta property="og:title" content="Aero {title ? `| ${title}` : ''}" />
+    <meta property="og:title" content={title ? `${title}` : "Aero"} />
     <meta property="og:description" content={description} />
     <meta property="og:image" content={image} />
 
     <!-- Twitter -->
     <meta property="twitter:card" content="summary" />
-    <meta property="twitter:title" content="Aero {title ? `| ${title}` : ''}" />
+    <meta property="twitter:title" content={title ? `${title}` : "Aero"} />
     <meta property="twitter:description" content={description} />
     <meta property="twitter:image" content={image} />
 </svelte:head>
