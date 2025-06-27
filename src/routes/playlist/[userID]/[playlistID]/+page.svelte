@@ -147,11 +147,15 @@
     let userDecorElement: HTMLImageElement | null = $state(null);
 </script>
 
-<Seo
-    title="{data.playlist.name} Playlist"
-    description={`Created By ${data.user.global_name}`}
-    image={data.playlist.cover || `https://cdn.discordapp.com/avatars/${data.user?.id}/${data.user?.avatar}?size=4096`}
-/>
+{#if data.playlist.isPublic}
+    <Seo
+        title={`${data.playlist.name} Playlist`}
+        description={`Created By ${data.user.global_name}`}
+        image={data.playlist.cover || `https://cdn.discordapp.com/avatars/${data.user?.id}/${data.user?.avatar}?size=4096`}
+    />
+{:else}
+    <Seo />
+{/if}
 
 <div class="flex w-full flex-col items-center justify-center gap-4 md:flex-row md:justify-start">
     <div class="size-40 shrink-0 rounded-lg bg-slate-800 bg-cover md:size-50" style="background-image: url({data.playlist.cover});"></div>
