@@ -151,14 +151,15 @@
                 {/each}
             {/if}
         </div>
-    {:else if !hasMore && initialLoaded}{/if}
-    <div class="flex flex-col items-center justify-center py-10 text-center">
-        <div class="flex flex-col items-center justify-center gap-2">
-            <randomMessage.icon class="size-10 {randomMessage.color}" />
-            <div class="flex flex-col items-center justify-center">
-                <h2 class="text-xl font-bold text-white md:text-2xl">{randomMessage.title}</h2>
-                <p class="text-lg text-slate-400">{randomMessage.subtitle}</p>
+    {:else if !hasMore && initialLoaded}
+        <div class="flex flex-col items-center justify-center py-10 text-center">
+            <div class="flex flex-col items-center justify-center gap-2">
+                <randomMessage.icon class="size-10 {randomMessage.color}" />
+                <div class="flex flex-col items-center justify-center">
+                    <h2 class="text-xl font-bold text-white md:text-2xl">{randomMessage.title}</h2>
+                    <p class="text-lg text-slate-400">{randomMessage.subtitle}</p>
+                </div>
             </div>
         </div>
-    </div>
+    {/if}
 </div>

@@ -3,7 +3,7 @@
     import SongListX from "$lib/components/SongListX.svelte";
     import MarqueeText from "$lib/components/ui/MarqueeText.svelte";
     import Seo from "$lib/components/ui/Seo.svelte";
-    import { openCtxMenu } from "$lib/ctxmenu";
+    import { createSongActions, openCtxMenu } from "$lib/ctxmenu";
     import { play } from "$lib/player";
     import { formatTime } from "$lib/utils/time";
     import { fade } from "svelte/transition";
@@ -52,7 +52,8 @@
                 }}
                 oncontextmenu={(e) => {
                     e.preventDefault();
-                    openCtxMenu(e, data.user?.id, songs[0]);
+                    const actions = createSongActions(songs[0], data.user?.id);
+                    openCtxMenu(e, actions);
                 }}
                 class="flex size-full cursor-pointer flex-col items-start justify-between gap-2 rounded-lg bg-slate-800 p-5 transition-colors duration-200 hover:bg-slate-700"
             >
@@ -77,7 +78,8 @@
                         }}
                         oncontextmenu={(e) => {
                             e.preventDefault();
-                            openCtxMenu(e, data.user?.id, song);
+                            const actions = createSongActions(song, data.user?.id);
+                            openCtxMenu(e, actions);
                         }}
                         class="flex h-auto w-full items-center justify-between gap-2 rounded-lg p-2 transition-colors duration-200 hover:bg-slate-800"
                     >

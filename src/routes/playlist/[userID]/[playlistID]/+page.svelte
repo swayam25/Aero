@@ -4,7 +4,7 @@
     import Seo from "$lib/components/ui/Seo.svelte";
     import Switch from "$lib/components/ui/Switch.svelte";
     import Tooltip from "$lib/components/ui/Tooltip.svelte";
-    import { openCtxMenu } from "$lib/ctxmenu";
+    import { createPlaylistSongActions, openCtxMenu } from "$lib/ctxmenu";
     import { fetchSongDetailed, playPlaylist, store } from "$lib/player";
     import { supabase } from "$lib/supabase";
     import { formatTime } from "$lib/utils/time";
@@ -261,7 +261,13 @@
                         out:fly={{ duration: 500, easing: expoOut, x: 100, y: 0 }}
                         oncontextmenu={(e) => {
                             e.preventDefault();
-                            openCtxMenu(e, data.loginUser?.id, fetchSongDetailed(song), data.playlist, "playlistSong", data.user?.id);
+                            const actions = createPlaylistSongActions(
+                                fetchSongDetailed(song),
+                                data.playlist,
+                                data.loginUser?.id || null,
+                                data.user?.id || null
+                            );
+                            openCtxMenu(e, actions);
                         }}
                         class="pl-song-handle flex w-full cursor-pointer items-center justify-center gap-2 rounded-lg p-2 transition-colors duration-200 hover:bg-slate-800"
                     >

@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { openCtxMenu } from "$lib/ctxmenu";
+    import { createQueueActions, openCtxMenu } from "$lib/ctxmenu";
     import type { UserData } from "$lib/discord/types";
     import { previous, seekTo, setVolume, skip, store, toggleLyrics, togglePause, toggleQueue } from "$lib/player";
     import { formatTime } from "$lib/utils/time";
@@ -79,7 +79,10 @@
         oncontextmenu={(e) => {
             if ($store.state === "unstarted") return;
             e.preventDefault();
-            openCtxMenu(e, user?.id, $store.meta, null, "queue");
+            if ($store.meta) {
+                const actions = createQueueActions($store.meta);
+                openCtxMenu(e, actions);
+            }
         }}
         role="button"
         tabindex="0"

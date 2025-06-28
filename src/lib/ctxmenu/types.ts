@@ -1,13 +1,33 @@
-import type { SongDetailed } from "ytmusic-api";
+import type { Component } from "svelte";
 
 export interface CtxStore {
     isOpen: boolean;
-    showPlaylistMenu: boolean;
     x: number;
     y: number;
-    type: "song" | "queue" | "playlist" | "playlistSong";
-    loginUserID: string | null | undefined;
-    song?: SongDetailed | null; // Only defined if type === "song" or "playlistSong"
-    playlistData?: { name: string; id: string } | null; // Only defined if type === "playlist" or "playlistSong"
-    accessedUserID?: string | null;
+    actions: CtxAction[];
+}
+
+export interface CtxShortcut {
+    key: string;
+    ctrlKey?: boolean;
+    shiftKey?: boolean;
+    altKey?: boolean;
+    metaKey?: boolean;
+}
+
+export interface CtxAction {
+    id: string;
+    label: string;
+    icon?: Component;
+    type?: "normal" | "error" | "success" | "warning";
+    disabled?: boolean;
+    separator?: boolean; // Add separator after this item
+    shortcut?: string | CtxShortcut; // Keyboard shortcut (string for display, object for matching)
+    onclick: (context: CtxActionContext) => void | Promise<void>;
+}
+
+export interface CtxActionContext {
+    closeMenu: () => void;
+    // Context is passed through the action's onclick function
+    [key: string]: any;
 }

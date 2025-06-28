@@ -1,6 +1,5 @@
 <script lang="ts">
     import Button from "$lib/components/ui/Button.svelte";
-    import { openCtxMenu } from "$lib/ctxmenu";
     import type { UserData } from "$lib/discord/types";
     import { play } from "$lib/player";
     import { cn } from "$lib/utils/cn";
@@ -57,9 +56,12 @@
                     onclick={async () => {
                         await play(song);
                     }}
-                    oncontextmenu={(e) => {
+                    oncontextmenu={async(e) => {
                         e.preventDefault();
-                        openCtxMenu(e, user?.id, song);
+                        const { createSongActions } = await import("$lib/ctxmenu/actions");
+                        const { openCtxMenu, closeCtxMenu } = await import("$lib/ctxmenu");
+                        const actions = createSongActions(song, user?.id || null);
+                        openCtxMenu(e, actions);
                     }}
                 >
                     <img src={thumb} alt="{song.name}'s Thumbnail" class="size-40 rounded-lg md:size-50" />

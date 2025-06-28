@@ -6,7 +6,7 @@
     import SolarLogout2Linear from "~icons/solar/logout-2-linear";
     import SolarTrashBinTrashLinear from "~icons/solar/trash-bin-trash-linear";
     import SolarUserCircleLinear from "~icons/solar/user-circle-linear";
-    import CtxButton from "./CtxButton.svelte";
+    import CtxButton from "../ctxmenu/components/CtxButton.svelte";
     import AlertPopup from "./ui/AlertPopup.svelte";
     import Button from "./ui/Button.svelte";
     import Popover from "./ui/Popover.svelte";

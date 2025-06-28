@@ -1,17 +1,17 @@
 <script lang="ts">
     import { onNavigate } from "$app/navigation";
     import BottomBar from "$lib/components/BottomBar.svelte";
-    import CtxMenu from "$lib/components/CtxMenu.svelte";
     import Lyrics from "$lib/components/Lyrics.svelte";
     import Navbar from "$lib/components/Navbar.svelte";
     import Player from "$lib/components/Player.svelte";
     import Queue from "$lib/components/Queue.svelte";
     import Sidebar from "$lib/components/Sidebar.svelte";
-    import { closeCtxMenu } from "$lib/ctxmenu";
+    import { closeCtxMenu, setupShortcuts } from "$lib/ctxmenu";
+    import ContextMenu from "$lib/ctxmenu/components/ContextMenu.svelte";
     import type { InsertPlaylist } from "$lib/db/schema";
     import { store } from "$lib/player";
     import { supabase } from "$lib/supabase";
-    import { type Snippet } from "svelte";
+    import { onDestroy, onMount, type Snippet } from "svelte";
     import { Toaster } from "svelte-sonner";
     import { expoOut } from "svelte/easing";
     import { fly } from "svelte/transition";
@@ -27,6 +27,16 @@
     let playlists: InsertPlaylist[] = $state(data.playlists);
     $effect(() => {
         playlists = data.playlists;
+    });
+
+    // Initialize keyboard shortcuts
+    let cleanupShortcuts: (() => void) | undefined;
+    onMount(() => {
+        cleanupShortcuts = setupShortcuts();
+    });
+
+    onDestroy(() => {
+        cleanupShortcuts?.();
     });
 
     // Show transition when navigating
@@ -75,7 +85,7 @@
         e.preventDefault();
     }}
 />
-<CtxMenu />
+<ContextMenu />
 
 <Toaster
     richColors

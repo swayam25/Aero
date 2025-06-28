@@ -6,7 +6,7 @@
     import DialogPopup from "$lib/components/ui/DialogPopup.svelte";
     import Input from "$lib/components/ui/Input.svelte";
     import Seo from "$lib/components/ui/Seo.svelte";
-    import { openCtxMenu } from "$lib/ctxmenu";
+    import { createPlaylistActions, openCtxMenu } from "$lib/ctxmenu";
     import type { InsertPlaylist } from "$lib/db/schema";
     import { hidePlDeletePopup, hidePlRenamePopup, store as popupStore } from "$lib/popups";
     import { supabase } from "$lib/supabase";
@@ -170,7 +170,8 @@
                 href={`/playlist/${data.user?.id}/${playlist.id}`}
                 oncontextmenu={(e) => {
                     e.preventDefault();
-                    openCtxMenu(e, data.user?.id, null, { name: playlist.name, id: playlist.id ?? "" }, "playlist");
+                    const actions = createPlaylistActions({ name: playlist.name, id: playlist.id ?? "" }, data.user?.id);
+                    openCtxMenu(e, actions);
                 }}
                 class="group flex size-fit cursor-pointer flex-col items-start justify-center gap-2 rounded-lg p-3 transition-colors duration-200 hover:bg-slate-800"
             >

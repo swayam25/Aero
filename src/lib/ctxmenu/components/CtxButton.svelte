@@ -3,7 +3,7 @@
     import type { Snippet } from "svelte";
 
     interface Props {
-        type?: "normal" | "error" | "success";
+        type?: "normal" | "error" | "success" | "warning";
         href?: string;
         disabled?: boolean;
         onclick?: (e: MouseEvent) => void;
@@ -17,6 +17,8 @@
                 return "not-disabled:hover:bg-red-500/10 not-disabled:hover:text-red-500";
             case "success":
                 return "not-disabled:hover:bg-green-500/10 not-disabled:hover:text-green-500";
+            case "warning":
+                return "not-disabled:hover:bg-yellow-500/10 not-disabled:hover:text-yellow-500";
             default:
                 return "not-disabled:hover:bg-slate-800";
         }
@@ -31,7 +33,7 @@
     {disabled}
     {onclick}
     class={cn(
-        "group flex w-full items-center justify-start gap-2 rounded-lg px-2 py-1.5 transition-colors duration-200 not-disabled:cursor-pointer",
+        "group flex w-full items-start justify-start gap-2 rounded-lg px-2 py-1.5 transition-colors duration-200 not-disabled:cursor-pointer disabled:cursor-not-allowed disabled:opacity-50",
         typeClass
     )}
 >

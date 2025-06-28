@@ -1,6 +1,6 @@
 <script lang="ts">
     import MarqueeText from "$lib/components/ui/MarqueeText.svelte";
-    import { openCtxMenu } from "$lib/ctxmenu";
+    import { createQueueActions, openCtxMenu } from "$lib/ctxmenu";
     import type { UserData } from "$lib/discord/types";
     import { play, store } from "$lib/player";
     import { draggable, type DragOptions } from "@neodrag/svelte";
@@ -81,7 +81,8 @@
                     }}
                     oncontextmenu={(e) => {
                         e.preventDefault();
-                        openCtxMenu(e, user?.id, song, null, "queue");
+                        const actions = createQueueActions(song);
+                        openCtxMenu(e, actions);
                     }}
                     class="song-handle flex w-full cursor-pointer items-center justify-center gap-2 rounded-lg p-2 transition-colors duration-200 hover:bg-slate-800"
                 >
