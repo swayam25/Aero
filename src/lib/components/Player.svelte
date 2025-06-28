@@ -18,12 +18,11 @@
     import SolarVolumeLinear from "~icons/solar/volume-linear";
     import SolarVolumeLoudLinear from "~icons/solar/volume-loud-linear";
     import SolarVolumeSmallLinear from "~icons/solar/volume-small-linear";
-    import MobilePlayer from "./MobilePlayer.svelte";
     import MarqueeText from "./ui/MarqueeText.svelte";
     import Popover from "./ui/Popover.svelte";
     import Slider from "./ui/Slider.svelte";
 
-    let { user }: { user: UserData } = $props();
+    let { user }: { user: UserData | null } = $props();
 
     let showMobilePlayer: boolean = $state(false);
     let currentTime: number = $state($store.currentTime);
@@ -68,10 +67,6 @@
     });
 </script>
 
-{#if showMobilePlayer}
-    <MobilePlayer bind:show={showMobilePlayer} />
-{/if}
-
 <div id="player" class="relative flex h-15 w-full items-center justify-end gap-2 rounded-lg px-4 sm:justify-center">
     <!-- Song Info -->
     <div
@@ -97,13 +92,7 @@
                 <span class="h-3 w-40 rounded-lg bg-slate-800 md:h-4 md:bg-slate-900"></span>
             </div>
         {:else}
-            <button
-                in:fly={{ duration: 100 }}
-                onclick={() => {
-                    if (window.innerWidth < 768) showMobilePlayer = true;
-                }}
-                class="flex max-w-40 flex-col items-start justify-center text-left"
-            >
+            <button in:fly={{ duration: 100 }} class="flex max-w-40 flex-col items-start justify-center text-left">
                 <MarqueeText text={$store.meta?.name || ""} class="text-sm font-semibold" />
                 <span class="w-20 truncate text-xs text-slate-400 md:w-40">{$store.meta?.artist.name}</span>
             </button>

@@ -2,6 +2,7 @@
     import { onNavigate } from "$app/navigation";
     import BottomBar from "$lib/components/BottomBar.svelte";
     import Lyrics from "$lib/components/Lyrics.svelte";
+    import MobilePlayerSystem from "$lib/components/MobilePlayerSystem.svelte";
     import Navbar from "$lib/components/Navbar.svelte";
     import Player from "$lib/components/Player.svelte";
     import PlaylistDialogPopup from "$lib/components/PlaylistDialogPopup.svelte";
@@ -140,15 +141,11 @@
             <BottomBar user={data.user} />
         </div>
     {/if}
-    {#if $store.showQueue || $store.showLyrics}
-        <div
-            in:fly={{ duration: !isMobile ? 0 : 200, easing: expoOut }}
-            out:fly={{ duration: !isMobile ? 0 : 200, easing: expoOut }}
-            class="fixed bottom-0 z-300 size-full bg-slate-900/50 md:relative md:z-0 md:row-start-2"
-        >
+    {#if !isMobile && ($store.showQueue || $store.showLyrics)}
+        <div in:fly={{ duration: 0, easing: expoOut }} out:fly={{ duration: 0, easing: expoOut }} class="md:relative md:z-0 md:row-start-2">
             <div
-                in:fly={{ duration: 500, easing: expoOut, x: !isMobile ? 100 : 0, y: isMobile ? 100 : 0 }}
-                out:fly={{ duration: !isMobile ? 0 : 500, easing: expoOut, x: 0, y: isMobile ? 100 : 0 }}
+                in:fly={{ duration: 500, easing: expoOut, x: 100, y: 0 }}
+                out:fly={{ duration: 0, easing: expoOut, x: 0, y: 0 }}
                 class="flex size-full items-end justify-center"
             >
                 {#if $store.showQueue}
@@ -160,8 +157,12 @@
         </div>
     {/if}
     <div class="fixed {data.user ? 'bottom-15' : 'bottom-2'} w-full p-2 md:relative md:bottom-0 md:col-span-full md:row-start-3 md:p-0">
-        <div class="rounded-lg bg-slate-900 md:rounded-none md:bg-transparent">
-            <Player user={data.user} />
-        </div>
+        {#if isMobile}
+            <MobilePlayerSystem user={data.user} />
+        {:else}
+            <div class="rounded-lg bg-slate-900 md:rounded-none md:bg-transparent">
+                <Player user={data.user} />
+            </div>
+        {/if}
     </div>
 </div>

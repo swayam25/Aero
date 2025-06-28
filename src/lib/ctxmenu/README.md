@@ -2,31 +2,21 @@
 
 A unified, maintainable context menu system for Aero built with Svelte 5, featuring dynamic submenus, loading states, playlist thumbnail support, and mobile-responsive design with drawer interface.
 
-## Features
-
-- **Responsive Design**: Automatically switches between desktop context menu and mobile drawer based on screen size (`< 768px`)
-- **Dynamic Submenus**: Load content asynchronously with loading states and error handling
-- **Keyboard Support**: Comprehensive keyboard shortcuts with automatic formatting
-- **Mobile Drawer**: Touch-friendly drawer interface using vaul-svelte for mobile devices
-- **Loading States**: Skeleton loading animations for both desktop and mobile
-- **Thumbnail Support**: Display playlist thumbnails and user avatars
-- **Maintainable**: Generic loader system for any type of dynamic content
-
 ## Structure
 
 ```
 /ctxmenu/
 ├── components/
-│   ├── ContextMenu.svelte # Main context menu with responsive logic
-│   ├── MobileDrawer.svelte # Mobile drawer interface
-│   ├── Submenu.svelte     # Desktop submenu component
-│   ├── CtxButton.svelte   # Menu button component
-│   └── Demo.svelte        # Demo component
-├── types.ts               # Type definitions including dynamic submenu types
-├── index.ts               # Main exports, utilities & keyboard handling
-├── shortcuts.ts           # Comprehensive shortcuts object & utilities
-├── actions.ts             # Action factories with dynamic loading examples
-└── README.md              # This file
+│   ├── ContextMenu.svelte       # Main context menu with responsive logic
+│   ├── MobileContextMenu.svelte # Mobile drawer interface
+│   ├── Submenu.svelte           # Desktop submenu component
+│   ├── CtxButton.svelte         # Menu button component
+│   └── Demo.svelte              # Demo component
+├── types.ts                     # Type definitions including dynamic submenu types
+├── index.ts                     # Main exports, utilities & keyboard handling
+├── shortcuts.ts                 # Comprehensive shortcuts object & utilities
+├── actions.ts                   # Action factories with dynamic loading examples
+└── README.md                    # This file
 ```
 
 ## Quick Start

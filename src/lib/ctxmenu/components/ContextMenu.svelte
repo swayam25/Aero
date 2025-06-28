@@ -17,7 +17,7 @@
     import SolarAltArrowRightLinear from "~icons/solar/alt-arrow-right-linear";
     import SolarConfoundedCircleLinear from "~icons/solar/confounded-circle-linear";
     import CtxButton from "./CtxButton.svelte";
-    import MobileDrawer from "./MobileDrawer.svelte";
+    import MobileContextMenu from "./MobileContextMenu.svelte";
     import Submenu from "./Submenu.svelte";
 
     let isMobile = $state(false);
@@ -158,7 +158,7 @@
 {#if $store.isOpen}
     {#if isMobile}
         <!-- Mobile drawer -->
-        <MobileDrawer />
+        <MobileContextMenu />
     {:else}
         <!-- Desktop context menu -->
         <div
