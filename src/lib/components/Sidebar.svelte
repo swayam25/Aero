@@ -1,4 +1,6 @@
 <script lang="ts">
+    import { goto } from "$app/navigation";
+    import { createPlaylistActions, openCtxMenu } from "$lib/ctxmenu";
     import type { InsertPlaylist } from "$lib/db/schema";
     import type { UserData } from "$lib/discord/types";
     import SolarMusicLibraryLinear from "~icons/solar/music-library-linear";
@@ -23,12 +25,20 @@
         {#each playlists as playlist}
             <Tooltip side="right">
                 {#snippet trigger()}
-                    <div
-                        aria-label={playlist.name}
-                        class="size-15 cursor-pointer rounded-lg bg-slate-800 bg-cover"
-                        style="background-image: url({playlist.cover});"
-                    >
-                        <a href="/playlist/{user?.id}/{playlist.id}" class="block size-full bg-transparent" aria-label={playlist.name}></a>
+                    <!-- This div is used to wrap the button for tooltip alignment -->
+                    <div>
+                        <button
+                            aria-label={playlist.name}
+                            class="size-15 cursor-pointer rounded-lg bg-slate-800 bg-cover"
+                            style="background-image: url({playlist.cover});"
+                            onclick={() => goto(`/playlist/${user?.id}/${playlist.id}`)}
+                            oncontextmenu={(e) => {
+                                e.preventDefault();
+                                const actions = createPlaylistActions({ name: playlist.name, id: playlist.id ?? "" }, user?.id);
+                                openCtxMenu(e, actions);
+                            }}
+                        >
+                        </button>
                     </div>
                 {/snippet}
                 {#snippet content()}

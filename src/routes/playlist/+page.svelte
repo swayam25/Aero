@@ -1,32 +1,19 @@
 <script lang="ts">
-    import { invalidateAll } from "$app/navigation";
     import NewPlaylistPopup from "$lib/components/NewPlaylistPopup.svelte";
-    import AlertPopup from "$lib/components/ui/AlertPopup.svelte";
     import Button from "$lib/components/ui/Button.svelte";
-    import DialogPopup from "$lib/components/ui/DialogPopup.svelte";
-    import Input from "$lib/components/ui/Input.svelte";
     import Seo from "$lib/components/ui/Seo.svelte";
     import { createPlaylistActions, openCtxMenu } from "$lib/ctxmenu";
     import type { InsertPlaylist } from "$lib/db/schema";
-    import { hidePlDeletePopup, hidePlRenamePopup, store as popupStore } from "$lib/popups";
     import { supabase } from "$lib/supabase";
-    import { AlertDialog, Dialog } from "bits-ui";
     import { onDestroy } from "svelte";
-    import { toast } from "svelte-sonner";
     import { expoOut } from "svelte/easing";
     import { fade, fly } from "svelte/transition";
     import MaterialSymbolsAdd2Rounded from "~icons/material-symbols/add-2-rounded";
     import SolarConfoundedCircleLinear from "~icons/solar/confounded-circle-linear";
-    import SolarPlaylist2Linear from "~icons/solar/playlist-2-linear";
-    import SolarRestartLinear from "~icons/solar/restart-linear";
-    import SolarTrashBinTrashLinear from "~icons/solar/trash-bin-trash-linear";
     import type { PageData } from "./$types";
 
     let { data }: { data: PageData } = $props();
-    let playlists: InsertPlaylist[] = $state(data.playlists);
-    $effect(() => {
-        playlists = data.playlists;
-    });
+    let playlists: InsertPlaylist[] = $derived(data.playlists);
 
     // Sync playlist data with db
     const channel = supabase
@@ -53,89 +40,9 @@
     onDestroy(() => {
         channel.unsubscribe();
     });
-
-    async function deletePlaylist() {
-        const plID = $popupStore.playlistData?.id;
-        hidePlDeletePopup();
-        const resp = await fetch(`/api/playlist`, {
-            body: JSON.stringify({ id: plID }),
-            method: "DELETE",
-            headers: {
-                "Content-Type": "application/json"
-            }
-        });
-        const respData = await resp.json();
-        if (resp.ok) toast.success("Playlist deleted successfully");
-        else toast.error(respData.error);
-        invalidateAll();
-    }
-
-    let input: HTMLInputElement | null = $state(null);
-    let inputValue: string = $state("");
-
-    async function renamePlaylist() {
-        const plID = $popupStore.playlistData?.id;
-        const newName = inputValue.trim();
-        hidePlRenamePopup();
-        inputValue = "";
-        const resp = await fetch(`/api/playlist`, {
-            body: JSON.stringify({ key: "rename_pl", value: { playlistID: plID, name: newName } }),
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json"
-            }
-        });
-        const respData = await resp.json();
-        if (resp.ok) toast.success("Playlist renamed successfully");
-        else toast.error(respData.error);
-        invalidateAll();
-    }
 </script>
 
 <Seo title="Playlists" />
-
-<!-- Delete Alert Popup (triggered via context menu) -->
-<AlertPopup title="ARE YOU SURE?" bind:open={$popupStore.showPlDeletePopup}>
-    {#snippet trigger()}{/snippet}
-    {#snippet description()}
-        This action cannot be undone. This will permanently
-        <span class="font-semibold text-red-500">delete your playlist</span> named
-        <span class="font-semibold text-sky-500">{$popupStore.playlistData?.name}</span>. Please confirm that you want to proceed.
-    {/snippet}
-    {#snippet actions()}
-        <AlertDialog.Action class="hover:!bg-red-500/10 hover:text-red-500" onclick={deletePlaylist}>
-            <SolarTrashBinTrashLinear class="size-5" />
-            Delete Playlist
-        </AlertDialog.Action>
-    {/snippet}
-</AlertPopup>
-
-<!-- Rename Popup (triggered via context menu) -->
-<DialogPopup title="RENAME PLAYLIST" bind:open={$popupStore.showPlRenamePopup}>
-    {#snippet trigger()}{/snippet}
-    {#snippet description()}
-        Enter the new name for your playlist. Be creative!
-    {/snippet}
-    {#snippet fields()}
-        <div class="flex size-full flex-col items-start justify-center gap-2">
-            <Input
-                bind:value={inputValue}
-                class="w-full"
-                placeholder="Playlist Name"
-                icon={SolarPlaylist2Linear}
-                onEnter={renamePlaylist}
-                max={10}
-                bind:ref={input}
-            />
-        </div>
-    {/snippet}
-    {#snippet actions()}
-        <Dialog.Close class="disabled:cursor-not-allowed" onclick={renamePlaylist} disabled={!inputValue}>
-            <SolarRestartLinear class="size-5" />
-            Rename
-        </Dialog.Close>
-    {/snippet}
-</DialogPopup>
 
 {#if playlists.length > 0}
     <div in:fade={{ duration: 100 }} class="mb-2 flex size-fit items-center justify-center gap-2 md:mb-5">

@@ -4,6 +4,7 @@
     import Lyrics from "$lib/components/Lyrics.svelte";
     import Navbar from "$lib/components/Navbar.svelte";
     import Player from "$lib/components/Player.svelte";
+    import PlaylistDialogPopup from "$lib/components/PlaylistDialogPopup.svelte";
     import Queue from "$lib/components/Queue.svelte";
     import Sidebar from "$lib/components/Sidebar.svelte";
     import { closeCtxMenu, setupShortcuts } from "$lib/ctxmenu";
@@ -24,10 +25,7 @@
     }
 
     let { data, children }: Props = $props();
-    let playlists: InsertPlaylist[] = $state(data.playlists);
-    $effect(() => {
-        playlists = data.playlists;
-    });
+    let playlists: InsertPlaylist[] = $derived(data.playlists);
 
     // Initialize keyboard shortcuts
     let cleanupShortcuts: (() => void) | undefined;
@@ -100,6 +98,8 @@
     }}
 />
 
+<PlaylistDialogPopup />
+
 <div
     class="grid h-screen w-screen grid-rows-[auto_1fr_auto] overflow-hidden md:gap-2 md:p-2"
     class:md:grid-cols-[5rem_1fr_30vw]={data.user && ($store.showQueue || $store.showLyrics)}
@@ -127,7 +127,7 @@
         </div>
     {/if}
     {#if $store.showQueue || $store.showLyrics}
-        <!-- Here "window.innerWidth >= 768" refers to "md" breakpoint -->
+        <!-- Here "window.innerWidth >= 768" refers to "md:" breakpoint -->
         <div
             in:fly={{ duration: window.innerWidth >= 768 ? 0 : 200, easing: expoOut }}
             out:fly={{ duration: window.innerWidth >= 768 ? 0 : 200, easing: expoOut }}
