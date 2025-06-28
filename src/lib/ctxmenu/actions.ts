@@ -5,8 +5,7 @@ import { showPlDeletePopup, showPlRenamePopup } from "$lib/popups";
 import { toast } from "svelte-sonner";
 import { get } from "svelte/store";
 import type { SongDetailed } from "ytmusic-api";
-import { createCtxAction, openCtxMenu } from "./index";
-import { shortcuts } from "./shortcuts";
+import { createCtxAction, openCtxMenu, shortcuts } from "./index";
 import type { CtxAction } from "./types";
 
 // Icons
