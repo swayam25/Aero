@@ -3,7 +3,7 @@
     import AlertPopup from "$lib/components/ui/AlertPopup.svelte";
     import DialogPopup from "$lib/components/ui/DialogPopup.svelte";
     import Input from "$lib/components/ui/Input.svelte";
-    import { hidePlDeletePopup, hidePlRenamePopup, store as popupStore } from "$lib/popups";
+    import { hidePlDeletePopup, hidePlRenamePopup, store as popupStore } from "$lib/stores/popups";
     import { AlertDialog, Dialog } from "bits-ui";
     import { toast } from "svelte-sonner";
     import SolarPlaylist2Linear from "~icons/solar/playlist-2-linear";

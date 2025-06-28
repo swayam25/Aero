@@ -1,7 +1,7 @@
 import { invalidateAll } from "$app/navigation";
 import type { InsertPlaylist } from "$lib/db/schema";
 import { addToQueue, play, store as playerStore, removeFromQueue, togglePause } from "$lib/player";
-import { showPlDeletePopup, showPlRenamePopup } from "$lib/popups";
+import { showPlDeletePopup, showPlRenamePopup } from "$lib/stores/popups";
 import { toast } from "svelte-sonner";
 import { get } from "svelte/store";
 import type { SongDetailed } from "ytmusic-api";

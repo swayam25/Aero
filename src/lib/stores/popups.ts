@@ -1,5 +1,10 @@
 import { writable } from "svelte/store";
-import type { PopupsStore } from "./types";
+
+export interface PopupsStore {
+    showPlDeletePopup: boolean;
+    showPlRenamePopup: boolean;
+    playlistData?: { name: string; id: string } | null;
+}
 
 export const store = writable<PopupsStore>({
     showPlDeletePopup: false,

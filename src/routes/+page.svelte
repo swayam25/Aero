@@ -1,6 +1,7 @@
 <script lang="ts">
     import SongListX from "$lib/components/SongListX.svelte";
     import Seo from "$lib/components/ui/Seo.svelte";
+    import { songsCache } from "$lib/stores/songsCache";
     import { onMount } from "svelte";
     import MaterialSymbolsDirectionsRunRounded from "~icons/material-symbols/directions-run-rounded";
     import MaterialSymbolsFavoriteRounded from "~icons/material-symbols/favorite-rounded";
@@ -70,9 +71,13 @@
             const response = await fetch(`/api/songs/categories?offset=${currentOffset}&limit=${limit}`);
             const result = await response.json();
             if (response.ok) {
-                allSongs = { ...allSongs, ...result.categories };
-                currentOffset += Object.keys(result.categories).length;
+                const newCategories = result.categories;
+                allSongs = { ...allSongs, ...newCategories };
+                currentOffset += Object.keys(newCategories).length;
                 hasMore = result.hasMore;
+
+                // Update cache
+                songsCache.updateCache(newCategories, currentOffset, hasMore);
             } else {
                 hasMore = false;
             }
@@ -83,10 +88,26 @@
         }
     }
 
+    function loadFromCache() {
+        const cache = $songsCache;
+        if (cache && !songsCache.isStale(cache)) {
+            allSongs = cache.categories;
+            currentOffset = cache.currentOffset;
+            hasMore = cache.hasMore;
+            initialLoaded = true;
+            return true;
+        }
+        return false;
+    }
+
     onMount(() => {
         // Set the initial limit based on screen size
         initialLimit = getInitialLimit();
-        // Load categories immediately with the calculated limit
+        // Try to load from cache first
+        if (loadFromCache()) {
+            return;
+        }
+        // Load categories if not in cache
         loadMoreCategories(initialLimit).then(() => {
             initialLoaded = true;
         });
