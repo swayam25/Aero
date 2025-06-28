@@ -10,13 +10,17 @@
         store
     } from "$lib/ctxmenu";
     import type { CtxAction } from "$lib/ctxmenu/types";
+    import { createMobileMediaQuery } from "$lib/utils/mobile";
     import { onMount } from "svelte";
     import { toast } from "svelte-sonner";
     import { fade } from "svelte/transition";
-    import CtxButton from "./CtxButton.svelte";
-    import Submenu from "./Submenu.svelte";
-    // Import icons for error states
+    import SolarAltArrowRightLinear from "~icons/solar/alt-arrow-right-linear";
     import SolarConfoundedCircleLinear from "~icons/solar/confounded-circle-linear";
+    import CtxButton from "./CtxButton.svelte";
+    import MobileDrawer from "./MobileDrawer.svelte";
+    import Submenu from "./Submenu.svelte";
+
+    let isMobile = $state(false);
 
     let ctxMenu: HTMLDivElement = $state(null!);
     let x: number = $state(0);
@@ -68,6 +72,11 @@
 
     // Close menu on click outside
     onMount(() => {
+        // Set up mobile detection
+        const cleanupMobile = createMobileMediaQuery((mobile) => {
+            isMobile = mobile;
+        });
+
         function handleClickOutside(e: MouseEvent) {
             if ($store.isOpen && ctxMenu && !ctxMenu.contains(e.target as Node)) {
                 // Also check if click is outside submenu
@@ -82,6 +91,7 @@
 
         return () => {
             document.removeEventListener("mousedown", handleClickOutside);
+            cleanupMobile();
         };
     });
 
@@ -146,57 +156,61 @@
 </script>
 
 {#if $store.isOpen}
-    <div
-        transition:fade={{ duration: 150 }}
-        bind:this={ctxMenu}
-        class="fixed z-[1000] flex min-w-48 flex-col items-start justify-center rounded-lg border border-slate-700 bg-slate-900/95 p-2 text-sm shadow-xl backdrop-blur-sm"
-        style="top: {y}px; left: {x}px;"
-    >
-        <div in:fade={{ duration: 100 }} class="flex w-full flex-col items-start justify-center">
-            {#each $store.actions as action, index}
-                <CtxButton
-                    type={action.type || "normal"}
-                    disabled={action.disabled}
-                    onclick={(e) => handleActionClick(action, e)}
-                    onmouseenter={(e) => handleMouseEnter(action, index, e.currentTarget as HTMLElement)}
-                    onmouseleave={handleMouseLeave}
-                    class="items-center justify-center"
-                    data-ctx-button
-                >
-                    {#if action.type === "skeleton"}
-                        <!-- Skeleton loading state with staggered animation -->
-                        <div class="size-10 shrink-0 animate-pulse rounded bg-slate-700/60" style="animation-delay: {index * 0.1}s"></div>
-                        <div class="h-5 flex-1 animate-pulse rounded bg-slate-700/60" style="animation-delay: {index * 0.1 + 0.05}s"></div>
-                    {:else}
-                        {#if action.image}
-                            <div class="flex size-10 shrink-0 items-center justify-center overflow-hidden rounded bg-slate-700/20">
-                                <img src={action.image} alt={action.label} class="size-full object-cover" loading="lazy" />
-                            </div>
-                        {:else if action.icon}
-                            {@const IconComponent = action.icon}
-                            <IconComponent class="size-5 shrink-0" />
+    {#if isMobile}
+        <!-- Mobile drawer -->
+        <MobileDrawer />
+    {:else}
+        <!-- Desktop context menu -->
+        <div
+            transition:fade={{ duration: 150 }}
+            bind:this={ctxMenu}
+            class="fixed z-[1000] flex min-w-48 flex-col items-start justify-center rounded-lg border border-slate-700 bg-slate-900/95 p-2 text-sm shadow-xl backdrop-blur-sm"
+            style="top: {y}px; left: {x}px;"
+        >
+            <div in:fade={{ duration: 100 }} class="flex w-full flex-col items-start justify-center">
+                {#each $store.actions as action, index}
+                    <CtxButton
+                        type={action.type || "normal"}
+                        disabled={action.disabled}
+                        onclick={(e) => handleActionClick(action, e)}
+                        onmouseenter={(e) => handleMouseEnter(action, index, e.currentTarget as HTMLElement)}
+                        onmouseleave={handleMouseLeave}
+                        class="items-center justify-center"
+                        data-ctx-button
+                    >
+                        {#if action.type === "skeleton"}
+                            <!-- Skeleton loading state with staggered animation -->
+                            <div class="size-10 shrink-0 animate-pulse rounded bg-slate-700/60" style="animation-delay: {index * 0.1}s"></div>
+                            <div class="h-5 flex-1 animate-pulse rounded bg-slate-700/60" style="animation-delay: {index * 0.1 + 0.05}s"></div>
+                        {:else}
+                            {#if action.image}
+                                <div class="flex size-10 shrink-0 items-center justify-center overflow-hidden rounded bg-slate-700/20">
+                                    <img src={action.image} alt={action.label} class="size-full object-cover" loading="lazy" />
+                                </div>
+                            {:else if action.icon}
+                                {@const IconComponent = action.icon}
+                                <IconComponent class="size-5 shrink-0" />
+                            {/if}
+                            <span class="flex-1 text-left">{action.label}</span>
+                            {#if action.submenu && (Array.isArray(action.submenu) ? action.submenu.length > 0 : true)}
+                                <!-- Submenu indicator arrow -->
+                                <SolarAltArrowRightLinear class="ml-2 size-4" />
+                            {:else if action.shortcut}
+                                <span class="ml-2 text-xs text-slate-400">
+                                    {formatShortcut(action.shortcut)}
+                                </span>
+                            {/if}
                         {/if}
-                        <span class="flex-1 text-left">{action.label}</span>
-                        {#if action.submenu && (Array.isArray(action.submenu) ? action.submenu.length > 0 : true)}
-                            <!-- Submenu indicator arrow -->
-                            <svg class="ml-2 h-4 w-4 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
-                            </svg>
-                        {:else if action.shortcut}
-                            <span class="ml-2 text-xs text-slate-400">
-                                {formatShortcut(action.shortcut)}
-                            </span>
-                        {/if}
+                    </CtxButton>
+
+                    {#if action.separator && index < $store.actions.length - 1}
+                        <div class="my-1 w-full border-t border-slate-700"></div>
                     {/if}
-                </CtxButton>
-
-                {#if action.separator && index < $store.actions.length - 1}
-                    <div class="my-1 w-full border-t border-slate-700"></div>
-                {/if}
-            {/each}
+                {/each}
+            </div>
         </div>
-    </div>
 
-    <!-- Submenu component -->
-    <Submenu />
+        <!-- Submenu component -->
+        <Submenu />
+    {/if}
 {/if}

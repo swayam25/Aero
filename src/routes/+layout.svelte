@@ -12,7 +12,8 @@
     import type { InsertPlaylist } from "$lib/db/schema";
     import { store } from "$lib/player";
     import { supabase } from "$lib/supabase";
-    import { onDestroy, onMount, type Snippet } from "svelte";
+    import { createMobileMediaQuery } from "$lib/utils/mobile";
+    import { onMount, type Snippet } from "svelte";
     import { Toaster } from "svelte-sonner";
     import { expoOut } from "svelte/easing";
     import { fly } from "svelte/transition";
@@ -27,14 +28,25 @@
     let { data, children }: Props = $props();
     let playlists: InsertPlaylist[] = $derived(data.playlists);
 
+    // Mobile detection state
+    let isMobile = $state(false);
+
     // Initialize keyboard shortcuts
     let cleanupShortcuts: (() => void) | undefined;
+    let cleanupMobileQuery: (() => void) | undefined;
+
     onMount(() => {
         cleanupShortcuts = setupShortcuts();
-    });
 
-    onDestroy(() => {
-        cleanupShortcuts?.();
+        // Set up mobile detection
+        cleanupMobileQuery = createMobileMediaQuery((mobile) => {
+            isMobile = mobile;
+        });
+
+        return () => {
+            cleanupShortcuts?.();
+            cleanupMobileQuery?.();
+        };
     });
 
     // Show transition when navigating
@@ -89,12 +101,14 @@
     richColors
     position="bottom-center"
     theme="dark"
+    style="z-index: 900;"
     toastOptions={{
         classes: {
             toast: "mb-30 md:mb-15 rounded-lg font-rubik",
             title: "text-sm",
             description: "text-[0.65rem]"
-        }
+        },
+        style: "z-index: 900;"
     }}
 />
 
@@ -127,15 +141,14 @@
         </div>
     {/if}
     {#if $store.showQueue || $store.showLyrics}
-        <!-- Here "window.innerWidth >= 768" refers to "md:" breakpoint -->
         <div
-            in:fly={{ duration: window.innerWidth >= 768 ? 0 : 200, easing: expoOut }}
-            out:fly={{ duration: window.innerWidth >= 768 ? 0 : 200, easing: expoOut }}
+            in:fly={{ duration: !isMobile ? 0 : 200, easing: expoOut }}
+            out:fly={{ duration: !isMobile ? 0 : 200, easing: expoOut }}
             class="fixed bottom-0 z-300 size-full bg-slate-900/50 md:relative md:z-0 md:row-start-2"
         >
             <div
-                in:fly={{ duration: 500, easing: expoOut, x: window.innerWidth >= 768 ? 100 : 0, y: window.innerWidth < 768 ? 100 : 0 }}
-                out:fly={{ duration: window.innerWidth >= 768 ? 0 : 500, easing: expoOut, x: 0, y: window.innerWidth < 768 ? 100 : 0 }}
+                in:fly={{ duration: 500, easing: expoOut, x: !isMobile ? 100 : 0, y: isMobile ? 100 : 0 }}
+                out:fly={{ duration: !isMobile ? 0 : 500, easing: expoOut, x: 0, y: isMobile ? 100 : 0 }}
                 class="flex size-full items-end justify-center"
             >
                 {#if $store.showQueue}

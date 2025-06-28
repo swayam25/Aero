@@ -1,14 +1,25 @@
 # Context Menu System
 
-A unified, maintainable context menu system for Aero built with Svelte 5, featuring dynamic submenus, loading states, and playlist thumbnail support.
+A unified, maintainable context menu system for Aero built with Svelte 5, featuring dynamic submenus, loading states, playlist thumbnail support, and mobile-responsive design with drawer interface.
+
+## Features
+
+- **Responsive Design**: Automatically switches between desktop context menu and mobile drawer based on screen size (`< 768px`)
+- **Dynamic Submenus**: Load content asynchronously with loading states and error handling
+- **Keyboard Support**: Comprehensive keyboard shortcuts with automatic formatting
+- **Mobile Drawer**: Touch-friendly drawer interface using vaul-svelte for mobile devices
+- **Loading States**: Skeleton loading animations for both desktop and mobile
+- **Thumbnail Support**: Display playlist thumbnails and user avatars
+- **Maintainable**: Generic loader system for any type of dynamic content
 
 ## Structure
 
 ```
 /ctxmenu/
 ├── components/
-│   ├── ContextMenu.svelte # Main context menu with submenu support
-│   ├── Submenu.svelte     # Submenu component
+│   ├── ContextMenu.svelte # Main context menu with responsive logic
+│   ├── MobileDrawer.svelte # Mobile drawer interface
+│   ├── Submenu.svelte     # Desktop submenu component
 │   ├── CtxButton.svelte   # Menu button component
 │   └── Demo.svelte        # Demo component
 ├── types.ts               # Type definitions including dynamic submenu types
@@ -33,7 +44,7 @@ function handleSongContextMenu(e: MouseEvent, song: SongDetailed) {
 
 ## Dynamic Submenus
 
-The new dynamic submenu system allows you to load content asynchronously when users hover over menu items.
+The dynamic submenu system allows you to load content asynchronously when users interact with menu items.
 
 ### Basic Usage
 
@@ -52,6 +63,7 @@ const actionWithDynamicSubmenu = createCtxAction({
             return items.map(item => createCtxAction({
                 label: item.name,
                 image: item.thumbnail, // Optional thumbnail
+                description: item.info, // Optional description (shown in mobile)
                 onclick: async (ctx) => {
                     console.log('Selected:', item);
                     ctx.closeMenu();
@@ -144,6 +156,28 @@ const customActions = [
 
 // Use custom actions
 openCtxMenu(e, customActions);
+```
+
+## Action Types
+
+Actions support different visual types:
+
+```ts
+createCtxAction({
+    label: "Delete",
+    type: "destructive", // Red highlight
+    onclick: async (ctx) => {
+        // Destructive action
+        ctx.closeMenu();
+    }
+});
+
+// Available types:
+// - "normal" (default)
+// - "error" / "destructive" (red)
+// - "success" (green)
+// - "warning" (yellow)
+// - "skeleton" (loading state)
 ```
 
 ## Loading States
@@ -308,3 +342,80 @@ const searchMenuActions = [
     })
 ];
 ```
+
+## Mobile-Specific Considerations
+
+### Action Descriptions
+On mobile, actions can include descriptions for better UX:
+
+```ts
+createCtxAction({
+    label: "Share",
+    description: "Share this song with friends", // Shown below label on mobile
+    icon: SolarShareLinear,
+    onclick: async (ctx) => {
+        shareAction();
+        ctx.closeMenu();
+    }
+});
+```
+
+### Touch Optimization
+The mobile drawer automatically optimizes for touch:
+- Larger touch targets (48px minimum)
+- Smooth drawer animations
+- Gesture-friendly close handles
+- Proper spacing between items
+
+### Navigation Stack
+Mobile submenus use a navigation stack:
+- **Back button**: Returns to previous menu level
+- **Title**: Shows current submenu name
+- **Breadcrumb**: Visual indicator of depth
+
+### Performance
+The mobile drawer is optimized for performance:
+- Lazy loading of submenu content
+- Efficient rendering with virtual scrolling for large lists
+- Minimal DOM updates during navigation
+
+## Dependencies
+
+- **vaul-svelte**: Mobile drawer component
+- **svelte-sonner**: Toast notifications for error handling
+- **@iconify/svelte**: Icon system
+
+## Installation
+
+```bash
+pnpm add vaul-svelte svelte-sonner
+```
+
+## Best Practices
+
+1. **Keep menus shallow**: Avoid deep nesting (max 2-3 levels)
+2. **Use loading states**: Always provide feedback during async operations
+3. **Provide descriptions**: Use descriptions on mobile for better UX
+4. **Handle errors gracefully**: Always include error labels for dynamic content
+5. **Test on mobile**: Verify drawer behavior on actual mobile devices
+6. **Optimize images**: Use appropriate sizes for thumbnails
+7. **Consider accessibility**: Ensure proper ARIA labels and keyboard navigation
+
+## Migration from Old System
+
+If migrating from the old playlist-specific system:
+
+```ts
+// Old way
+const oldActions = createPlaylistSubmenu(song);
+
+// New way
+const newActions = [
+    createCtxAction({
+        label: "Add to Playlist",
+        submenu: createSubmenuLoader(() => loadPlaylistSubmenu(song))
+    })
+];
+```
+
+The new system is backwards compatible, but you get better loading states and mobile support with the dynamic loader approach.

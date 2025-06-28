@@ -3,7 +3,7 @@
     import type { Snippet } from "svelte";
 
     interface Props {
-        type?: "normal" | "error" | "success" | "warning" | "skeleton";
+        type?: "normal" | "error" | "success" | "warning" | "skeleton" | "destructive";
         href?: string;
         class?: string;
         disabled?: boolean;
@@ -28,6 +28,7 @@
     let typeClass = $derived.by(() => {
         switch (type) {
             case "error":
+            case "destructive":
                 return "not-disabled:hover:bg-red-500/10 not-disabled:hover:text-red-500";
             case "success":
                 return "not-disabled:hover:bg-green-500/10 not-disabled:hover:text-green-500";
@@ -52,7 +53,7 @@
     {onmouseleave}
     {...rest}
     class={cn(
-        "group flex w-full items-start justify-start gap-2 rounded-lg px-2 py-1.5 transition-colors duration-200 not-disabled:cursor-pointer disabled:cursor-not-allowed disabled:opacity-50",
+        "group flex w-full items-center justify-start gap-2 rounded-lg px-2 py-1.5 transition-colors duration-200 not-disabled:cursor-pointer disabled:cursor-not-allowed disabled:opacity-50",
         typeClass,
         className
     )}

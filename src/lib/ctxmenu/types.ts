@@ -25,9 +25,10 @@ export interface CtxShortcut {
 export interface CtxAction {
     id: string;
     label: string;
+    description?: string; // Optional description for mobile drawer
     icon?: Component;
     image?: string; // URL for thumbnail/avatar images
-    type?: "normal" | "error" | "success" | "warning" | "skeleton";
+    type?: "normal" | "error" | "success" | "warning" | "skeleton" | "destructive";
     disabled?: boolean;
     separator?: boolean; // Add separator after this item
     shortcut?: string | CtxShortcut; // Keyboard shortcut (string for display, object for matching)

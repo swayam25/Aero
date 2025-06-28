@@ -57,6 +57,7 @@
         "@neodrag/svelte": "^2.3.2",
         "clsx": "^2.1.1",
         "svelte-range-slider-pips": "^3.2.2",
-        "tailwind-merge": "^3.2.0"
+        "tailwind-merge": "^3.2.0",
+        "vaul-svelte": "^0.3.2"
     }
 }
