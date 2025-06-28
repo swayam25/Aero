@@ -1,9 +1,22 @@
 <script lang="ts">
-    import { closeCtxMenu, formatShortcut, store } from "$lib/ctxmenu";
+    import {
+        closeCtxMenu,
+        closeSubmenu,
+        createErrorAction,
+        createLoadingActions,
+        formatShortcut,
+        isSubmenuLoader,
+        openSubmenu,
+        store
+    } from "$lib/ctxmenu";
+    import type { CtxAction } from "$lib/ctxmenu/types";
     import { onMount } from "svelte";
     import { toast } from "svelte-sonner";
     import { fade } from "svelte/transition";
     import CtxButton from "./CtxButton.svelte";
+    import Submenu from "./Submenu.svelte";
+    // Import icons for error states
+    import SolarConfoundedCircleLinear from "~icons/solar/confounded-circle-linear";
 
     let ctxMenu: HTMLDivElement = $state(null!);
     let x: number = $state(0);
@@ -57,7 +70,11 @@
     onMount(() => {
         function handleClickOutside(e: MouseEvent) {
             if ($store.isOpen && ctxMenu && !ctxMenu.contains(e.target as Node)) {
-                closeCtxMenu();
+                // Also check if click is outside submenu
+                const submenuElement = document.querySelector("[data-submenu]");
+                if (!submenuElement || !submenuElement.contains(e.target as Node)) {
+                    closeCtxMenu();
+                }
             }
         }
 
@@ -73,12 +90,58 @@
 
         if (action.disabled) return;
 
+        // If action has submenu, don't execute onclick, just handle submenu
+        if (action.submenu) {
+            return;
+        }
+
         try {
             await action.onclick();
         } catch (error) {
             console.error("Error executing context action:", error);
             toast.error("An error occurred");
         }
+    }
+
+    function handleMouseEnter(action: any, index: number, buttonElement: HTMLElement) {
+        if (action.submenu !== undefined) {
+            const rect = buttonElement.getBoundingClientRect();
+
+            // Check if this is a dynamic submenu loader
+            if (isSubmenuLoader(action.submenu)) {
+                const loader = action.submenu;
+
+                // Show loading state first
+                const loadingActions = createLoadingActions(loader.loadingItems || 3, loader.loadingLabel || "Loading...");
+                openSubmenu(index, loadingActions, rect);
+
+                // Load actual submenu content
+                loader
+                    .loader()
+                    .then((submenuActions: CtxAction[]) => {
+                        openSubmenu(index, submenuActions, rect);
+                    })
+                    .catch((error: Error) => {
+                        console.error("Failed to load submenu:", error);
+                        const errorAction = createErrorAction(loader.errorLabel || "Failed to load", SolarConfoundedCircleLinear);
+                        openSubmenu(index, [errorAction], rect);
+                    });
+            } else if (Array.isArray(action.submenu) && action.submenu.length > 0) {
+                // Static submenu
+                openSubmenu(index, action.submenu, rect);
+            }
+        } else {
+            closeSubmenu();
+        }
+    }
+
+    function handleMouseLeave() {
+        // Add small delay before closing submenu to allow moving to submenu
+        setTimeout(() => {
+            if (!document.querySelector("[data-submenu]:hover") && !document.querySelector("[data-ctx-button]:hover")) {
+                closeSubmenu();
+            }
+        }, 100);
     }
 </script>
 
@@ -91,16 +154,39 @@
     >
         <div in:fade={{ duration: 100 }} class="flex w-full flex-col items-start justify-center">
             {#each $store.actions as action, index}
-                <CtxButton type={action.type || "normal"} disabled={action.disabled} onclick={(e) => handleActionClick(action, e)}>
-                    {#if action.icon}
-                        {@const IconComponent = action.icon}
-                        <IconComponent class="size-5 shrink-0" />
-                    {/if}
-                    <span class="flex-1 text-left">{action.label}</span>
-                    {#if action.shortcut}
-                        <span class="ml-2 text-xs text-slate-400">
-                            {formatShortcut(action.shortcut)}
-                        </span>
+                <CtxButton
+                    type={action.type || "normal"}
+                    disabled={action.disabled}
+                    onclick={(e) => handleActionClick(action, e)}
+                    onmouseenter={(e) => handleMouseEnter(action, index, e.currentTarget as HTMLElement)}
+                    onmouseleave={handleMouseLeave}
+                    class="items-center justify-center"
+                    data-ctx-button
+                >
+                    {#if action.type === "skeleton"}
+                        <!-- Skeleton loading state with staggered animation -->
+                        <div class="size-10 shrink-0 animate-pulse rounded bg-slate-700/60" style="animation-delay: {index * 0.1}s"></div>
+                        <div class="h-5 flex-1 animate-pulse rounded bg-slate-700/60" style="animation-delay: {index * 0.1 + 0.05}s"></div>
+                    {:else}
+                        {#if action.image}
+                            <div class="flex size-10 shrink-0 items-center justify-center overflow-hidden rounded bg-slate-700/20">
+                                <img src={action.image} alt={action.label} class="size-full object-cover" loading="lazy" />
+                            </div>
+                        {:else if action.icon}
+                            {@const IconComponent = action.icon}
+                            <IconComponent class="size-5 shrink-0" />
+                        {/if}
+                        <span class="flex-1 text-left">{action.label}</span>
+                        {#if action.submenu && (Array.isArray(action.submenu) ? action.submenu.length > 0 : true)}
+                            <!-- Submenu indicator arrow -->
+                            <svg class="ml-2 h-4 w-4 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+                            </svg>
+                        {:else if action.shortcut}
+                            <span class="ml-2 text-xs text-slate-400">
+                                {formatShortcut(action.shortcut)}
+                            </span>
+                        {/if}
                     {/if}
                 </CtxButton>
 
@@ -110,4 +196,7 @@
             {/each}
         </div>
     </div>
+
+    <!-- Submenu component -->
+    <Submenu />
 {/if}

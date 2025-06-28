@@ -1,12 +1,13 @@
 import { get, writable } from "svelte/store";
 import { matchesShortcut } from "./shortcuts";
-import type { CtxAction, CtxActionContext, CtxStore } from "./types";
+import type { CtxAction, CtxActionContext, CtxStore, CtxSubmenuLoader } from "./types";
 
 export const store = writable<CtxStore>({
     isOpen: false,
     x: 0,
     y: 0,
-    actions: []
+    actions: [],
+    submenu: undefined
 });
 
 export function openCtxMenu(e: MouseEvent, actions: CtxAction[]) {
@@ -27,7 +28,8 @@ export function openCtxMenu(e: MouseEvent, actions: CtxAction[]) {
         isOpen: true,
         x,
         y,
-        actions: enhancedActions
+        actions: enhancedActions,
+        submenu: undefined
     });
 }
 
@@ -37,7 +39,8 @@ export function closeCtxMenu() {
         isOpen: false,
         x: 0,
         y: 0,
-        actions: []
+        actions: [],
+        submenu: undefined
     }));
 }
 
@@ -94,6 +97,92 @@ export function setupShortcuts(): () => void {
     return () => {
         document.removeEventListener("keydown", handleKeyDown);
     };
+}
+
+// Submenu management functions
+export function openSubmenu(parentIndex: number, submenuActions: CtxAction[], parentButtonRect: DOMRect) {
+    store.update((state) => {
+        // Calculate submenu position
+        const submenuX = parentButtonRect.right + 8; // 8px gap from parent menu
+        const submenuY = parentButtonRect.top;
+
+        // Check if submenu would go off screen and adjust position
+        const submenuWidth = 192; // min-w-48 = 192px
+        const submenuHeight = submenuActions.length * 40; // approximate height per item
+
+        let adjustedX = submenuX;
+        let adjustedY = submenuY;
+
+        // Adjust horizontal position if submenu goes off right edge
+        if (submenuX + submenuWidth > window.innerWidth) {
+            adjustedX = parentButtonRect.left - submenuWidth - 8; // Show on left side instead
+        }
+
+        // Adjust vertical position if submenu goes off bottom edge
+        if (submenuY + submenuHeight > window.innerHeight - 72) {
+            adjustedY = Math.max(window.innerHeight - submenuHeight - 72, 50);
+        }
+
+        return {
+            ...state,
+            submenu: {
+                isOpen: true,
+                x: adjustedX,
+                y: adjustedY,
+                actions: submenuActions,
+                parentIndex
+            }
+        };
+    });
+}
+
+export function closeSubmenu() {
+    store.update((state) => ({
+        ...state,
+        submenu: undefined
+    }));
+}
+
+// Dynamic submenu utilities
+export function createSubmenuLoader(
+    loader: () => Promise<CtxAction[]>,
+    options: {
+        loadingItems?: number;
+        loadingLabel?: string;
+        errorLabel?: string;
+    } = {}
+): CtxSubmenuLoader {
+    return {
+        loader,
+        loadingItems: options.loadingItems ?? 3,
+        loadingLabel: options.loadingLabel ?? "Loading...",
+        errorLabel: options.errorLabel ?? "Failed to load"
+    };
+}
+
+export function createLoadingActions(count: number, label: string): CtxAction[] {
+    return Array.from({ length: count }, (_, i) =>
+        createCtxAction({
+            label: `${label} ${i + 1}`,
+            type: "skeleton",
+            disabled: true,
+            onclick: async () => {}
+        })
+    );
+}
+
+export function createErrorAction(label: string, icon?: any): CtxAction {
+    return createCtxAction({
+        label,
+        icon,
+        type: "error",
+        disabled: true,
+        onclick: async () => {}
+    });
+}
+
+export function isSubmenuLoader(submenu: CtxAction[] | CtxSubmenuLoader | undefined): submenu is CtxSubmenuLoader {
+    return submenu !== undefined && !Array.isArray(submenu) && "loader" in submenu;
 }
 
 export * from "./actions";

@@ -5,11 +5,10 @@ import { showPlDeletePopup, showPlRenamePopup } from "$lib/stores/popups";
 import { toast } from "svelte-sonner";
 import { get } from "svelte/store";
 import type { SongDetailed } from "ytmusic-api";
-import { createCtxAction, openCtxMenu, shortcuts } from "./index";
+import { createCtxAction, createSubmenuLoader, shortcuts } from "./index";
 import type { CtxAction } from "./types";
 
 // Icons
-import SolarAltArrowLeftLinear from "~icons/solar/alt-arrow-left-linear";
 import SolarConfoundedCircleLinear from "~icons/solar/confounded-circle-linear";
 import SolarCopyLinear from "~icons/solar/copy-linear";
 import SolarInfoCircleLinear from "~icons/solar/info-circle-linear";
@@ -62,15 +61,14 @@ export function createSongActions(song: SongDetailed, loginUserID: string | null
             createCtxAction({
                 label: "Add to Playlist",
                 icon: SolarMusicLibraryLinear,
+                submenu: createSubmenuLoader(() => loadPlaylistSubmenu(song), {
+                    loadingItems: 3,
+                    loadingLabel: "Loading playlist",
+                    errorLabel: "Failed to load playlists"
+                }),
                 onclick: async (ctx) => {
-                    const playlistActions = await createPlaylistSelectionActions(song);
-                    // Re-open context menu with playlist selection
-                    // We need to get the last mouse event position, for now just use center
-                    const fakeEvent = new MouseEvent("contextmenu", {
-                        clientX: window.innerWidth / 2,
-                        clientY: window.innerHeight / 2
-                    });
-                    openCtxMenu(fakeEvent, playlistActions);
+                    // This will be handled by submenu, but keep as fallback
+                    ctx.closeMenu();
                 }
             })
         );
@@ -325,80 +323,58 @@ export function createPlaylistSongActions(
     return actions;
 }
 
-// Playlist selection submenu factory
-async function createPlaylistSelectionActions(song: SongDetailed): Promise<CtxAction[]> {
-    const actions: CtxAction[] = [];
-
-    // Back button
-    actions.push(
-        createCtxAction({
-            label: "Back",
-            icon: SolarAltArrowLeftLinear,
-            separator: true,
-            onclick: async (ctx) => {
-                // Go back to previous menu - would need to implement history
-                ctx.closeMenu();
-            }
-        })
-    );
-
+// Load playlist submenu dynamically
+async function loadPlaylistSubmenu(song: SongDetailed): Promise<CtxAction[]> {
     try {
-        // Fetch playlists
         const resp = await fetch(`/api/playlists`);
         const playlists = (await resp.json()) as InsertPlaylist[];
 
         if (playlists.length === 0) {
-            actions.push(
+            return [
                 createCtxAction({
                     label: "No playlists found",
                     icon: SolarConfoundedCircleLinear,
                     disabled: true,
                     onclick: async () => {}
                 })
-            );
-        } else {
-            // Add playlist actions
-            playlists.forEach((playlist) => {
-                actions.push(
-                    createCtxAction({
-                        label: playlist.name,
-                        onclick: async (ctx) => {
-                            const resp = await fetch(`/api/playlist/${playlist.id}`, {
-                                body: JSON.stringify({
-                                    key: "add_song",
-                                    value: {
-                                        playlistID: playlist.id,
-                                        songID: song.videoId,
-                                        songCover: song.thumbnails[0].url.replace("=w60-h60-l90-rj", "")
-                                    }
-                                }),
-                                method: "POST",
-                                headers: { "Content-Type": "application/json" }
-                            });
-
-                            const respData = await resp.json();
-                            if (resp.ok) {
-                                toast.success("Added song to playlist");
-                            } else {
-                                toast.error(respData.error);
-                            }
-                            ctx.closeMenu();
-                        }
-                    })
-                );
-            });
+            ];
         }
-    } catch (error) {
-        actions.push(
+
+        return playlists.map((playlist) =>
             createCtxAction({
-                label: "Failed to load playlists",
-                icon: SolarConfoundedCircleLinear,
-                type: "error",
-                disabled: true,
-                onclick: async () => {}
+                label: playlist.name,
+                image: playlist.cover || undefined,
+                icon: playlist.cover ? undefined : SolarMusicLibraryLinear,
+                onclick: async (ctx) => {
+                    ctx.closeMenu();
+
+                    try {
+                        const resp = await fetch(`/api/playlist/${playlist.id}`, {
+                            body: JSON.stringify({
+                                key: "add_song",
+                                value: {
+                                    playlistID: playlist.id,
+                                    songID: song.videoId,
+                                    songCover: song.thumbnails[0].url.replace("=w60-h60-l90-rj", "")
+                                }
+                            }),
+                            method: "POST",
+                            headers: { "Content-Type": "application/json" }
+                        });
+
+                        const respData = await resp.json();
+                        if (resp.ok) {
+                            toast.success("Added song to playlist");
+                        } else {
+                            toast.error(respData.error);
+                        }
+                    } catch (error) {
+                        toast.error("Failed to add song to playlist");
+                    }
+                }
             })
         );
+    } catch (error) {
+        throw new Error("Failed to load playlists");
     }
-
-    return actions;
 }
