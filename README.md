@@ -119,3 +119,16 @@ Aero makes listening to music feel light and breezy
     - For other colors use `<color>-500` as text color and `<color>-500/10` as background color on hover (*make sure to have bg color as `slate-800`/`slate-900`/`slate-950` before hover*).
     - Border radius: `rounded-lg` (*For every possible card/container*)
     - For buttons and links, we strictly use the [`<Button />`](./src/lib/components/ui/Button.svelte) component.
+
+- Z Index Layer System
+    - **Base Layer (`z-0`)**: Layout components and default content.
+    - **Content Layer (`z-10`)**: Drawer content and elevated cards.
+    - **UI Components (`z-50`)**: Tooltips and popovers.
+    - **Modals & Overlays (`z-100`)**: Dialog and alert popups.
+    - **Toast Notifications (`z-900`)**: Toast messages using `style="z-index: 900;"`.
+    - **Context Menus (`z-[1000]`)**: Right-click context menu using `z-[1000]` class.
+    - **Submenus (`z-[1001]`)**: Context menu submenus using `z-[1001]` class.
+    - **Mobile Drawers**: Dynamic `zIndex` prop values:
+        - Player drawer: `zIndex={1000}` (*default `MobileDrawer` component `zIndex` value*)
+        - Queue & Lyrics drawer: `zIndex={1100}`
+        - Context menu drawer: `zIndex={1300}`

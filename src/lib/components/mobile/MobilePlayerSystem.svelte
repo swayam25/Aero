@@ -47,7 +47,7 @@
 </MobileDrawer>
 
 <!-- Lyrics Drawer -->
-<MobileDrawer open={$store.showLyrics} onClose={closeLyrics} title="Lyrics" maxHeight="max-h-[80vh]" zIndex={1200}>
+<MobileDrawer open={$store.showLyrics} onClose={closeLyrics} title="Lyrics" maxHeight="max-h-[80vh]" zIndex={1100}>
     <MobileLyrics />
 </MobileDrawer>
 
