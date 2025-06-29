@@ -6,7 +6,7 @@
     interface Props {
         title: string;
         open?: boolean;
-        trigger: Snippet;
+        trigger?: Snippet;
         description: Snippet;
         actions: Snippet;
     }
@@ -14,9 +14,11 @@
 </script>
 
 <AlertDialog.Root bind:open>
-    <AlertDialog.Trigger class="flex w-full items-center justify-center">
-        {@render trigger()}
-    </AlertDialog.Trigger>
+    {#if trigger}
+        <AlertDialog.Trigger class="flex w-full items-center justify-center">
+            {@render trigger()}
+        </AlertDialog.Trigger>
+    {/if}
     <AlertDialog.Portal>
         <AlertDialog.Overlay class="fixed inset-0 z-100 flex size-full items-center justify-center backdrop-blur-xs" forceMount>
             {#snippet child({ props, open })}

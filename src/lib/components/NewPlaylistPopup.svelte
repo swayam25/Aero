@@ -48,17 +48,15 @@
         Enter a new name for the playlist and click <span class="font-semibold text-sky-500">create</span> to create a new playlist.
     {/snippet}
     {#snippet fields()}
-        <div class="flex size-full flex-col items-start justify-center gap-2">
-            <Input
-                bind:value={inputValue}
-                class="w-full"
-                placeholder="Playlist Name"
-                icon={SolarPlaylist2Linear}
-                max={10}
-                onEnter={createPlaylist}
-                bind:ref={input}
-            />
-        </div>
+        <Input
+            bind:value={inputValue}
+            class="w-full"
+            placeholder="Playlist Name"
+            icon={SolarPlaylist2Linear}
+            max={10}
+            onEnter={createPlaylist}
+            bind:ref={input}
+        />
     {/snippet}
     {#snippet actions()}
         <Dialog.Close

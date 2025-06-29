@@ -50,8 +50,6 @@
 
 <!-- Delete Alert Popup (triggered via context menu) -->
 <AlertPopup title="ARE YOU SURE?" bind:open={$popupStore.showPlDeletePopup}>
-    <!-- No trigger snippet as this is controlled by the popup -->
-    {#snippet trigger()}{/snippet}
     {#snippet description()}
         This action cannot be undone. This will permanently
         <span class="font-semibold text-red-500">delete your playlist</span> named
@@ -68,22 +66,19 @@
 <!-- Rename Popup (triggered via context menu) -->
 <DialogPopup title="RENAME PLAYLIST" bind:open={$popupStore.showPlRenamePopup}>
     <!-- No trigger snippet as this is controlled by the popup -->
-    {#snippet trigger()}{/snippet}
     {#snippet description()}
         Enter the new name for your playlist. Be creative!
     {/snippet}
     {#snippet fields()}
-        <div class="flex size-full flex-col items-start justify-center gap-2">
-            <Input
-                bind:value={inputValue}
-                class="w-full"
-                placeholder="Playlist Name"
-                icon={SolarPlaylist2Linear}
-                onEnter={renamePlaylist}
-                max={10}
-                bind:ref={input}
-            />
-        </div>
+        <Input
+            bind:value={inputValue}
+            class="w-full"
+            placeholder="Playlist Name"
+            icon={SolarPlaylist2Linear}
+            onEnter={renamePlaylist}
+            max={10}
+            bind:ref={input}
+        />
     {/snippet}
     {#snippet actions()}
         <Dialog.Close class="disabled:cursor-not-allowed" onclick={renamePlaylist} disabled={!inputValue}>
