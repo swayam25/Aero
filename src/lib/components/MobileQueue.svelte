@@ -34,17 +34,17 @@
         /* Optimize for mobile touch */
         padding: 0.75rem !important;
         margin-bottom: 0.5rem !important;
-        background-color: rgba(15, 23, 42, 0.5) !important;
+        background-color: var(--color-slate-900) !important;
         border-radius: 0.5rem !important;
     }
 
     :global(.mobile-queue-wrapper .song-handle:hover) {
-        background-color: rgba(30, 41, 59, 0.8) !important;
+        background-color: var(--color-slate-800) !important;
     }
 
     :global(.mobile-queue-wrapper .size-15) {
         /* Slightly smaller thumbnails for mobile */
-        width: 3rem !important;
-        height: 3rem !important;
+        width: 2.5rem !important;
+        height: 2.5rem !important;
     }
 </style>
