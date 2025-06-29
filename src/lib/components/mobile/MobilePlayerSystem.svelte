@@ -1,17 +1,10 @@
 <script lang="ts">
-    import type { UserData } from "$lib/discord/types";
     import { store } from "$lib/player";
+    import Player from "../Player.svelte";
+    import MobileDrawer from "../ui/MobileDrawer.svelte";
     import MobileLyrics from "./MobileLyrics.svelte";
     import MobilePlayer from "./MobilePlayer.svelte";
     import MobileQueue from "./MobileQueue.svelte";
-    import Player from "./Player.svelte";
-    import MobileDrawer from "./ui/MobileDrawer.svelte";
-
-    interface Props {
-        user: UserData | null;
-    }
-
-    let { user }: Props = $props();
 
     let showMobilePlayer = $state(false);
 
@@ -50,9 +43,7 @@
 
 <!-- Queue Drawer -->
 <MobileDrawer open={$store.showQueue} onClose={closeQueue} title="Queue" maxHeight="max-h-[80vh]" zIndex={1100}>
-    {#if user}
-        <MobileQueue {user} />
-    {/if}
+    <MobileQueue />
 </MobileDrawer>
 
 <!-- Lyrics Drawer -->
@@ -62,5 +53,5 @@
 
 <!-- Mini Player (clickable to open mobile player) -->
 <button class="w-full cursor-pointer rounded-lg bg-slate-900" onclick={handlePlayerClick} disabled={$store.state === "unstarted"}>
-    <Player {user} />
+    <Player />
 </button>

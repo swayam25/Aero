@@ -1,5 +1,5 @@
 <script lang="ts">
-    import Lyrics from "./Lyrics.svelte";
+    import Lyrics from "../Lyrics.svelte";
 </script>
 
 <!-- Mobile Lyrics using original Lyrics component styled for drawer -->

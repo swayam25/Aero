@@ -2,7 +2,7 @@
     import { onNavigate } from "$app/navigation";
     import BottomBar from "$lib/components/BottomBar.svelte";
     import Lyrics from "$lib/components/Lyrics.svelte";
-    import MobilePlayerSystem from "$lib/components/MobilePlayerSystem.svelte";
+    import MobilePlayerSystem from "$lib/components/mobile/MobilePlayerSystem.svelte";
     import Navbar from "$lib/components/Navbar.svelte";
     import Player from "$lib/components/Player.svelte";
     import PlaylistDialogPopup from "$lib/components/PlaylistDialogPopup.svelte";
@@ -149,7 +149,7 @@
                 class="flex size-full items-end justify-center"
             >
                 {#if $store.showQueue}
-                    <Queue user={data.user} />
+                    <Queue />
                 {:else if $store.showLyrics}
                     <Lyrics />
                 {/if}
@@ -158,10 +158,10 @@
     {/if}
     <div class="fixed {data.user ? 'bottom-15' : 'bottom-2'} w-full p-2 md:relative md:bottom-0 md:col-span-full md:row-start-3 md:p-0">
         {#if isMobile}
-            <MobilePlayerSystem user={data.user} />
+            <MobilePlayerSystem />
         {:else}
             <div class="rounded-lg bg-slate-900 md:rounded-none md:bg-transparent">
-                <Player user={data.user} />
+                <Player />
             </div>
         {/if}
     </div>

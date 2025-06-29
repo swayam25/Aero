@@ -1,5 +1,6 @@
 <script lang="ts">
     import { invalidateAll } from "$app/navigation";
+    import Draggable from "$lib/components/ui/Draggable.svelte";
     import MarqueeText from "$lib/components/ui/MarqueeText.svelte";
     import Seo from "$lib/components/ui/Seo.svelte";
     import Switch from "$lib/components/ui/Switch.svelte";
@@ -8,7 +9,6 @@
     import { fetchSongDetailed, playPlaylist, store } from "$lib/player";
     import { supabase } from "$lib/supabase";
     import { formatTime } from "$lib/utils/time";
-    import { draggable, type DragOptions } from "@neodrag/svelte";
     import { onDestroy } from "svelte";
     import { toast } from "svelte-sonner";
     import { expoOut } from "svelte/easing";
@@ -24,80 +24,47 @@
     let playlistSongs: Promise<SongFull>[] = $derived(data.playlistSongs);
     let playlistObject: { id: number; song: Promise<SongFull> }[] = $state([]);
 
-    let currentDragIndex = $state(0);
-    let translateY = $state(0);
-    let lastOffsetY = $state(0);
-    let dragging = $state(false);
-
     let plSyncTimeout: NodeJS.Timeout | null = $state(null);
 
-    const options: DragOptions = {
-        axis: "y",
-        bounds: "parent",
-        recomputeBounds: {
-            drag: true
-        },
-        onDragStart({ rootNode, offsetY }) {
-            currentDragIndex = [...rootNode.parentNode!.children].indexOf(rootNode);
-            lastOffsetY = offsetY;
-            translateY = 0;
-            dragging = true;
-        },
-        onDrag({ rootNode, offsetY }) {
-            translateY += offsetY - lastOffsetY;
-            lastOffsetY = offsetY;
-            if (translateY > 0.5 * rootNode.clientHeight && currentDragIndex != playlistObject.length - 1) {
-                shiftItem(rootNode, 1);
-            } else if (translateY < -0.5 * rootNode.clientHeight && currentDragIndex != 0) {
-                shiftItem(rootNode, -1);
-            }
-        },
-        async onDragEnd({ rootNode }) {
-            rootNode.style.transform = `translate3d(0,0,0)`;
-            translateY = 0;
-            dragging = false;
-            if (plSyncTimeout) {
-                clearTimeout(plSyncTimeout);
-            }
-            plSyncTimeout = setTimeout(async () => {
-                toast.promise(
-                    async () => {
-                        const resp = await fetch(`/api/playlist/${data.playlist.id}`, {
-                            method: "POST",
-                            body: JSON.stringify({
-                                key: "reorder",
-                                value: {
-                                    playlistID: data.playlist.id,
-                                    songIDs: (await Promise.all(playlistObject.map((item) => item.song))).map((item) => item.videoId)
-                                }
-                            }),
-                            headers: { "Content-Type": "application/json" }
-                        });
-                        if (!resp.ok) {
-                            const respData = await resp.json();
-                            throw new Error(respData.error);
-                        }
-                    },
-                    {
-                        loading: "Syncing playlist...",
-                        success: "Playlist synced successfully",
-                        error: (e) => {
-                            return `${e}`;
-                        }
-                    }
-                );
-            }, 1000);
-        },
-        transform() {
-            return `translate3d(0,${translateY}px,0)`;
+    // Handle reordering items in the playlist
+    function handleReorder(fromIndex: number, toIndex: number) {
+        const [movedItem] = playlistObject.splice(fromIndex, 1);
+        playlistObject.splice(toIndex, 0, movedItem);
+    }
+
+    // Handle drag end - sync with server
+    async function handleDragEnd() {
+        if (plSyncTimeout) {
+            clearTimeout(plSyncTimeout);
         }
-    };
-
-    function shiftItem(item: HTMLElement, shift: number) {
-        playlistObject.splice(currentDragIndex + shift, 0, playlistObject.splice(currentDragIndex, 1)[0]);
-
-        currentDragIndex += shift;
-        translateY -= shift * item.offsetHeight;
+        plSyncTimeout = setTimeout(async () => {
+            toast.promise(
+                async () => {
+                    const resp = await fetch(`/api/playlist/${data.playlist.id}`, {
+                        method: "POST",
+                        body: JSON.stringify({
+                            key: "reorder",
+                            value: {
+                                playlistID: data.playlist.id,
+                                songIDs: (await Promise.all(playlistObject.map((item) => item.song))).map((item) => item.videoId)
+                            }
+                        }),
+                        headers: { "Content-Type": "application/json" }
+                    });
+                    if (!resp.ok) {
+                        const respData = await resp.json();
+                        throw new Error(respData.error);
+                    }
+                },
+                {
+                    loading: "Syncing playlist...",
+                    success: "Playlist synced successfully",
+                    error: (e) => {
+                        return `${e}`;
+                    }
+                }
+            );
+        }, 1000);
     }
 
     $effect(() => {
@@ -249,45 +216,53 @@
                     </div>
                 </div>
             {:then song}
-                <li class="w-full" use:draggable={options}>
-                    <button
-                        onclick={async () => {
-                            await playPlaylist(
-                                fetchSongDetailed(song),
-                                playlistObject.map((item) => item.song)
-                            );
-                        }}
-                        in:fly={{ duration: 500, easing: expoOut, x: -100, y: 0 }}
-                        out:fly={{ duration: 500, easing: expoOut, x: 100, y: 0 }}
-                        oncontextmenu={(e) => {
-                            e.preventDefault();
-                            const actions = createPlaylistSongActions(
-                                fetchSongDetailed(song),
-                                data.playlist,
-                                data.loginUser?.id || null,
-                                data.user?.id || null
-                            );
-                            openCtxMenu(e, actions);
-                        }}
-                        class="pl-song-handle flex w-full cursor-pointer items-center justify-center gap-2 rounded-lg p-2 transition-colors duration-200 hover:bg-slate-800"
-                    >
-                        <div class="flex size-10 items-center justify-center p-1 text-lg">
-                            {#if song.videoId === $store.meta?.videoId}
-                                <span in:fade={{ duration: 100 }} class="size-full">
-                                    <HugeiconsCd class="size-full animate-spin text-sky-500" />
-                                </span>
-                            {:else}
-                                <span in:fade={{ duration: 100 }} class="text-slate-200">{idx + 1}</span>
-                            {/if}
-                        </div>
-                        <img src={song.thumbnails[0].url.replace("=w60-h60-l90-rj", "")} alt="{song.name}'s Thumbnail" class="size-15 rounded-lg" />
-                        <div class="flex w-full flex-col items-center justify-center text-left">
-                            <MarqueeText class="w-10 font-bold" text={song.name} />
-                            <MarqueeText class="w-10 text-sm text-slate-400" text={song.artist.name} />
-                        </div>
-                        <p class="text-sm text-slate-400">{formatTime(song.duration ?? 0)}</p>
-                    </button>
-                </li>
+                <Draggable items={playlistObject} onReorder={handleReorder} onDragEnd={handleDragEnd} class="w-full">
+                    {#snippet children()}
+                        <li class="w-full">
+                            <button
+                                onclick={async () => {
+                                    await playPlaylist(
+                                        fetchSongDetailed(song),
+                                        playlistObject.map((item) => item.song)
+                                    );
+                                }}
+                                in:fly={{ duration: 500, easing: expoOut, x: -100, y: 0 }}
+                                out:fly={{ duration: 500, easing: expoOut, x: 100, y: 0 }}
+                                oncontextmenu={(e) => {
+                                    e.preventDefault();
+                                    const actions = createPlaylistSongActions(
+                                        fetchSongDetailed(song),
+                                        data.playlist,
+                                        data.loginUser?.id || null,
+                                        data.user?.id || null
+                                    );
+                                    openCtxMenu(e, actions);
+                                }}
+                                class="pl-song-handle flex w-full cursor-pointer items-center justify-center gap-2 rounded-lg p-2 transition-colors duration-200 hover:bg-slate-800"
+                            >
+                                <div class="flex size-10 items-center justify-center p-1 text-lg">
+                                    {#if song.videoId === $store.meta?.videoId}
+                                        <span in:fade={{ duration: 100 }} class="size-full">
+                                            <HugeiconsCd class="size-full animate-spin text-sky-500" />
+                                        </span>
+                                    {:else}
+                                        <span in:fade={{ duration: 100 }} class="text-slate-200">{idx + 1}</span>
+                                    {/if}
+                                </div>
+                                <img
+                                    src={song.thumbnails[0].url.replace("=w60-h60-l90-rj", "")}
+                                    alt="{song.name}'s Thumbnail"
+                                    class="size-15 rounded-lg"
+                                />
+                                <div class="flex w-full flex-col items-center justify-center text-left">
+                                    <MarqueeText class="w-10 font-bold" text={song.name} />
+                                    <MarqueeText class="w-10 text-sm text-slate-400" text={song.artist.name} />
+                                </div>
+                                <p class="text-sm text-slate-400">{formatTime(song.duration ?? 0)}</p>
+                            </button>
+                        </li>
+                    {/snippet}
+                </Draggable>
             {/await}
         {/each}
     {/if}

@@ -1,6 +1,5 @@
 <script lang="ts">
     import { createQueueActions, openCtxMenu } from "$lib/ctxmenu";
-    import type { UserData } from "$lib/discord/types";
     import { previous, seekTo, setVolume, skip, store, toggleLyrics, togglePause, toggleQueue } from "$lib/player";
     import { formatTime } from "$lib/utils/time";
     import { onMount } from "svelte";
@@ -22,9 +21,6 @@
     import Popover from "./ui/Popover.svelte";
     import Slider from "./ui/Slider.svelte";
 
-    let { user }: { user: UserData | null } = $props();
-
-    let showMobilePlayer: boolean = $state(false);
     let currentTime: number = $state($store.currentTime);
     let isSeeking: boolean = $state(false);
 
