@@ -41,8 +41,8 @@
         <Drawer.Overlay class="fixed inset-0 bg-black/50" style="z-index: {zIndex - 1};" />
         <Drawer.Content
             class={cn(
-                "fixed inset-x-0 flex flex-col",
-                fullScreen ? "inset-0 h-screen" : "bottom-0 mt-24 h-fit rounded-t-2xl border-t border-slate-700",
+                "fixed inset-x-0 flex flex-col rounded-t-2xl border-t border-slate-700",
+                fullScreen ? "-top-4 right-0 left-0 h-[calc(100vh+1rem)]" : "bottom-0 mt-24 h-fit",
                 backgroundImage ? "bg-slate-950" : "bg-slate-900",
                 className
             )}
@@ -52,19 +52,19 @@
         >
             <!-- Background overlay for blur effect -->
             {#if backgroundImage}
-                <div class={cn("absolute inset-0 bg-slate-950/80", blur ? "backdrop-blur-2xl" : "", fullScreen ? "" : "rounded-t-2xl")}></div>
+                <div class={cn("absolute inset-0 rounded-t-2xl bg-slate-950/80", blur ? "backdrop-blur-2xl" : "")}></div>
             {/if}
 
             <!-- Content wrapper with relative positioning -->
             <div class="relative z-10 flex h-full flex-col">
                 <!-- Handle -->
                 {#if showHandle}
-                    <div class="mx-auto mt-4 h-2 w-12 rounded-full bg-slate-600"></div>
+                    <div class={cn("mx-auto h-2 w-12 rounded-full bg-slate-600", fullScreen ? "mt-8" : "mt-4")}></div>
                 {/if}
 
                 <!-- Header -->
                 {#if title}
-                    <div class={cn("relative flex items-center justify-center py-5", headerClass)}>
+                    <div class={cn("relative flex items-center justify-center py-4", headerClass)}>
                         <h2 class="text-lg font-medium text-slate-200">{title}</h2>
                     </div>
                 {/if}

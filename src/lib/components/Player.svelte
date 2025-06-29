@@ -21,6 +21,12 @@
     import Popover from "./ui/Popover.svelte";
     import Slider from "./ui/Slider.svelte";
 
+    let {
+        onSongInfoClick = () => {}
+    }: {
+        onSongInfoClick?: () => void;
+    } = $props();
+
     let currentTime: number = $state($store.currentTime);
     let isSeeking: boolean = $state(false);
 
@@ -65,8 +71,13 @@
 
 <div id="player" class="relative flex h-15 w-full items-center justify-end gap-2 rounded-lg px-4 sm:justify-center">
     <!-- Song Info -->
-    <div
+    <button
         class="absolute left-0 flex items-center justify-center gap-2 transition-opacity md:left-5"
+        onclick={() => {
+            if ($store.state !== "unstarted") {
+                onSongInfoClick();
+            }
+        }}
         oncontextmenu={(e) => {
             if ($store.state === "unstarted") return;
             e.preventDefault();
@@ -75,7 +86,6 @@
                 openCtxMenu(e, actions);
             }
         }}
-        role="button"
         tabindex="0"
     >
         <div
@@ -88,12 +98,12 @@
                 <span class="h-3 w-40 rounded-lg bg-slate-800 md:h-4 md:bg-slate-900"></span>
             </div>
         {:else}
-            <button in:fly={{ duration: 100 }} class="flex max-w-40 flex-col items-start justify-center text-left">
+            <div in:fly={{ duration: 100 }} class="flex max-w-40 flex-col items-start justify-center text-left">
                 <MarqueeText text={$store.meta?.name || ""} class="text-sm font-semibold" />
                 <span class="w-20 truncate text-xs text-slate-400 md:w-40">{$store.meta?.artist.name}</span>
-            </button>
+            </div>
         {/if}
-    </div>
+    </button>
 
     <!-- Main Controls -->
     <div

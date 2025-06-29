@@ -52,6 +52,6 @@
 </MobileDrawer>
 
 <!-- Mini Player (clickable to open mobile player) -->
-<button class="w-full cursor-pointer rounded-lg bg-slate-900" onclick={handlePlayerClick} disabled={$store.state === "unstarted"}>
-    <Player />
+<button class="w-full cursor-pointer rounded-lg bg-slate-900" disabled={$store.state === "unstarted"}>
+    <Player onSongInfoClick={handlePlayerClick} />
 </button>
