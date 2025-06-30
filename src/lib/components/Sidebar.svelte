@@ -9,7 +9,7 @@
     let { user, playlists }: { user: UserData; playlists: InsertPlaylist[] } = $props();
 </script>
 
-<div class="flex size-full w-20 flex-col items-center justify-start rounded-lg bg-slate-900">
+<div class="flex h-full w-20 flex-col items-center justify-start rounded-lg bg-slate-900">
     <Tooltip side="right" class="my-5">
         {#snippet trigger()}
             <a href="/playlist" class="cursor-pointer opacity-80 transition-opacity hover:opacity-100">
@@ -25,24 +25,29 @@
         {#each playlists as playlist}
             <Tooltip side="right">
                 {#snippet trigger()}
-                    <!-- This div is used to wrap the button for tooltip alignment -->
-                    <div>
-                        <button
-                            aria-label={playlist.name}
-                            class="size-15 cursor-pointer rounded-lg bg-slate-800 bg-cover"
-                            style="background-image: url({playlist.cover});"
-                            onclick={() => goto(`/playlist/${user?.id}/${playlist.id}`)}
-                            oncontextmenu={(e) => {
+                    <!-- Using <button> here breaks the tooltip, which leads the app to crash -->
+                    <div
+                        role="button"
+                        tabindex="0"
+                        aria-label={playlist.name || "Unnamed playlist"}
+                        class="size-15 cursor-pointer rounded-lg bg-slate-800 bg-cover transition-transform"
+                        style="background-image: {playlist.cover ? `url(${playlist.cover})` : 'none'};"
+                        onclick={() => goto(`/playlist/${user?.id}/${playlist.id}`)}
+                        onkeydown={(e) => {
+                            if (e.key === "Enter" || e.key === " ") {
                                 e.preventDefault();
-                                const actions = createPlaylistActions({ name: playlist.name, id: playlist.id ?? "" }, user?.id);
-                                openCtxMenu(e, actions);
-                            }}
-                        >
-                        </button>
-                    </div>
+                                goto(`/playlist/${user?.id}/${playlist.id}`);
+                            }
+                        }}
+                        oncontextmenu={(e) => {
+                            e.preventDefault();
+                            const actions = createPlaylistActions({ name: playlist.name || "Unnamed playlist", id: playlist.id ?? "" }, user?.id);
+                            openCtxMenu(e, actions);
+                        }}
+                    ></div>
                 {/snippet}
                 {#snippet content()}
-                    {playlist.name}
+                    {playlist.name || "Unnamed playlist"}
                 {/snippet}
             </Tooltip>
         {/each}

@@ -1,13 +1,59 @@
 <script lang="ts">
     import SongListX from "$lib/components/SongListX.svelte";
+    import Popover from "$lib/components/ui/Popover.svelte";
     import Seo from "$lib/components/ui/Seo.svelte";
+    import Tooltip from "$lib/components/ui/Tooltip.svelte";
+    import CtxButton from "$lib/ctxmenu/components/CtxButton.svelte";
+    import type { SelectPlaylist } from "$lib/db/schema";
     import { fetchSongDetailed, play, store } from "$lib/player";
+    import { supabase } from "$lib/supabase";
+    import { formatTime } from "$lib/utils/time";
+    import { toast } from "svelte-sonner";
     import { fade } from "svelte/transition";
+    import SolarConfoundedCircleLinear from "~icons/solar/confounded-circle-linear";
+    import SolarCopyLinear from "~icons/solar/copy-linear";
     import SolarPauseCircleBold from "~icons/solar/pause-circle-bold";
     import SolarPlayCircleBold from "~icons/solar/play-circle-bold";
+    import SolarPlaylist2Linear from "~icons/solar/playlist-2-linear";
     import type { PageData } from "./$types";
 
     let { data }: { data: PageData } = $props();
+
+    let playlists: SelectPlaylist[] | null = $derived(data.playlists);
+
+    $effect(() => {
+        if (data.user && playlists) {
+            // Sync playlist data with db
+            const channel = supabase
+                .channel("playlist-changes-song-info")
+                .on(
+                    "postgres_changes",
+                    {
+                        event: "UPDATE",
+                        schema: "public",
+                        table: "playlist",
+                        filter: `user_id=eq.${data.user?.id}`
+                    },
+                    (payload) => {
+                        const { new: newPlaylist } = payload;
+                        if (playlists) {
+                            playlists = playlists.map((playlist: SelectPlaylist) => {
+                                if (playlist.id === newPlaylist.id) {
+                                    return { ...playlist, ...newPlaylist };
+                                }
+                                return playlist;
+                            });
+                        }
+                    }
+                )
+                .subscribe();
+
+            return () => {
+                channel.unsubscribe();
+            };
+        }
+    });
+    let openPlaylistPopover = $state(false);
 </script>
 
 <Seo
@@ -15,39 +61,143 @@
     description={`Listen to ${data.song.name} by ${data.song.artist.name}`}
     image={data.song.thumbnails[0].url.replace("=w60-h60-l90-rj", "")}
 />
+
 <div class="flex w-full flex-col items-center justify-center gap-4 md:flex-row md:justify-start">
     <div
         class="size-40 shrink-0 rounded-lg bg-slate-800 bg-cover md:size-50"
         style="background-image: url({data.song.thumbnails[0].url.replace('=w60-h60-l90-rj', '')});"
     ></div>
-    <div class="flex flex-col items-center justify-center gap-2 md:items-start">
-        <div class="flex items-center justify-center gap-2"></div>
-        <div class="flex items-center justify-center gap-2 md:items-end">
+    <div class="flex flex-col items-start justify-center gap-2 text-left">
+        <div class="flex flex-col items-start justify-center gap-2 text-left">
             <h1
-                class="text-2xl font-bold md:text-4xl"
+                class="text-left text-2xl font-bold md:text-4xl"
                 class:md:text-6xl={data.song.name.length > 10 && data.song.name.length <= 20}
                 class:md:text-8xl={data.song.name.length <= 10}
             >
                 {data.song.name}
             </h1>
-        </div>
-        <div class="flex items-start justify-center gap-2">
-            <p class="text-sm text-slate-400 md:w-[50vw]">
-                {data.song.artist.name.split(", ").splice(0, 5).join(", ")}
-            </p>
-        </div>
-        <div class="flex items-center justify-center gap-2">
-            <!-- Play/Pause -->
-            <button
-                class="size-10 cursor-pointer transition-colors duration-200 hover:text-sky-500 md:size-15"
-                onclick={async () => await play(fetchSongDetailed(data.song))}
+            <div
+                class="flex items-center justify-center gap-1 text-sm text-slate-400 [&>*:not(:first-child)]:before:mr-1 [&>*:not(:first-child)]:before:content-['•']"
             >
-                {#if $store.state === "playing" && $store.meta?.videoId === data.song.videoId}
-                    <SolarPauseCircleBold class="size-full" />
-                {:else}
-                    <SolarPlayCircleBold class="size-full" />
+                <!-- Artist Name -->
+                <p>
+                    {data.song.artist.name.split(", ").splice(0, 5).join(", ")}
+                </p>
+                <!-- Duration -->
+                <p>
+                    {formatTime(data.song.duration)}
+                </p>
+            </div>
+        </div>
+        <div class="flex w-full items-center justify-between gap-5 md:w-fit md:flex-row-reverse md:justify-start">
+            <div class="flex items-center justify-center gap-2">
+                <!-- Copy Song Link -->
+                <Tooltip side="bottom">
+                    {#snippet trigger()}
+                        <div
+                            role="button"
+                            tabindex="0"
+                            class="size-6 cursor-pointer text-slate-400 transition-colors duration-200 hover:text-slate-50"
+                            onclick={() => {
+                                const link = `${window.location.origin}/song?id=${data.song.videoId}`;
+                                navigator.clipboard.writeText(link);
+                                toast.success("Song link copied to clipboard");
+                            }}
+                            onkeydown={(e) => {
+                                if (e.key === "Enter" || e.key === " ") {
+                                    e.preventDefault();
+                                    const link = `${window.location.origin}/song?id=${data.song.videoId}`;
+                                    navigator.clipboard.writeText(link);
+                                    toast.success("Song link copied to clipboard");
+                                }
+                            }}
+                        >
+                            <SolarCopyLinear class="size-full" />
+                        </div>
+                    {/snippet}
+                    {#snippet content()}
+                        Copy Song Link
+                    {/snippet}
+                </Tooltip>
+                {#if data.user && playlists}
+                    <!-- Add to Playlist -->
+                    <Popover arrow side="bottom" bind:open={openPlaylistPopover}>
+                        {#snippet trigger()}
+                            <div class="size-6 cursor-pointer text-slate-400 transition-colors duration-200 hover:text-slate-50">
+                                <SolarPlaylist2Linear class="size-full" />
+                            </div>
+                        {/snippet}
+                        {#snippet content()}
+                            <div class="flex min-w-48 flex-col items-start justify-center">
+                                {#if data.user}
+                                    {#if !playlists}
+                                        <CtxButton disabled>
+                                            <SolarConfoundedCircleLinear class="size-5 shrink-0" />
+                                            <span class="flex-1 text-left">Login to add to playlists</span>
+                                        </CtxButton>
+                                    {:else if playlists.length === 0}
+                                        <CtxButton disabled>
+                                            <SolarConfoundedCircleLinear class="size-5 shrink-0" />
+                                            <span class="flex-1 text-left">No playlists found</span>
+                                        </CtxButton>
+                                    {:else}
+                                        {#each playlists as playlist}
+                                            <CtxButton
+                                                onclick={async () => {
+                                                    openPlaylistPopover = false;
+                                                    try {
+                                                        const resp = await fetch(`/api/playlist/${playlist.id}`, {
+                                                            body: JSON.stringify({
+                                                                key: "add_song",
+                                                                value: {
+                                                                    playlistID: playlist.id,
+                                                                    songID: data.song.videoId,
+                                                                    songCover: data.song.thumbnails[0].url.replace("=w60-h60-l90-rj", "")
+                                                                }
+                                                            }),
+                                                            method: "POST",
+                                                            headers: { "Content-Type": "application/json" }
+                                                        });
+
+                                                        const respData = await resp.json();
+                                                        if (resp.ok) {
+                                                            toast.success(`Added to ${playlist.name}`);
+                                                        } else {
+                                                            toast.error(respData.error);
+                                                        }
+                                                    } catch (error) {
+                                                        toast.error("Failed to add song to playlist");
+                                                    }
+                                                }}
+                                                class="items-center justify-center"
+                                            >
+                                                <div
+                                                    class="size-10 shrink-0 rounded-lg bg-slate-800 bg-cover transition-colors duration-200 group-hover:bg-slate-900"
+                                                    style="background-image: url({playlist.cover || ''});"
+                                                ></div>
+                                                <span class="flex-1 text-left">{playlist.name}</span>
+                                            </CtxButton>
+                                        {/each}
+                                    {/if}
+                                {/if}
+                            </div>
+                        {/snippet}
+                    </Popover>
                 {/if}
-            </button>
+            </div>
+            <div class="flex items-center justify-center gap-2">
+                <!-- Play/Pause -->
+                <button
+                    class="size-15 cursor-pointer transition-colors duration-200 hover:text-sky-500"
+                    onclick={async () => await play(fetchSongDetailed(data.song))}
+                >
+                    {#if $store.state === "playing" && $store.meta?.videoId === data.song.videoId}
+                        <SolarPauseCircleBold class="size-full" />
+                    {:else}
+                        <SolarPlayCircleBold class="size-full" />
+                    {/if}
+                </button>
+            </div>
         </div>
     </div>
 </div>

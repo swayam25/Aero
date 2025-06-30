@@ -1,18 +1,19 @@
 <script lang="ts">
     import { formatShortcut, store } from "$lib/ctxmenu";
+    import type { CtxAction } from "$lib/ctxmenu/types";
     import { toast } from "svelte-sonner";
     import { fade } from "svelte/transition";
     import CtxButton from "./CtxButton.svelte";
 
     let submenu: HTMLDivElement = $state(null!);
 
-    async function handleActionClick(action: any, e: MouseEvent) {
+    async function handleActionClick(action: CtxAction, e: MouseEvent) {
         e.stopPropagation();
 
         if (action.disabled) return;
 
         try {
-            await action.onclick();
+            await action.onclick({ closeMenu: () => {} }); // Submenu actions don't typically need closeMenu context
         } catch (error) {
             console.error("Error executing submenu action:", error);
             toast.error("An error occurred");
@@ -41,13 +42,14 @@
                         <div class="size-10 shrink-0 animate-pulse rounded bg-slate-700/60" style="animation-delay: {index * 0.1}s"></div>
                         <div class="h-5 flex-1 animate-pulse rounded bg-slate-700/60" style="animation-delay: {index * 0.1 + 0.05}s"></div>
                     {:else}
-                        {#if action.image}
-                            <div class="flex size-10 shrink-0 items-center justify-center overflow-hidden rounded bg-slate-700/20">
-                                <img src={action.image} alt={action.label} class="size-full object-cover" loading="lazy" />
-                            </div>
-                        {:else if action.icon}
+                        {#if action.icon}
                             {@const IconComponent = action.icon}
                             <IconComponent class="size-5 shrink-0" />
+                        {:else}
+                            <div
+                                class="size-10 shrink-0 rounded-lg bg-slate-800 bg-cover transition-colors duration-200 group-hover:bg-slate-900"
+                                style="background-image: url({action.image || ''});"
+                            ></div>
                         {/if}
                         <span class="flex-1 text-left">{action.label}</span>
                         {#if action.shortcut}

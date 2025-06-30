@@ -95,7 +95,7 @@
         };
     });
 
-    async function handleActionClick(action: any, e: MouseEvent) {
+    async function handleActionClick(action: CtxAction, e: MouseEvent) {
         e.stopPropagation();
 
         if (action.disabled) return;
@@ -106,14 +106,14 @@
         }
 
         try {
-            await action.onclick();
+            await action.onclick({ closeMenu: closeCtxMenu });
         } catch (error) {
             console.error("Error executing context action:", error);
             toast.error("An error occurred");
         }
     }
 
-    function handleMouseEnter(action: any, index: number, buttonElement: HTMLElement) {
+    function handleMouseEnter(action: CtxAction, index: number, buttonElement: HTMLElement) {
         if (action.submenu !== undefined) {
             const rect = buttonElement.getBoundingClientRect();
 

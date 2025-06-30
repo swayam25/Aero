@@ -21,6 +21,10 @@ import SolarRestartLinear from "~icons/solar/restart-linear";
 import SolarShareLinear from "~icons/solar/share-linear";
 import SolarTrashBinTrashLinear from "~icons/solar/trash-bin-trash-linear";
 
+// When we `createCtxAction`, in the `onclick` handler first we close the context menu then perform the action.
+// This ensures the menu closes before any async operations like network requests or player actions.
+// This prevents issues where the menu might still be open when the action completes, which could lead to bad UX.
+
 // Song context menu factory
 export function createSongActions(song: SongDetailed, loginUserID: string | null): CtxAction[] {
     const actions: CtxAction[] = [];
@@ -32,8 +36,8 @@ export function createSongActions(song: SongDetailed, loginUserID: string | null
             icon: SolarPlayLinear,
             shortcut: shortcuts.space,
             onclick: async (ctx) => {
-                await play(song);
                 ctx.closeMenu();
+                await play(song);
             }
         })
     );
@@ -47,9 +51,9 @@ export function createSongActions(song: SongDetailed, loginUserID: string | null
                 icon: SolarPlaylist2Linear,
                 shortcut: shortcuts.q,
                 onclick: async (ctx) => {
+                    ctx.closeMenu();
                     await addToQueue(song);
                     toast.success("Added to queue");
-                    ctx.closeMenu();
                 }
             })
         );
@@ -81,10 +85,10 @@ export function createSongActions(song: SongDetailed, loginUserID: string | null
             icon: SolarCopyLinear,
             shortcut: shortcuts.ctrl.c,
             onclick: async (ctx) => {
+                ctx.closeMenu();
                 const link = `${window.location.origin}/song?id=${song.videoId}`;
                 navigator.clipboard.writeText(link);
                 toast.success("Song link copied to clipboard");
-                ctx.closeMenu();
             }
         })
     );
@@ -97,8 +101,8 @@ export function createSongActions(song: SongDetailed, loginUserID: string | null
             shortcut: shortcuts.i,
             separator: true,
             onclick: async (ctx) => {
-                toast.info(`${song.name} by ${song.artist.name}`);
                 ctx.closeMenu();
+                toast.info(`${song.name} by ${song.artist.name}`);
             }
         })
     );
@@ -120,8 +124,8 @@ export function createQueueActions(song: SongDetailed): CtxAction[] {
                 icon: isPaused ? SolarPlayLinear : SolarPauseLinear,
                 shortcut: shortcuts.space,
                 onclick: async (ctx) => {
-                    await togglePause();
                     ctx.closeMenu();
+                    await togglePause();
                 }
             })
         );
@@ -132,8 +136,8 @@ export function createQueueActions(song: SongDetailed): CtxAction[] {
                 icon: SolarPlayLinear,
                 shortcut: shortcuts.space,
                 onclick: async (ctx) => {
-                    await play(song, true);
                     ctx.closeMenu();
+                    await play(song, true);
                 }
             })
         );
@@ -145,9 +149,9 @@ export function createQueueActions(song: SongDetailed): CtxAction[] {
                 type: "error",
                 shortcut: shortcuts.delete,
                 onclick: async (ctx) => {
+                    ctx.closeMenu();
                     await removeFromQueue(song);
                     toast.success("Removed from queue");
-                    ctx.closeMenu();
                 }
             })
         );
@@ -167,6 +171,7 @@ export function createPlaylistActions(playlistData: { name: string; id: string }
             icon: SolarShareLinear,
             shortcut: shortcuts.ctrl.s,
             onclick: async (ctx) => {
+                ctx.closeMenu();
                 try {
                     const resp = await fetch(`/api/playlist/${playlistData.id}`, {
                         method: "POST",
@@ -187,10 +192,8 @@ export function createPlaylistActions(playlistData: { name: string; id: string }
                     } else {
                         toast.error("Playlist is private");
                     }
-                    ctx.closeMenu();
                 } catch (error) {
                     toast.error("Failed to share playlist");
-                    ctx.closeMenu();
                 }
             }
         })
@@ -203,8 +206,8 @@ export function createPlaylistActions(playlistData: { name: string; id: string }
             icon: SolarRestartLinear,
             shortcut: shortcuts.f2,
             onclick: async (ctx) => {
-                showPlRenamePopup(playlistData);
                 ctx.closeMenu();
+                showPlRenamePopup(playlistData);
             }
         })
     );
@@ -218,8 +221,8 @@ export function createPlaylistActions(playlistData: { name: string; id: string }
             shortcut: shortcuts.shift.delete,
             separator: true,
             onclick: async (ctx) => {
-                showPlDeletePopup(playlistData);
                 ctx.closeMenu();
+                showPlDeletePopup(playlistData);
             }
         })
     );
@@ -243,8 +246,8 @@ export function createPlaylistSongActions(
             icon: SolarPlayLinear,
             shortcut: shortcuts.space,
             onclick: async (ctx) => {
-                await play(song);
                 ctx.closeMenu();
+                await play(song);
             }
         })
     );
@@ -258,9 +261,9 @@ export function createPlaylistSongActions(
                 icon: SolarPlaylist2Linear,
                 shortcut: shortcuts.q,
                 onclick: async (ctx) => {
+                    ctx.closeMenu();
                     await addToQueue(song);
                     toast.success("Added to queue");
-                    ctx.closeMenu();
                 }
             })
         );
@@ -273,10 +276,10 @@ export function createPlaylistSongActions(
             icon: SolarCopyLinear,
             shortcut: shortcuts.ctrl.c,
             onclick: async (ctx) => {
+                ctx.closeMenu();
                 const link = `https://music.youtube.com/watch?v=${song.videoId}`;
                 navigator.clipboard.writeText(link);
                 toast.success("Song link copied to clipboard");
-                ctx.closeMenu();
             }
         })
     );
@@ -290,6 +293,7 @@ export function createPlaylistSongActions(
                 type: "error",
                 shortcut: shortcuts.delete,
                 onclick: async (ctx) => {
+                    ctx.closeMenu();
                     try {
                         const resp = await fetch(`/api/playlist/${playlistData.id}`, {
                             body: JSON.stringify({
@@ -310,10 +314,8 @@ export function createPlaylistSongActions(
                         } else {
                             toast.error(respData.error);
                         }
-                        ctx.closeMenu();
                     } catch (error) {
                         toast.error("Failed to remove song from playlist");
-                        ctx.closeMenu();
                     }
                 }
             })
@@ -344,10 +346,8 @@ async function loadPlaylistSubmenu(song: SongDetailed): Promise<CtxAction[]> {
             createCtxAction({
                 label: playlist.name,
                 image: playlist.cover || undefined,
-                icon: playlist.cover ? undefined : SolarMusicLibraryLinear,
                 onclick: async (ctx) => {
                     ctx.closeMenu();
-
                     try {
                         const resp = await fetch(`/api/playlist/${playlist.id}`, {
                             body: JSON.stringify({
