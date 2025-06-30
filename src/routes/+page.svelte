@@ -144,43 +144,42 @@
 
 <Seo />
 
-<div class="flex flex-col gap-4 md:gap-8">
-    {#if !initialLoaded && Object.keys(allSongs).length === 0}
-        {#each Array(initialLimit) as _}
-            <div class="text-left">
-                <div class="mb-2 h-8 w-48 animate-pulse rounded-lg bg-slate-800 md:h-10 md:w-64"></div>
-                <SongListX skeleton />
-            </div>
-        {/each}
-    {:else}
-        {#each Object.keys(allSongs) as categoryName}
-            <div class="text-left">
-                <h1 class="text-3xl font-bold md:text-4xl">{categoryName}</h1>
-                <SongListX user={data.user} songs={allSongs[categoryName]} />
-            </div>
-        {/each}
-    {/if}
+{#if !initialLoaded && Object.keys(allSongs).length === 0}
+    {#each Array(initialLimit) as _}
+        <div class="text-left">
+            <div class="mb-2 h-8 w-48 animate-pulse rounded-lg bg-slate-800 md:h-10 md:w-64"></div>
+            <SongListX skeleton />
+        </div>
+    {/each}
+{:else}
+    {#each Object.keys(allSongs) as categoryName}
+        <!-- Top margin/padding is not needed here as SongListX alr comes with padding -->
+        <div class="text-left">
+            <h1 class="text-3xl font-bold md:text-4xl">{categoryName}</h1>
+            <SongListX user={data.user} songs={allSongs[categoryName]} />
+        </div>
+    {/each}
+{/if}
 
-    {#if hasMore && initialLoaded}
-        <div bind:this={loadingElement} class="flex flex-col gap-4 md:gap-8">
-            {#if isLoading}
-                {#each Array(3) as _}
-                    <div class="text-left">
-                        <div class="mb-2 h-8 w-48 animate-pulse rounded-lg bg-slate-800 md:h-10 md:w-64"></div>
-                        <SongListX skeleton />
-                    </div>
-                {/each}
-            {/if}
-        </div>
-    {:else if !hasMore && initialLoaded}
-        <div class="flex flex-col items-center justify-center py-10 text-center">
-            <div class="flex flex-col items-center justify-center gap-2">
-                <randomMessage.icon class="size-10 {randomMessage.color}" />
-                <div class="flex flex-col items-center justify-center">
-                    <h2 class="text-xl font-bold text-white md:text-2xl">{randomMessage.title}</h2>
-                    <p class="text-lg text-slate-400">{randomMessage.subtitle}</p>
+{#if hasMore && initialLoaded}
+    <div bind:this={loadingElement} class="flex flex-col gap-4 md:gap-8">
+        {#if isLoading}
+            {#each Array(3) as _}
+                <div class="text-left">
+                    <div class="mb-2 h-8 w-48 animate-pulse rounded-lg bg-slate-800 md:h-10 md:w-64"></div>
+                    <SongListX skeleton />
                 </div>
+            {/each}
+        {/if}
+    </div>
+{:else if !hasMore && initialLoaded}
+    <div class="flex flex-col items-center justify-center py-10 text-center">
+        <div class="flex flex-col items-center justify-center gap-2">
+            <randomMessage.icon class="size-10 {randomMessage.color}" />
+            <div class="flex flex-col items-center justify-center">
+                <h2 class="text-xl font-bold text-white md:text-2xl">{randomMessage.title}</h2>
+                <p class="text-lg text-slate-400">{randomMessage.subtitle}</p>
             </div>
         </div>
-    {/if}
-</div>
+    </div>
+{/if}

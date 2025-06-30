@@ -72,7 +72,7 @@
 <div id="player" class="relative flex h-15 w-full items-center justify-end gap-2 rounded-lg px-4 sm:justify-center">
     <!-- Song Info -->
     <button
-        class="absolute left-0 flex items-center justify-center gap-2 transition-opacity md:left-5"
+        class="absolute left-0 flex cursor-pointer items-center justify-center gap-2 transition-opacity md:left-5"
         onclick={() => {
             if ($store.state !== "unstarted") {
                 onSongInfoClick();
@@ -113,12 +113,12 @@
     >
         <div class="flex items-center justify-center gap-2 transition-all *:cursor-pointer">
             <!-- Previous -->
-            <button onclick={previous} class="size-5 opacity-80 transition-opacity hover:opacity-100">
+            <button onclick={previous} class="size-5 cursor-pointer opacity-80 transition-opacity hover:opacity-100">
                 <SolarSkipPreviousBold class="size-full" />
             </button>
 
             <!-- Play/Pause -->
-            <button class="size-10 transition-colors duration-200 hover:text-sky-500" onclick={togglePause}>
+            <button class="size-10 cursor-pointer transition-colors duration-200 hover:text-sky-500" onclick={togglePause}>
                 {#if $store.state === "playing"}
                     <SolarPauseCircleBold class="size-full" />
                 {:else}
@@ -129,7 +129,7 @@
             <!-- Next -->
             <button
                 onclick={skip}
-                class="size-5 opacity-80 transition-opacity not-disabled:hover:opacity-100"
+                class="size-5 cursor-pointer opacity-80 transition-opacity not-disabled:hover:opacity-100"
                 class:!cursor-not-allowed={$store.queue.length < 2}
                 disabled={$store.queue.length < 2}
             >
@@ -153,7 +153,7 @@
         <!-- Volume -->
         <Popover side="top">
             {#snippet trigger()}
-                <span class="size-5 opacity-80 transition-opacity hover:opacity-100">
+                <span class="size-5 cursor-pointer opacity-80 transition-opacity hover:opacity-100">
                     {#if volume === 0}
                         <SolarMutedLinear class="size-full" />
                     {:else if volume < 50 && volume > 20}
@@ -185,7 +185,7 @@
                         break;
                 }
             }}
-            class="size-5 transition-opacity hover:opacity-100"
+            class="size-5 cursor-pointer transition-opacity hover:opacity-100"
             class:opacity-80={$store.loop === "none"}
         >
             {#if $store.loop === "none"}
@@ -200,7 +200,7 @@
         <!-- Queue -->
         <button
             onclick={toggleQueue}
-            class="size-5 opacity-80 transition-opacity not-disabled:hover:opacity-100"
+            class="size-5 cursor-pointer opacity-80 transition-opacity not-disabled:hover:opacity-100"
             class:!cursor-not-allowed={$store.queue.length < 2}
             disabled={$store.queue.length < 2}
         >
@@ -210,7 +210,7 @@
         <!-- Lyrics -->
         <button
             onclick={toggleLyrics}
-            class="size-5 opacity-80 transition-opacity not-disabled:hover:opacity-100"
+            class="size-5 cursor-pointer opacity-80 transition-opacity not-disabled:hover:opacity-100"
             class:!cursor-not-allowed={!$store.meta}
             disabled={!$store.meta}
         >
@@ -222,7 +222,7 @@
             onclick={() => {
                 $store.shuffle = !$store.shuffle;
             }}
-            class="size-5 transition-opacity not-disabled:hover:opacity-100"
+            class="size-5 cursor-pointer transition-opacity not-disabled:hover:opacity-100"
             class:opacity-80={!$store.shuffle}
             class:!cursor-not-allowed={$store.queue.length < 2}
             disabled={$store.queue.length < 2}

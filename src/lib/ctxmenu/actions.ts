@@ -81,7 +81,7 @@ export function createSongActions(song: SongDetailed, loginUserID: string | null
             icon: SolarCopyLinear,
             shortcut: shortcuts.ctrl.c,
             onclick: async (ctx) => {
-                const link = `https://music.youtube.com/watch?v=${song.videoId}`;
+                const link = `${window.location.origin}/song?id=${song.videoId}`;
                 navigator.clipboard.writeText(link);
                 toast.success("Song link copied to clipboard");
                 ctx.closeMenu();
