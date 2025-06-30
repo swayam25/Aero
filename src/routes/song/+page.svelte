@@ -97,7 +97,7 @@
                         <div
                             role="button"
                             tabindex="0"
-                            class="size-6 cursor-pointer text-slate-400 transition-colors duration-200 hover:text-slate-50"
+                            class="size-6 cursor-pointer opacity-80 transition-colors duration-200 hover:opacity-100"
                             onclick={() => {
                                 const link = `${window.location.origin}/song?id=${data.song.videoId}`;
                                 navigator.clipboard.writeText(link);
@@ -123,7 +123,7 @@
                     <!-- Add to Playlist -->
                     <Popover arrow side="bottom" bind:open={openPlaylistPopover} title="Add to Playlist">
                         {#snippet trigger()}
-                            <div class="size-6 cursor-pointer text-slate-400 transition-colors duration-200 hover:text-slate-50">
+                            <div class="size-6 cursor-pointer opacity-80 transition-colors duration-200 hover:opacity-100">
                                 <SolarPlaylist2Linear class="size-full" />
                             </div>
                         {/snippet}

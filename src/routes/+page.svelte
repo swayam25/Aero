@@ -120,14 +120,19 @@
             { threshold: 0.1, rootMargin: "100px" }
         );
         // Backup scroll event listener to handle edge cases
-        const handleScroll = () => {
+        const handleScroll = async () => {
             if (!hasMore || isLoading || !initialLoaded) return;
             const scrollPosition = window.scrollY + window.innerHeight;
             const documentHeight = document.documentElement.scrollHeight;
 
             // Trigger loading when user is within 200px of the bottom
             if (scrollPosition >= documentHeight - 200) {
-                loadMoreCategories();
+                await loadMoreCategories();
+
+                window.scrollTo({
+                    top: documentHeight - window.innerHeight,
+                    behavior: "smooth"
+                });
             }
         };
         // Add scroll event listener
@@ -164,7 +169,7 @@
 {#if hasMore && initialLoaded}
     <div bind:this={loadingElement} class="flex flex-col gap-4 md:gap-8">
         {#if isLoading}
-            {#each Array(3) as _}
+            {#each Array(8) as _}
                 <div class="text-left">
                     <div class="mb-2 h-8 w-48 animate-pulse rounded-lg bg-slate-800 md:h-10 md:w-64"></div>
                     <SongListX skeleton />

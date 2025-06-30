@@ -105,7 +105,7 @@
                     {#if open}
                         <div {...wrapperProps}>
                             <div {...props} transition:fade={{ duration: 100 }}>
-                                <div class="flex flex-col items-start justify-center">
+                                <div class="flex flex-col items-center justify-center">
                                     {@render content()}
                                 </div>
                                 {#if arrow}
