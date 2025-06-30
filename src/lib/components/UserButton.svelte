@@ -78,7 +78,7 @@
 
 <div class="flex items-center justify-center">
     {#if user}
-        <Popover side="bottom">
+        <Popover side="bottom" title="Account Menu">
             {#snippet trigger()}
                 <div class="relative flex size-10 cursor-pointer items-center justify-center md:size-12">
                     <img src={`https://cdn.discordapp.com/avatars/${user?.id}/${user?.avatar}`} alt="User Avatar" class="size-full rounded-full" />
@@ -100,40 +100,36 @@
                 </div>
             {/snippet}
             {#snippet content()}
-                <div class="flex flex-col items-start justify-center gap-1">
-                    <p class="text-lg font-bold">{user?.global_name || user?.username}</p>
-                    <span class="w-full border-t border-slate-700"></span>
-                    <!-- Profile -->
-                    <CtxButton href="/profile/{user?.id}">
-                        <SolarUserCircleLinear class="size-5" />
-                        Profile
-                    </CtxButton>
-                    <!-- Logout -->
-                    <CtxButton onclick={logout}>
-                        <SolarLogout2Linear class="size-5" />
-                        Logout
-                    </CtxButton>
-                    <!-- Delete -->
-                    <AlertPopup title="ARE YOU SURE?" bind:open={deletePopupOpen}>
-                        {#snippet trigger()}
-                            <CtxButton type="error">
-                                <SolarTrashBinTrashLinear class="size-5" />
-                                Delete Account
-                            </CtxButton>
-                        {/snippet}
-                        {#snippet description()}
-                            This action cannot be undone. This will permanently
-                            <span class="font-semibold text-red-500">delete your account</span>
-                            and all associated data. Please confirm that you want to proceed.
-                        {/snippet}
-                        {#snippet actions()}
-                            <AlertDialog.Action class="hover:!bg-red-500/10 hover:text-red-500" onclick={deleteAcc}>
-                                <SolarTrashBinTrashLinear class="size-5" />
-                                Delete Account
-                            </AlertDialog.Action>
-                        {/snippet}
-                    </AlertPopup>
-                </div>
+                <!-- Profile -->
+                <CtxButton href="/profile/{user?.id}">
+                    <SolarUserCircleLinear class="size-5" />
+                    Profile
+                </CtxButton>
+                <!-- Logout -->
+                <CtxButton onclick={logout}>
+                    <SolarLogout2Linear class="size-5" />
+                    Logout
+                </CtxButton>
+                <!-- Delete -->
+                <AlertPopup title="ARE YOU SURE?" bind:open={deletePopupOpen}>
+                    {#snippet trigger()}
+                        <CtxButton type="error">
+                            <SolarTrashBinTrashLinear class="size-5" />
+                            Delete Account
+                        </CtxButton>
+                    {/snippet}
+                    {#snippet description()}
+                        This action cannot be undone. This will permanently
+                        <span class="font-semibold text-red-500">delete your account</span>
+                        and all associated data. Please confirm that you want to proceed.
+                    {/snippet}
+                    {#snippet actions()}
+                        <AlertDialog.Action class="hover:!bg-red-500/10 hover:text-red-500" onclick={deleteAcc}>
+                            <SolarTrashBinTrashLinear class="size-5" />
+                            Delete Account
+                        </AlertDialog.Action>
+                    {/snippet}
+                </AlertPopup>
             {/snippet}
         </Popover>
     {:else}

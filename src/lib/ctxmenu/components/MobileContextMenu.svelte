@@ -95,7 +95,7 @@
 <MobileDrawer open={$store.isOpen} onClose={handleClose} title={currentTitle || "Menu"} zIndex={1300}>
     <div class="flex flex-col gap-1">
         {#each $store.actions as action, index}
-            <CtxButton type={action.type || "normal"} disabled={action.disabled} onclick={(e) => handleActionClick(action, e)} class="p-3">
+            <CtxButton type={action.type || "normal"} disabled={action.disabled} onclick={(e) => handleActionClick(action, e)}>
                 {#if action.type === "skeleton"}
                     <!-- Skeleton loading state with staggered animation -->
                     <div class="size-10 shrink-0 animate-pulse rounded bg-slate-700/60" style="animation-delay: {index * 0.1}s"></div>

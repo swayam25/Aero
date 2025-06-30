@@ -121,66 +121,64 @@
                 </Tooltip>
                 {#if data.user && playlists}
                     <!-- Add to Playlist -->
-                    <Popover arrow side="bottom" bind:open={openPlaylistPopover}>
+                    <Popover arrow side="bottom" bind:open={openPlaylistPopover} title="Add to Playlist">
                         {#snippet trigger()}
                             <div class="size-6 cursor-pointer text-slate-400 transition-colors duration-200 hover:text-slate-50">
                                 <SolarPlaylist2Linear class="size-full" />
                             </div>
                         {/snippet}
                         {#snippet content()}
-                            <div class="flex min-w-48 flex-col items-start justify-center">
-                                {#if data.user}
-                                    {#if !playlists}
-                                        <CtxButton disabled>
-                                            <SolarConfoundedCircleLinear class="size-5 shrink-0" />
-                                            <span class="flex-1 text-left">Login to add to playlists</span>
-                                        </CtxButton>
-                                    {:else if playlists.length === 0}
-                                        <CtxButton disabled>
-                                            <SolarConfoundedCircleLinear class="size-5 shrink-0" />
-                                            <span class="flex-1 text-left">No playlists found</span>
-                                        </CtxButton>
-                                    {:else}
-                                        {#each playlists as playlist}
-                                            <CtxButton
-                                                onclick={async () => {
-                                                    openPlaylistPopover = false;
-                                                    try {
-                                                        const resp = await fetch(`/api/playlist/${playlist.id}`, {
-                                                            body: JSON.stringify({
-                                                                key: "add_song",
-                                                                value: {
-                                                                    playlistID: playlist.id,
-                                                                    songID: data.song.videoId,
-                                                                    songCover: data.song.thumbnails[0].url.replace("=w60-h60-l90-rj", "")
-                                                                }
-                                                            }),
-                                                            method: "POST",
-                                                            headers: { "Content-Type": "application/json" }
-                                                        });
+                            {#if data.user}
+                                {#if !playlists}
+                                    <CtxButton disabled>
+                                        <SolarConfoundedCircleLinear class="size-5 shrink-0" />
+                                        <span class="flex-1 text-left">Login to add to playlists</span>
+                                    </CtxButton>
+                                {:else if playlists.length === 0}
+                                    <CtxButton disabled>
+                                        <SolarConfoundedCircleLinear class="size-5 shrink-0" />
+                                        <span class="flex-1 text-left">No playlists found</span>
+                                    </CtxButton>
+                                {:else}
+                                    {#each playlists as playlist}
+                                        <CtxButton
+                                            onclick={async () => {
+                                                openPlaylistPopover = false;
+                                                try {
+                                                    const resp = await fetch(`/api/playlist/${playlist.id}`, {
+                                                        body: JSON.stringify({
+                                                            key: "add_song",
+                                                            value: {
+                                                                playlistID: playlist.id,
+                                                                songID: data.song.videoId,
+                                                                songCover: data.song.thumbnails[0].url.replace("=w60-h60-l90-rj", "")
+                                                            }
+                                                        }),
+                                                        method: "POST",
+                                                        headers: { "Content-Type": "application/json" }
+                                                    });
 
-                                                        const respData = await resp.json();
-                                                        if (resp.ok) {
-                                                            toast.success(`Added to ${playlist.name}`);
-                                                        } else {
-                                                            toast.error(respData.error);
-                                                        }
-                                                    } catch (error) {
-                                                        toast.error("Failed to add song to playlist");
+                                                    const respData = await resp.json();
+                                                    if (resp.ok) {
+                                                        toast.success(`Added to ${playlist.name}`);
+                                                    } else {
+                                                        toast.error(respData.error);
                                                     }
-                                                }}
-                                                class="items-center justify-center"
-                                            >
-                                                <div
-                                                    class="size-10 shrink-0 rounded-lg bg-slate-800 bg-cover transition-colors duration-200 group-hover:bg-slate-900"
-                                                    style="background-image: url({playlist.cover || ''});"
-                                                ></div>
-                                                <span class="flex-1 text-left">{playlist.name}</span>
-                                            </CtxButton>
-                                        {/each}
-                                    {/if}
+                                                } catch (error) {
+                                                    toast.error("Failed to add song to playlist");
+                                                }
+                                            }}
+                                            class="items-center justify-center"
+                                        >
+                                            <div
+                                                class="size-10 shrink-0 rounded-lg bg-slate-800 bg-cover transition-colors duration-200 group-hover:bg-slate-900"
+                                                style="background-image: url({playlist.cover || ''});"
+                                            ></div>
+                                            <span class="flex-1 text-left">{playlist.name}</span>
+                                        </CtxButton>
+                                    {/each}
                                 {/if}
-                            </div>
+                            {/if}
                         {/snippet}
                     </Popover>
                 {/if}
