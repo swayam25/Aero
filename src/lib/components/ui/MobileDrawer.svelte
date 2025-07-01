@@ -1,5 +1,4 @@
 <script lang="ts">
-    import { closeCtxMenu } from "$lib/ctxmenu";
     import { cn } from "$lib/utils/cn";
     import type { Snippet } from "svelte";
     import { Drawer } from "vaul-svelte";
@@ -22,9 +21,7 @@
 
     let {
         open,
-        onClose = () => {
-            closeCtxMenu();
-        },
+        onClose = () => {},
         title = "",
         showHandle = true,
         maxHeight = "max-h-96",
@@ -38,8 +35,6 @@
         children
     }: Props = $props();
 </script>
-
-2
 
 <Drawer.Root {onClose} {open}>
     <Drawer.Portal>
