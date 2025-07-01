@@ -20,7 +20,6 @@
     import { fly } from "svelte/transition";
     import "../app.css";
     import type { PageData } from "./$types";
-    import { ComponentType } from "discord-api-types/v10";
 
     interface Props {
         data: PageData;
