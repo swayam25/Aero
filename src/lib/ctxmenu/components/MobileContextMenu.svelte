@@ -89,6 +89,7 @@
 
     function handleClose() {
         closeCtxMenu();
+        console.log($store.isOpen);
     }
 </script>
 

@@ -36,7 +36,7 @@
     }: Props = $props();
 </script>
 
-<Drawer.Root {open} {onClose}>
+<Drawer.Root {onClose} {open}>
     <Drawer.Portal>
         <Drawer.Overlay class="fixed inset-0 bg-black/50" style="z-index: {zIndex - 1};" />
         <Drawer.Content

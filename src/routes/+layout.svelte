@@ -8,7 +8,7 @@
     import PlaylistDialogPopup from "$lib/components/PlaylistDialogPopup.svelte";
     import Queue from "$lib/components/Queue.svelte";
     import Sidebar from "$lib/components/Sidebar.svelte";
-    import { closeCtxMenu, setupShortcuts } from "$lib/ctxmenu";
+    import { setupShortcuts } from "$lib/ctxmenu";
     import ContextMenu from "$lib/ctxmenu/components/ContextMenu.svelte";
     import type { InsertPlaylist } from "$lib/db/schema";
     import { store } from "$lib/player";
@@ -90,12 +90,6 @@
     });
 </script>
 
-<svelte:window
-    on:click={closeCtxMenu}
-    oncontextmenu={(e) => {
-        e.preventDefault();
-    }}
-/>
 <ContextMenu />
 
 <Toaster
