@@ -8,7 +8,7 @@
     import PlaylistDialogPopup from "$lib/components/PlaylistDialogPopup.svelte";
     import Queue from "$lib/components/Queue.svelte";
     import Sidebar from "$lib/components/Sidebar.svelte";
-    import { closeCtxMenu, setupShortcuts, store as ctxStore } from "$lib/ctxmenu";
+    import { closeCtxMenu, setupShortcuts } from "$lib/ctxmenu";
     import ContextMenu from "$lib/ctxmenu/components/ContextMenu.svelte";
     import type { InsertPlaylist } from "$lib/db/schema";
     import { store } from "$lib/player";
@@ -32,9 +32,6 @@
 
     // Mobile detection state
     let isMobile = $state(false);
-
-    // Context Menu Reference
-    let ctxMenu: HTMLDivElement;
 
     // Initialize keyboard shortcuts
     let cleanupShortcuts: (() => void) | undefined;
