@@ -15,7 +15,7 @@
 
 <svelte:head>
     <title>Aero {title ? `| ${title}` : ""}</title>
-    <link rel="icon" href="/aero.webp" />
+    <link rel="icon" type="image/svg" href="/aero.webp" />
     <meta name="description" content={description} />
     <meta name="theme-color" content="#0EA5E9" />
     <meta name="background-color" content="#020617" />

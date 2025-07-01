@@ -8,7 +8,7 @@
     import PlaylistDialogPopup from "$lib/components/PlaylistDialogPopup.svelte";
     import Queue from "$lib/components/Queue.svelte";
     import Sidebar from "$lib/components/Sidebar.svelte";
-    import { closeCtxMenu, setupShortcuts } from "$lib/ctxmenu";
+    import { closeCtxMenu, setupShortcuts, store as ctxStore } from "$lib/ctxmenu";
     import ContextMenu from "$lib/ctxmenu/components/ContextMenu.svelte";
     import type { InsertPlaylist } from "$lib/db/schema";
     import { store } from "$lib/player";
@@ -20,6 +20,7 @@
     import { fly } from "svelte/transition";
     import "../app.css";
     import type { PageData } from "./$types";
+    import { ComponentType } from "discord-api-types/v10";
 
     interface Props {
         data: PageData;
@@ -31,6 +32,9 @@
 
     // Mobile detection state
     let isMobile = $state(false);
+
+    // Context Menu Reference
+    let ctxMenu: HTMLDivElement;
 
     // Initialize keyboard shortcuts
     let cleanupShortcuts: (() => void) | undefined;
@@ -90,12 +94,6 @@
     });
 </script>
 
-<svelte:window
-    on:click={closeCtxMenu}
-    oncontextmenu={(e) => {
-        e.preventDefault();
-    }}
-/>
 <ContextMenu />
 
 <Toaster
