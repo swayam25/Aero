@@ -14,7 +14,7 @@ export const store = writable<PlayerStore>({
     currentTime: 0,
     showQueue: false,
     lyrics: { data: null, error: null },
-    showLyrics: false
+    showLyrics: false,
 });
 
 export async function init() {
@@ -27,7 +27,7 @@ export async function init() {
                 1: "playing",
                 2: "paused",
                 3: "buffering",
-                5: "cued"
+                5: "cued",
             };
             return { ...state, state: stateMap[event.data as keyof typeof stateMap] as PlayerStore["state"] };
         });
@@ -109,7 +109,7 @@ export async function playPlaylist(song: SongDetailed, plSongs: Promise<SongFull
     // Update the queue with the reordered playlist
     store.update((state) => ({
         ...state,
-        queue: reorderedPlaylist
+        queue: reorderedPlaylist,
     }));
 }
 
@@ -255,6 +255,6 @@ export function fetchSongDetailed(song: SongFull): SongDetailed {
         artist: song.artist,
         album: { name: "", albumId: "" },
         duration: song.duration,
-        thumbnails: song.thumbnails
+        thumbnails: song.thumbnails,
     };
 }

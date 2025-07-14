@@ -4,7 +4,7 @@ import { boolean, jsonb, pgTable, serial, text, timestamp, uuid } from "drizzle-
 export const userTable = pgTable("user", {
     id: serial("id").primaryKey(),
     userID: text("user_id").notNull().unique(),
-    createdAt: timestamp("created_at").notNull().defaultNow()
+    createdAt: timestamp("created_at").notNull().defaultNow(),
 });
 
 export const playlistTable = pgTable("playlist", {
@@ -16,16 +16,16 @@ export const playlistTable = pgTable("playlist", {
     name: text("name").notNull(),
     cover: text("cover"),
     songs: jsonb("songs").$type<string[]>().notNull(),
-    isPublic: boolean("is_public").notNull().default(false)
+    isPublic: boolean("is_public").notNull().default(false),
 });
 
 export const userRelations = relations(userTable, ({ many }) => ({
-    playlists: many(playlistTable)
+    playlists: many(playlistTable),
 }));
 
 export const settingsTable = pgTable("settings", {
     key: text("key").primaryKey(),
-    value: jsonb("value").$type<string[]>().notNull().default([])
+    value: jsonb("value").$type<string[]>().notNull().default([]),
 });
 
 export type SelectPlaylist = typeof playlistTable.$inferSelect;

@@ -7,14 +7,14 @@ export async function getNewAccessToken(url: string, refreshToken: string, clien
     const resp = await fetch(`${url}/oauth2/token`, {
         method: "POST",
         headers: {
-            "Content-Type": "application/x-www-form-urlencoded"
+            "Content-Type": "application/x-www-form-urlencoded",
         },
         body: new URLSearchParams({
             client_id: clienID,
             client_secret: clientSecret,
             grant_type: "refresh_token",
-            refresh_token: refreshToken
-        }).toString()
+            refresh_token: refreshToken,
+        }).toString(),
     });
 
     if (resp.ok) {
@@ -27,8 +27,8 @@ export async function getNewAccessToken(url: string, refreshToken: string, clien
 export async function getUserData(db: DB, access_token: string): Promise<UserData> {
     const userDataResponse = await fetch(`${PUBLIC_DISCORD_URL}/users/@me`, {
         headers: {
-            Authorization: `Bearer ${access_token}`
-        }
+            Authorization: `Bearer ${access_token}`,
+        },
     });
     if (!userDataResponse.ok) {
         error(userDataResponse.status, userDataResponse.statusText);
@@ -49,8 +49,8 @@ export async function getUserData(db: DB, access_token: string): Promise<UserDat
 export async function fetchUser(db: DB, baseURI: string, botToken: string, id: string) {
     const resp = await fetch(`${baseURI}/users/${id}`, {
         headers: {
-            Authorization: `Bot ${botToken}`
-        }
+            Authorization: `Bot ${botToken}`,
+        },
     });
     if (!resp.ok) {
         return { error: true };

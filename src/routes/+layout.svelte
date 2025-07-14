@@ -73,7 +73,7 @@
                         event: "UPDATE",
                         schema: "public",
                         table: "playlist",
-                        filter: `user_id=eq.${data.user?.id}`
+                        filter: `user_id=eq.${data.user?.id}`,
                     },
                     (payload) => {
                         const { new: newPlaylist } = payload;
@@ -83,7 +83,7 @@
                             }
                             return playlist;
                         });
-                    }
+                    },
                 )
                 .subscribe();
         }
@@ -101,9 +101,9 @@
         classes: {
             toast: "mb-30 md:mb-15 rounded-lg font-rubik",
             title: "text-sm",
-            description: "text-[0.65rem]"
+            description: "text-[0.65rem]",
         },
-        style: "z-index: 900;"
+        style: "z-index: 900;",
     }}
 />
 

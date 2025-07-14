@@ -23,7 +23,7 @@
         if (songList) {
             songList.scrollTo({
                 left: direction === "left" ? songList.scrollLeft - 1000 : songList.scrollLeft + 1000,
-                behavior: "smooth"
+                behavior: "smooth",
             });
         }
     }

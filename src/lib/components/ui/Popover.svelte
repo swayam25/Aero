@@ -48,7 +48,7 @@
         contentClass = "",
         mobileContentClass = "",
         maxHeight = "max-h-96",
-        fullScreen = false
+        fullScreen = false,
     }: Props = $props();
 
     let isMobile = $state(false);

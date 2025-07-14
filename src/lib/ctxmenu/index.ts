@@ -7,7 +7,7 @@ export const store = writable<CtxStore>({
     x: 0,
     y: 0,
     actions: [],
-    submenu: undefined
+    submenu: undefined,
 });
 
 export function openCtxMenu(e: MouseEvent, actions: CtxAction[]) {
@@ -21,7 +21,7 @@ export function openCtxMenu(e: MouseEvent, actions: CtxAction[]) {
             // Always provide closeMenu in context
             const enhancedCtx: CtxActionContext = { closeMenu: closeCtxMenu, ...ctx };
             return action.onclick(enhancedCtx);
-        }
+        },
     }));
 
     store.set({
@@ -29,7 +29,7 @@ export function openCtxMenu(e: MouseEvent, actions: CtxAction[]) {
         x,
         y,
         actions: enhancedActions,
-        submenu: undefined
+        submenu: undefined,
     });
 }
 
@@ -40,7 +40,7 @@ export function closeCtxMenu() {
         x: 0,
         y: 0,
         actions: [],
-        submenu: undefined
+        submenu: undefined,
     }));
 }
 
@@ -49,7 +49,7 @@ export function createCtxAction(
     action: Omit<CtxAction, "id"> & {
         id?: string;
         onclick: (ctx: CtxActionContext) => void | Promise<void>;
-    }
+    },
 ): CtxAction {
     return {
         id: action.id || crypto.randomUUID(),
@@ -60,7 +60,7 @@ export function createCtxAction(
         onclick: async (ctx: CtxActionContext) => {
             // Context already includes closeMenu from openCtxMenu
             return action.onclick(ctx);
-        }
+        },
     };
 }
 
@@ -130,8 +130,8 @@ export function openSubmenu(parentIndex: number, submenuActions: CtxAction[], pa
                 x: adjustedX,
                 y: adjustedY,
                 actions: submenuActions,
-                parentIndex
-            }
+                parentIndex,
+            },
         };
     });
 }
@@ -139,7 +139,7 @@ export function openSubmenu(parentIndex: number, submenuActions: CtxAction[], pa
 export function closeSubmenu() {
     store.update((state) => ({
         ...state,
-        submenu: undefined
+        submenu: undefined,
     }));
 }
 
@@ -150,13 +150,13 @@ export function createSubmenuLoader(
         loadingItems?: number;
         loadingLabel?: string;
         errorLabel?: string;
-    } = {}
+    } = {},
 ): CtxSubmenuLoader {
     return {
         loader,
         loadingItems: options.loadingItems ?? 3,
         loadingLabel: options.loadingLabel ?? "Loading...",
-        errorLabel: options.errorLabel ?? "Failed to load"
+        errorLabel: options.errorLabel ?? "Failed to load",
     };
 }
 
@@ -166,8 +166,8 @@ export function createLoadingActions(count: number, label: string): CtxAction[] 
             label: `${label} ${i + 1}`,
             type: "skeleton",
             disabled: true,
-            onclick: async () => {}
-        })
+            onclick: async () => {},
+        }),
     );
 }
 
@@ -177,7 +177,7 @@ export function createErrorAction(label: string, icon?: any): CtxAction {
         icon,
         type: "error",
         disabled: true,
-        onclick: async () => {}
+        onclick: async () => {},
     });
 }
 

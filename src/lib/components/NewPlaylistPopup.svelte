@@ -24,9 +24,9 @@
         const resp = await fetch("/api/playlist", {
             method: "POST",
             headers: {
-                "Content-Type": "application/json"
+                "Content-Type": "application/json",
             },
-            body: JSON.stringify({ key: "create_pl", value: plName })
+            body: JSON.stringify({ key: "create_pl", value: plName }),
         });
         const respData = await resp.json();
 

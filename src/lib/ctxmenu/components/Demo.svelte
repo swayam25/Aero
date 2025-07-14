@@ -15,7 +15,7 @@
                 onclick: async (ctx) => {
                     toast.success("Added to favorites!");
                     ctx.closeMenu();
-                }
+                },
             }),
             createCtxAction({
                 label: "Rate Song",
@@ -23,7 +23,7 @@
                 onclick: async (ctx) => {
                     toast.info("Rating feature coming soon!");
                     ctx.closeMenu();
-                }
+                },
             }),
             createCtxAction({
                 label: "View Album",
@@ -32,7 +32,7 @@
                 onclick: async (ctx) => {
                     toast.info("Album view coming soon!");
                     ctx.closeMenu();
-                }
+                },
             }),
             createCtxAction({
                 label: "Dangerous Action",
@@ -40,8 +40,8 @@
                 disabled: true,
                 onclick: async (ctx) => {
                     ctx.closeMenu();
-                }
-            })
+                },
+            }),
         ];
     }
 

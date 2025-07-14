@@ -8,8 +8,8 @@ export const POST: RequestHandler = async ({ cookies, locals }) => {
         return new Response(JSON.stringify({ message: "User not logged in" }), {
             status: 401,
             headers: {
-                "Content-Type": "application/json"
-            }
+                "Content-Type": "application/json",
+            },
         });
     }
 
@@ -20,7 +20,7 @@ export const POST: RequestHandler = async ({ cookies, locals }) => {
     return new Response(JSON.stringify({ message: "Account Deleted" }), {
         status: 200,
         headers: {
-            "Content-Type": "application/json"
-        }
+            "Content-Type": "application/json",
+        },
     });
 };

@@ -22,7 +22,7 @@
     import Slider from "./ui/Slider.svelte";
 
     let {
-        onSongInfoClick = () => {}
+        onSongInfoClick = () => {},
     }: {
         onSongInfoClick?: () => void;
     } = $props();

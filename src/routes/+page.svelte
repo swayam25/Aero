@@ -35,32 +35,32 @@
             icon: MaterialSymbolsGrassRounded,
             color: "text-green-500",
             title: "That's all, music addict!",
-            subtitle: "Time to touch some grass... it's green and crunchy!"
+            subtitle: "Time to touch some grass... it's green and crunchy!",
         },
         {
             icon: MaterialSymbolsSunnyRounded,
             color: "text-amber-500",
             title: "Congratulations! You've reached the end!",
-            subtitle: "Now go see what that bright yellow thing in the sky is!"
+            subtitle: "Now go see what that bright yellow thing in the sky is!",
         },
         {
             icon: MaterialSymbolsDirectionsRunRounded,
             color: "text-blue-500",
             title: "You've scrolled enough for today!",
-            subtitle: "Your thumb needs a break. Try using your legs instead!"
+            subtitle: "Your thumb needs a break. Try using your legs instead!",
         },
         {
             icon: MaterialSymbolsFavoriteRounded,
             color: "text-red-500",
             title: "Music overload detected!",
-            subtitle: "Step outside before you turn into a playlist!"
+            subtitle: "Step outside before you turn into a playlist!",
         },
         {
             icon: MaterialSymbolsTrophyRounded,
             color: "text-yellow-500",
             title: "Bottom of the internet achieved!",
-            subtitle: "Reward: Vitamin D deficiency. Go fix that!"
-        }
+            subtitle: "Reward: Vitamin D deficiency. Go fix that!",
+        },
     ];
     const randomMessage = $state(endMessages[Math.floor(Math.random() * endMessages.length)]);
 
@@ -117,7 +117,7 @@
                     loadMoreCategories();
                 }
             },
-            { threshold: 0.1, rootMargin: "100px" }
+            { threshold: 0.1, rootMargin: "100px" },
         );
         // Backup scroll event listener to handle edge cases
         const handleScroll = async () => {
@@ -131,7 +131,7 @@
 
                 window.scrollTo({
                     top: documentHeight - window.innerHeight,
-                    behavior: "smooth"
+                    behavior: "smooth",
                 });
             }
         };

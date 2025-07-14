@@ -7,7 +7,7 @@
         formatShortcut,
         isSubmenuLoader,
         openSubmenu,
-        store
+        store,
     } from "$lib/ctxmenu";
     import type { CtxAction } from "$lib/ctxmenu/types";
     import { createMobileMediaQuery } from "$lib/utils/mobile";

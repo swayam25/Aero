@@ -38,8 +38,8 @@ export function createSongActions(song: SongDetailed, loginUserID: string | null
             onclick: async (ctx) => {
                 ctx.closeMenu();
                 await play(song);
-            }
-        })
+            },
+        }),
     );
 
     // Add to Queue (only if queue exists)
@@ -54,8 +54,8 @@ export function createSongActions(song: SongDetailed, loginUserID: string | null
                     ctx.closeMenu();
                     await addToQueue(song);
                     toast.success("Added to queue");
-                }
-            })
+                },
+            }),
         );
     }
 
@@ -68,13 +68,13 @@ export function createSongActions(song: SongDetailed, loginUserID: string | null
                 submenu: createSubmenuLoader(() => loadPlaylistSubmenu(song), {
                     loadingItems: 3,
                     loadingLabel: "Loading playlist",
-                    errorLabel: "Failed to load playlists"
+                    errorLabel: "Failed to load playlists",
                 }),
                 onclick: async (ctx) => {
                     // This will be handled by submenu, but keep as fallback
                     ctx.closeMenu();
-                }
-            })
+                },
+            }),
         );
     }
 
@@ -89,8 +89,8 @@ export function createSongActions(song: SongDetailed, loginUserID: string | null
                 const link = `${window.location.origin}/song?id=${song.videoId}`;
                 navigator.clipboard.writeText(link);
                 toast.success("Song link copied to clipboard");
-            }
-        })
+            },
+        }),
     );
 
     // Song Info
@@ -103,8 +103,8 @@ export function createSongActions(song: SongDetailed, loginUserID: string | null
             onclick: async (ctx) => {
                 ctx.closeMenu();
                 toast.info(`${song.name} by ${song.artist.name}`);
-            }
-        })
+            },
+        }),
     );
 
     return actions;
@@ -126,8 +126,8 @@ export function createQueueActions(song: SongDetailed): CtxAction[] {
                 onclick: async (ctx) => {
                     ctx.closeMenu();
                     await togglePause();
-                }
-            })
+                },
+            }),
         );
     } else {
         actions.push(
@@ -138,8 +138,8 @@ export function createQueueActions(song: SongDetailed): CtxAction[] {
                 onclick: async (ctx) => {
                     ctx.closeMenu();
                     await play(song, true);
-                }
-            })
+                },
+            }),
         );
 
         actions.push(
@@ -152,8 +152,8 @@ export function createQueueActions(song: SongDetailed): CtxAction[] {
                     ctx.closeMenu();
                     await removeFromQueue(song);
                     toast.success("Removed from queue");
-                }
-            })
+                },
+            }),
         );
     }
 
@@ -177,9 +177,9 @@ export function createPlaylistActions(playlistData: { name: string; id: string }
                         method: "POST",
                         body: JSON.stringify({
                             key: "fetch",
-                            value: { playlistID: playlistData.id }
+                            value: { playlistID: playlistData.id },
                         }),
-                        headers: { "Content-Type": "application/json" }
+                        headers: { "Content-Type": "application/json" },
                     });
 
                     const plData = await resp.json();
@@ -195,8 +195,8 @@ export function createPlaylistActions(playlistData: { name: string; id: string }
                 } catch (error) {
                     toast.error("Failed to share playlist");
                 }
-            }
-        })
+            },
+        }),
     );
 
     // Rename
@@ -208,8 +208,8 @@ export function createPlaylistActions(playlistData: { name: string; id: string }
             onclick: async (ctx) => {
                 ctx.closeMenu();
                 showPlRenamePopup(playlistData);
-            }
-        })
+            },
+        }),
     );
 
     // Delete
@@ -223,8 +223,8 @@ export function createPlaylistActions(playlistData: { name: string; id: string }
             onclick: async (ctx) => {
                 ctx.closeMenu();
                 showPlDeletePopup(playlistData);
-            }
-        })
+            },
+        }),
     );
 
     return actions;
@@ -235,7 +235,7 @@ export function createPlaylistSongActions(
     song: SongDetailed,
     playlistData: { name: string; id: string },
     loginUserID: string | null,
-    accessedUserID: string | null
+    accessedUserID: string | null,
 ): CtxAction[] {
     const actions: CtxAction[] = [];
 
@@ -248,8 +248,8 @@ export function createPlaylistSongActions(
             onclick: async (ctx) => {
                 ctx.closeMenu();
                 await play(song);
-            }
-        })
+            },
+        }),
     );
 
     // Add to Queue
@@ -264,8 +264,8 @@ export function createPlaylistSongActions(
                     ctx.closeMenu();
                     await addToQueue(song);
                     toast.success("Added to queue");
-                }
-            })
+                },
+            }),
         );
     }
 
@@ -280,8 +280,8 @@ export function createPlaylistSongActions(
                 const link = `https://music.youtube.com/watch?v=${song.videoId}`;
                 navigator.clipboard.writeText(link);
                 toast.success("Song link copied to clipboard");
-            }
-        })
+            },
+        }),
     );
 
     // Remove from Playlist (only if user owns the playlist)
@@ -300,11 +300,11 @@ export function createPlaylistSongActions(
                                 key: "remove_song",
                                 value: {
                                     playlistID: playlistData.id,
-                                    songID: song.videoId
-                                }
+                                    songID: song.videoId,
+                                },
                             }),
                             method: "POST",
-                            headers: { "Content-Type": "application/json" }
+                            headers: { "Content-Type": "application/json" },
                         });
 
                         const respData = await resp.json();
@@ -317,8 +317,8 @@ export function createPlaylistSongActions(
                     } catch (error) {
                         toast.error("Failed to remove song from playlist");
                     }
-                }
-            })
+                },
+            }),
         );
     }
 
@@ -337,8 +337,8 @@ async function loadPlaylistSubmenu(song: SongDetailed): Promise<CtxAction[]> {
                     label: "No playlists found",
                     icon: SolarConfoundedCircleLinear,
                     disabled: true,
-                    onclick: async () => {}
-                })
+                    onclick: async () => {},
+                }),
             ];
         }
 
@@ -355,11 +355,11 @@ async function loadPlaylistSubmenu(song: SongDetailed): Promise<CtxAction[]> {
                                 value: {
                                     playlistID: playlist.id,
                                     songID: song.videoId,
-                                    songCover: song.thumbnails[0].url.replace("=w60-h60-l90-rj", "")
-                                }
+                                    songCover: song.thumbnails[0].url.replace("=w60-h60-l90-rj", ""),
+                                },
                             }),
                             method: "POST",
-                            headers: { "Content-Type": "application/json" }
+                            headers: { "Content-Type": "application/json" },
                         });
 
                         const respData = await resp.json();
@@ -371,8 +371,8 @@ async function loadPlaylistSubmenu(song: SongDetailed): Promise<CtxAction[]> {
                     } catch (error) {
                         toast.error("Failed to add song to playlist");
                     }
-                }
-            })
+                },
+            }),
         );
     } catch (error) {
         throw new Error("Failed to load playlists");

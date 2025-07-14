@@ -48,7 +48,7 @@
     {onCheckedChange}
     class={cn(
         "inline-flex cursor-pointer items-center gap-11 rounded-full bg-gray-800 p-1 transition-all disabled:cursor-not-allowed disabled:opacity-50 data-[state=checked]:bg-sky-500",
-        sizeClass
+        sizeClass,
     )}
 >
     <Switch.Thumb

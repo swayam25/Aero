@@ -21,7 +21,7 @@
 <div
     class={cn(
         "flex h-10 items-center justify-center gap-4 rounded-lg border border-slate-700 bg-slate-800 p-2 transition-colors duration-200",
-        className
+        className,
     )}
     class:!border-slate-400={inputFocus}
 >

@@ -32,7 +32,7 @@
                         event: "UPDATE",
                         schema: "public",
                         table: "playlist",
-                        filter: `user_id=eq.${data.user?.id}`
+                        filter: `user_id=eq.${data.user?.id}`,
                     },
                     (payload) => {
                         const { new: newPlaylist } = payload;
@@ -44,7 +44,7 @@
                                 return playlist;
                             });
                         }
-                    }
+                    },
                 )
                 .subscribe();
 
@@ -151,11 +151,11 @@
                                                             value: {
                                                                 playlistID: playlist.id,
                                                                 songID: data.song.videoId,
-                                                                songCover: data.song.thumbnails[0].url.replace("=w60-h60-l90-rj", "")
-                                                            }
+                                                                songCover: data.song.thumbnails[0].url.replace("=w60-h60-l90-rj", ""),
+                                                            },
                                                         }),
                                                         method: "POST",
-                                                        headers: { "Content-Type": "application/json" }
+                                                        headers: { "Content-Type": "application/json" },
                                                     });
 
                                                     const respData = await resp.json();

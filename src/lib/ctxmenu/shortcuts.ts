@@ -196,7 +196,7 @@ export const shortcuts = {
         comma: { key: ",", ctrlKey: true } as CtxShortcut,
         period: { key: ".", ctrlKey: true } as CtxShortcut,
         slash: { key: "/", ctrlKey: true } as CtxShortcut,
-        backtick: { key: "`", ctrlKey: true } as CtxShortcut
+        backtick: { key: "`", ctrlKey: true } as CtxShortcut,
     },
 
     // Shift combinations
@@ -284,7 +284,7 @@ export const shortcuts = {
         comma: { key: "<", shiftKey: true } as CtxShortcut, // Shift+, = <
         period: { key: ">", shiftKey: true } as CtxShortcut, // Shift+. = >
         slash: { key: "?", shiftKey: true } as CtxShortcut, // Shift+/ = ?
-        backtick: { key: "~", shiftKey: true } as CtxShortcut // Shift+` = ~
+        backtick: { key: "~", shiftKey: true } as CtxShortcut, // Shift+` = ~
     },
 
     // Alt combinations
@@ -354,7 +354,7 @@ export const shortcuts = {
         f9: { key: "F9", altKey: true } as CtxShortcut,
         f10: { key: "F10", altKey: true } as CtxShortcut,
         f11: { key: "F11", altKey: true } as CtxShortcut,
-        f12: { key: "F12", altKey: true } as CtxShortcut
+        f12: { key: "F12", altKey: true } as CtxShortcut,
     },
 
     // Meta/Cmd combinations (mainly for macOS)
@@ -403,7 +403,7 @@ export const shortcuts = {
         arrowUp: { key: "ArrowUp", metaKey: true } as CtxShortcut,
         arrowDown: { key: "ArrowDown", metaKey: true } as CtxShortcut,
         arrowLeft: { key: "ArrowLeft", metaKey: true } as CtxShortcut,
-        arrowRight: { key: "ArrowRight", metaKey: true } as CtxShortcut
+        arrowRight: { key: "ArrowRight", metaKey: true } as CtxShortcut,
     },
 
     // Multi-modifier combinations
@@ -453,7 +453,7 @@ export const shortcuts = {
         f9: { key: "F9", ctrlKey: true, shiftKey: true } as CtxShortcut,
         f10: { key: "F10", ctrlKey: true, shiftKey: true } as CtxShortcut,
         f11: { key: "F11", ctrlKey: true, shiftKey: true } as CtxShortcut,
-        f12: { key: "F12", ctrlKey: true, shiftKey: true } as CtxShortcut
+        f12: { key: "F12", ctrlKey: true, shiftKey: true } as CtxShortcut,
     },
 
     ctrlAlt: {
@@ -497,7 +497,7 @@ export const shortcuts = {
         f9: { key: "F9", ctrlKey: true, altKey: true } as CtxShortcut,
         f10: { key: "F10", ctrlKey: true, altKey: true } as CtxShortcut,
         f11: { key: "F11", ctrlKey: true, altKey: true } as CtxShortcut,
-        f12: { key: "F12", ctrlKey: true, altKey: true } as CtxShortcut
+        f12: { key: "F12", ctrlKey: true, altKey: true } as CtxShortcut,
     },
 
     shiftAlt: {
@@ -541,8 +541,8 @@ export const shortcuts = {
         f9: { key: "F9", shiftKey: true, altKey: true } as CtxShortcut,
         f10: { key: "F10", shiftKey: true, altKey: true } as CtxShortcut,
         f11: { key: "F11", shiftKey: true, altKey: true } as CtxShortcut,
-        f12: { key: "F12", shiftKey: true, altKey: true } as CtxShortcut
-    }
+        f12: { key: "F12", shiftKey: true, altKey: true } as CtxShortcut,
+    },
 };
 
 // Utility functions for shortcut handling
@@ -561,7 +561,7 @@ export function parseShortcut(shortcut: string | CtxShortcut): CtxShortcut {
         ctrlKey: modifiers.some((m) => m.toLowerCase() === "ctrl"),
         shiftKey: modifiers.some((m) => m.toLowerCase() === "shift"),
         altKey: modifiers.some((m) => m.toLowerCase() === "alt"),
-        metaKey: modifiers.some((m) => ["meta", "cmd"].includes(m.toLowerCase()))
+        metaKey: modifiers.some((m) => ["meta", "cmd"].includes(m.toLowerCase())),
     };
 }
 

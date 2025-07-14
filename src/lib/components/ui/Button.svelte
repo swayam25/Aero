@@ -19,7 +19,7 @@
         href = "",
         disabled = $bindable(false),
         onclick = () => {},
-        children
+        children,
     }: Props = $props();
 
     let sizeClass: string = $derived.by(() => {
@@ -45,7 +45,7 @@
     class={cn(
         "flex cursor-pointer items-center justify-center gap-2 rounded-lg bg-slate-800 transition-all duration-200 hover:brightness-80",
         className,
-        sizeClass
+        sizeClass,
     )}
     {onclick}
     {href}

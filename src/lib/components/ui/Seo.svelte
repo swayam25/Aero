@@ -9,7 +9,7 @@
         title = "",
         description = "Aero makes listening to music feel light and breezy.",
         image = "/aero.webp",
-        author = "Swayam"
+        author = "Swayam",
     }: Props = $props();
 </script>
 

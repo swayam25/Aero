@@ -49,8 +49,8 @@
         await fetch("/auth/delete", {
             method: "POST",
             headers: {
-                "Content-Type": "application/json"
-            }
+                "Content-Type": "application/json",
+            },
         });
         invalidateAll();
     }
@@ -63,7 +63,7 @@
                 loginPopup = window.open(
                     data.url,
                     "discord-login",
-                    "width=500,height=700,scrollbars=yes,resizable=yes,status=yes,location=yes,toolbar=no,menubar=no"
+                    "width=500,height=700,scrollbars=yes,resizable=yes,status=yes,location=yes,toolbar=no,menubar=no",
                 );
 
                 if (loginPopup) {

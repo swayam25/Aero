@@ -16,15 +16,15 @@ export const GET: RequestHandler = async ({ fetch, url, cookies, locals }) => {
         const resp = await fetch(`${PUBLIC_DISCORD_URL}/oauth2/token`, {
             method: "POST",
             headers: {
-                "Content-Type": "application/x-www-form-urlencoded"
+                "Content-Type": "application/x-www-form-urlencoded",
             },
             body: new URLSearchParams({
                 client_id: DISCORD_CLIENT_ID,
                 client_secret: DISCORD_CLIENT_SECRET,
                 grant_type: "authorization_code",
                 code,
-                redirect_uri: `${url.origin}/auth/callback`
-            }).toString()
+                redirect_uri: `${url.origin}/auth/callback`,
+            }).toString(),
         });
 
         if (resp.ok) {
@@ -35,7 +35,7 @@ export const GET: RequestHandler = async ({ fetch, url, cookies, locals }) => {
                 maxAge: expires_in,
                 sameSite: "none",
                 httpOnly: true,
-                secure: true
+                secure: true,
             });
 
             cookies.set("refresh_token", refresh_token, {
@@ -43,7 +43,7 @@ export const GET: RequestHandler = async ({ fetch, url, cookies, locals }) => {
                 maxAge: 60 * 60 * 24 * 365, // 1 year
                 sameSite: "none",
                 httpOnly: true,
-                secure: true
+                secure: true,
             });
 
             const userData = await getUserData(locals.db, access_token);
@@ -55,7 +55,7 @@ export const GET: RequestHandler = async ({ fetch, url, cookies, locals }) => {
                     maxAge: expires_in,
                     sameSite: "none",
                     httpOnly: true,
-                    secure: true
+                    secure: true,
                 });
 
                 const dbUser = await checkUser(locals.db, userData.id);
@@ -82,8 +82,8 @@ export const GET: RequestHandler = async ({ fetch, url, cookies, locals }) => {
                     </html>
                     `,
                     {
-                        headers: { "Content-Type": "text/html" }
-                    }
+                        headers: { "Content-Type": "text/html" },
+                    },
                 );
             } else {
                 error(500, "Failed to get user data");

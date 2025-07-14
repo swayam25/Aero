@@ -1315,7 +1315,7 @@ const SONG_CATEGORIES = [
     "Reality Bending Beats",
     "Consciousness Altering",
     "Transcendent Audio",
-    "Enlightened Listening"
+    "Enlightened Listening",
 ];
 
 export const GET: RequestHandler = async ({ locals, url }) => {
@@ -1357,6 +1357,6 @@ export const GET: RequestHandler = async ({ locals, url }) => {
     return json({
         categories: songs,
         hasMore: offset + limit < SONG_CATEGORIES.length,
-        total: SONG_CATEGORIES.length
+        total: SONG_CATEGORIES.length,
     });
 };

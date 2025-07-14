@@ -8,7 +8,7 @@ export const GET: RequestHandler = async ({ cookies }) => {
     return new Response(JSON.stringify({ message: "Logged out" }), {
         status: 200,
         headers: {
-            "Content-Type": "application/json"
-        }
+            "Content-Type": "application/json",
+        },
     });
 };

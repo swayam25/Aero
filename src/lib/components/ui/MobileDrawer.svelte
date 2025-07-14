@@ -32,7 +32,7 @@
         backgroundImage = "",
         blur = false,
         zIndex = 1000,
-        children
+        children,
     }: Props = $props();
 </script>
 
@@ -44,7 +44,7 @@
                 "fixed inset-x-0 flex flex-col rounded-t-2xl border-t border-slate-700",
                 fullScreen ? "-top-4 right-0 left-0 h-[calc(100vh+1rem)]" : "bottom-0 mt-24 h-fit",
                 backgroundImage ? "bg-slate-950" : "bg-slate-900",
-                className
+                className,
             )}
             style="z-index: {zIndex}; {backgroundImage
                 ? `background-image: url(${backgroundImage}); background-size: cover; background-position: center;`

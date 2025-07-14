@@ -20,7 +20,7 @@ const createSongsCache = () => {
                         categories,
                         currentOffset: offset,
                         hasMore,
-                        lastUpdated: Date.now()
+                        lastUpdated: Date.now(),
                     };
                 }
                 return {
@@ -28,7 +28,7 @@ const createSongsCache = () => {
                     categories: { ...cache.categories, ...categories },
                     currentOffset: offset,
                     hasMore,
-                    lastUpdated: Date.now()
+                    lastUpdated: Date.now(),
                 };
             });
         },
@@ -37,7 +37,7 @@ const createSongsCache = () => {
             // 5 minutes
             if (!cache) return true;
             return Date.now() - cache.lastUpdated > maxAge;
-        }
+        },
     };
 };
 

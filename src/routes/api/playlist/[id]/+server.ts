@@ -26,7 +26,7 @@ export const POST: RequestHandler = async ({ locals, request }) => {
         await setPlaylistCover(
             locals.db,
             value.playlistID,
-            previousSongID ? (await locals.ytmusic.getSong(previousSongID)).thumbnails[0].url.replace("=w60-h60-l90-rj", "") : ""
+            previousSongID ? (await locals.ytmusic.getSong(previousSongID)).thumbnails[0].url.replace("=w60-h60-l90-rj", "") : "",
         );
         await removeSongFromPlaylist(locals.db, value.playlistID, value.songID);
     } else if (key === "toggle_view") {
@@ -39,7 +39,7 @@ export const POST: RequestHandler = async ({ locals, request }) => {
         await setPlaylistCover(
             locals.db,
             value.playlistID,
-            (await locals.ytmusic.getSong(value.songIDs.slice(-1)[0])).thumbnails[0].url.replace("=w60-h60-l90-rj", "")
+            (await locals.ytmusic.getSong(value.songIDs.slice(-1)[0])).thumbnails[0].url.replace("=w60-h60-l90-rj", ""),
         );
     }
 

@@ -45,7 +45,7 @@ export async function getPublicPlaylists(db: DB, userID: string) {
 
 export async function checkPlaylist(db: DB, userID: string, playlistID: string) {
     return db.query.playlistTable.findFirst({
-        where: (fields) => and(eq(fields.userID, userID), eq(fields.id, playlistID))
+        where: (fields) => and(eq(fields.userID, userID), eq(fields.id, playlistID)),
     });
 }
 

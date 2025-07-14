@@ -17,8 +17,8 @@
             body: JSON.stringify({ id: plID }),
             method: "DELETE",
             headers: {
-                "Content-Type": "application/json"
-            }
+                "Content-Type": "application/json",
+            },
         });
         const respData = await resp.json();
         if (resp.ok) toast.success("Playlist deleted successfully");
@@ -38,8 +38,8 @@
             body: JSON.stringify({ key: "rename_pl", value: { playlistID: plID, name: newName } }),
             method: "POST",
             headers: {
-                "Content-Type": "application/json"
-            }
+                "Content-Type": "application/json",
+            },
         });
         const respData = await resp.json();
         if (resp.ok) toast.success("Playlist renamed successfully");

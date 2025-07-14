@@ -8,7 +8,7 @@ export interface PopupsStore {
 
 export const store = writable<PopupsStore>({
     showPlDeletePopup: false,
-    showPlRenamePopup: false
+    showPlRenamePopup: false,
 });
 
 export function showPlDeletePopup(playlistData: PopupsStore["playlistData"]) {

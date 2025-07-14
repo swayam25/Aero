@@ -20,7 +20,7 @@
         onDrag,
         dragOptions = {},
         class: className = "",
-        children
+        children,
     }: DraggableProps & { children: any } = $props();
 
     let currentDragIndex = $state(0);
@@ -32,7 +32,7 @@
         axis: "y",
         bounds: "parent",
         recomputeBounds: {
-            drag: true
+            drag: true,
         },
         onDragStart({ rootNode, offsetY }) {
             currentDragIndex = [...rootNode.parentNode!.children].indexOf(rootNode);
@@ -61,7 +61,7 @@
         },
         transform() {
             return `translate3d(0,${translateY}px,0)`;
-        }
+        },
     };
 
     // Merge user options with default options

@@ -46,10 +46,10 @@
                             key: "reorder",
                             value: {
                                 playlistID: data.playlist.id,
-                                songIDs: (await Promise.all(playlistObject.map((item) => item.song))).map((item) => item.videoId)
-                            }
+                                songIDs: (await Promise.all(playlistObject.map((item) => item.song))).map((item) => item.videoId),
+                            },
                         }),
-                        headers: { "Content-Type": "application/json" }
+                        headers: { "Content-Type": "application/json" },
                     });
                     if (!resp.ok) {
                         const respData = await resp.json();
@@ -61,8 +61,8 @@
                     success: "Playlist synced successfully",
                     error: (e) => {
                         return `${e}`;
-                    }
-                }
+                    },
+                },
             );
         }, 1000);
     }
@@ -70,7 +70,7 @@
     $effect(() => {
         playlistObject = playlistSongs.map((item, index) => ({
             id: index,
-            song: item
+            song: item,
         }));
     });
 
@@ -83,9 +83,9 @@
                 event: "UPDATE",
                 schema: "public",
                 table: "playlist",
-                filter: `user_id=eq.${data.user?.id}`
+                filter: `user_id=eq.${data.user?.id}`,
             },
-            () => invalidateAll()
+            () => invalidateAll(),
         )
         .subscribe();
     onDestroy(() => {
@@ -97,7 +97,7 @@
         const resp = await fetch(`/api/playlist/${data.playlist.id}`, {
             method: "POST",
             body: JSON.stringify({ key: "toggle_view", value: { playlistID: data.playlist.id } }),
-            headers: { "Content-Type": "application/json" }
+            headers: { "Content-Type": "application/json" },
         });
         const respData = await resp.json();
         if (resp.ok) {
@@ -223,7 +223,7 @@
                                 onclick={async () => {
                                     await playPlaylist(
                                         fetchSongDetailed(song),
-                                        playlistObject.map((item) => item.song)
+                                        playlistObject.map((item) => item.song),
                                     );
                                 }}
                                 in:fly={{ duration: 500, easing: expoOut, x: -100, y: 0 }}
@@ -234,7 +234,7 @@
                                         fetchSongDetailed(song),
                                         data.playlist,
                                         data.loginUser?.id || null,
-                                        data.user?.id || null
+                                        data.user?.id || null,
                                     );
                                     openCtxMenu(e, actions);
                                 }}
