@@ -19,14 +19,16 @@ export const GET: RequestHandler = async ({ cookies, locals }) => {
         cookies.set("access_token", newToken.access_token, {
             path: "/",
             maxAge: newToken.expires_in,
-            sameSite: "lax",
-            httpOnly: true
+            sameSite: "none",
+            httpOnly: true,
+            secure: true
         });
         cookies.set("refresh_token", newToken.refresh_token, {
             path: "/",
             maxAge: 60 * 60 * 24 * 365, // 1 year
-            sameSite: "lax",
-            httpOnly: true
+            sameSite: "none",
+            httpOnly: true,
+            secure: true
         });
 
         const userData = await getUserData(locals.db, newToken.access_token);
@@ -35,8 +37,9 @@ export const GET: RequestHandler = async ({ cookies, locals }) => {
         cookies.set("user", token, {
             path: "/",
             maxAge: newToken.expires_in,
-            sameSite: "lax",
-            httpOnly: true
+            sameSite: "none",
+            httpOnly: true,
+            secure: true
         });
 
         console.log("Refreshed token successfully");
