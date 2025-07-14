@@ -5,7 +5,7 @@ import { getNewAccessToken, getUserData } from "$lib/discord/user";
 import { redirect } from "@sveltejs/kit";
 import type { RequestHandler } from "./$types";
 
-export const GET: RequestHandler = async ({ cookies, locals }) => {
+export const GET: RequestHandler = async ({ fetch, cookies, locals }) => {
     const refreshToken: string | undefined = cookies.get("refresh_token");
 
     if (!refreshToken) {
@@ -43,6 +43,11 @@ export const GET: RequestHandler = async ({ cookies, locals }) => {
         });
 
         console.log("Refreshed token successfully");
+    } else {
+        console.log("Failed to refresh token");
+        cookies.delete("access_token", { path: "/" });
+        cookies.delete("refresh_token", { path: "/" });
+        cookies.delete("user", { path: "/" });
     }
 
     return redirect(302, "/");
