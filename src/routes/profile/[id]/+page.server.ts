@@ -9,7 +9,7 @@ import type { PageServerLoad } from "./$types";
 export const load: PageServerLoad = async ({ params, locals }) => {
     const userID = params.id;
     const userExists = await checkUser(locals.db, userID);
-    let user: UserData;
+    let user: UserData | null;
 
     if (!userExists) {
         return error(404, "User not found");

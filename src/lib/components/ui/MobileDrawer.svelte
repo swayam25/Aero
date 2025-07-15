@@ -88,7 +88,7 @@
                 {/if}
 
                 <!-- Content -->
-                <div class={cn("overflow-y-auto", fullScreen ? "flex-1 px-4 pb-4" : `px-4 pb-8 ${maxHeight}`, contentClass)}>
+                <div class={cn("overflow-y-autos overflow-x-hidden", fullScreen ? "flex-1 px-4 pb-4" : `px-4 pb-8 ${maxHeight}`, contentClass)}>
                     {@render children()}
                 </div>
             </div>

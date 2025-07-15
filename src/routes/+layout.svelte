@@ -96,14 +96,14 @@
     richColors
     position="bottom-center"
     theme="dark"
-    style="z-index: 900;"
+    style="z-index: 2000;"
     toastOptions={{
         classes: {
             toast: "mb-30 md:mb-15 rounded-lg font-rubik",
             title: "text-sm",
             description: "text-[0.65rem]",
         },
-        style: "z-index: 900;",
+        style: "z-index: 2000;",
     }}
 />
 
@@ -152,10 +152,10 @@
     {/if}
     <div class="fixed {data.user ? 'bottom-15' : 'bottom-2'} w-full p-2 md:relative md:bottom-0 md:col-span-full md:row-start-3 md:p-0">
         {#if isMobile}
-            <MobilePlayerSystem />
+            <MobilePlayerSystem user={data.user} />
         {:else}
             <div class="rounded-lg bg-slate-900 md:rounded-none md:bg-transparent">
-                <Player />
+                <Player user={data.user} />
             </div>
         {/if}
     </div>

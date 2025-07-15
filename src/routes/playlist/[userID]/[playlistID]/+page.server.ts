@@ -14,7 +14,7 @@ export const load: PageServerLoad = async ({ params, locals }) => {
 
     const userExists = await checkUser(locals.db, userID);
     let loginUser: UserData | null = locals.user;
-    let user: UserData;
+    let user: UserData | null;
     let playlist: SelectPlaylist;
     let playlistSongs: Promise<SongFull>[];
 

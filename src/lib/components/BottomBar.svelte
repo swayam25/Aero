@@ -5,7 +5,7 @@
     import SolarMusicLibraryLinear from "~icons/solar/music-library-linear";
     import SolarUserCircleLinear from "~icons/solar/user-circle-linear";
 
-    let { user }: { user: UserData } = $props();
+    let { user }: { user: UserData | null } = $props();
 
     let links: { name: string; href: string; icon: Component; hidden?: boolean }[] = [
         { name: "Home", href: "/", icon: SolarHome2Linear },

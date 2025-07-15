@@ -6,7 +6,7 @@
     import SolarMusicLibraryLinear from "~icons/solar/music-library-linear";
     import Tooltip from "./ui/Tooltip.svelte";
 
-    let { user, playlists }: { user: UserData; playlists: InsertPlaylist[] } = $props();
+    let { user, playlists }: { user: UserData | null; playlists: InsertPlaylist[] } = $props();
 </script>
 
 <div class="flex h-full w-20 flex-col items-center justify-start rounded-lg bg-slate-900">
@@ -41,6 +41,7 @@
                         }}
                         oncontextmenu={(e) => {
                             e.preventDefault();
+                            if (!user) return;
                             const actions = createPlaylistActions({ name: playlist.name || "Unnamed playlist", id: playlist.id ?? "" }, user?.id);
                             openCtxMenu(e, actions);
                         }}

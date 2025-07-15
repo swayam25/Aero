@@ -1,23 +1,21 @@
 <script lang="ts">
     import { createQueueActions, openCtxMenu } from "$lib/ctxmenu";
-    import { previous, seekTo, skip, store, toggleLyrics, togglePause, toggleQueue } from "$lib/player";
+    import type { UserData } from "$lib/discord/types";
+    import { previous, seekTo, skip, store, togglePause } from "$lib/player";
     import { formatTime } from "$lib/utils/time";
-    import SolarMicrophoneLargeLinear from "~icons/solar/microphone-large-linear";
     import SolarPauseCircleBold from "~icons/solar/pause-circle-bold";
     import SolarPlayCircleBold from "~icons/solar/play-circle-bold";
-    import SolarPlaylist2Linear from "~icons/solar/playlist-2-linear";
-    import SolarRepeatLinear from "~icons/solar/repeat-linear";
-    import SolarRepeatOneLinear from "~icons/solar/repeat-one-linear";
-    import SolarShuffleLinear from "~icons/solar/shuffle-linear";
     import SolarSkipNextBold from "~icons/solar/skip-next-bold";
     import SolarSkipPreviousBold from "~icons/solar/skip-previous-bold";
+    import PlayerButtons from "../PlayerButtons.svelte";
     import MarqueeText from "../ui/MarqueeText.svelte";
     import Slider from "../ui/Slider.svelte";
 
     interface Props {
+        user: UserData | null;
         show: boolean;
     }
-    let { show = $bindable() }: Props = $props();
+    let { user, show = $bindable() }: Props = $props();
 
     // Update currentTime
     let currentTime: number = $state($store.currentTime);
@@ -97,64 +95,5 @@
     </div>
 
     <!-- Bottom Controls -->
-    <div class="flex items-center justify-center gap-8 pb-4">
-        <!-- Loop -->
-        <button
-            onclick={() => {
-                switch ($store.loop) {
-                    case "none":
-                        $store.loop = "single";
-                        break;
-                    case "single":
-                        $store.loop = $store.queue.length >= 2 ? "queue" : "none";
-                        break;
-                    case "queue":
-                        $store.loop = "none";
-                        break;
-                }
-            }}
-            class="size-6 opacity-80 transition-opacity hover:opacity-100"
-        >
-            {#if $store.loop === "none"}
-                <SolarRepeatLinear class="size-full text-white" />
-            {:else if $store.loop === "single"}
-                <SolarRepeatOneLinear class="size-full text-sky-500" />
-            {:else}
-                <SolarRepeatLinear class="size-full text-sky-500" />
-            {/if}
-        </button>
-
-        <!-- Queue -->
-        <button
-            onclick={toggleQueue}
-            class="size-6 opacity-80 transition-opacity not-disabled:hover:opacity-100"
-            class:!cursor-not-allowed={$store.queue.length < 2}
-            disabled={$store.queue.length < 2}
-        >
-            <SolarPlaylist2Linear class="size-full text-white" />
-        </button>
-
-        <!-- Lyrics -->
-        <button
-            onclick={toggleLyrics}
-            class="size-6 opacity-80 transition-opacity not-disabled:hover:opacity-100"
-            class:!cursor-not-allowed={!$store.meta}
-            disabled={!$store.meta}
-        >
-            <SolarMicrophoneLargeLinear class="size-full text-white" />
-        </button>
-
-        <!-- Shuffle -->
-        <button
-            onclick={() => {
-                $store.shuffle = !$store.shuffle;
-            }}
-            class="size-6 transition-opacity not-disabled:hover:opacity-100"
-            class:opacity-80={!$store.shuffle}
-            class:!cursor-not-allowed={$store.queue.length < 2}
-            disabled={$store.queue.length < 2}
-        >
-            <SolarShuffleLinear class="size-full {$store.shuffle ? 'text-sky-500' : 'text-white'}" />
-        </button>
-    </div>
+    <PlayerButtons {user} showVolume={false} iconSize="size-6" gap="gap-8" py="py-4" />
 </div>

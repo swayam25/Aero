@@ -1,4 +1,5 @@
 <script lang="ts">
+    import type { UserData } from "$lib/discord/types";
     import { store } from "$lib/player";
     import Player from "../Player.svelte";
     import MobileDrawer from "../ui/MobileDrawer.svelte";
@@ -6,6 +7,7 @@
     import MobilePlayer from "./MobilePlayer.svelte";
     import MobileQueue from "./MobileQueue.svelte";
 
+    let { user }: { user: UserData | null } = $props();
     let showMobilePlayer = $state(false);
 
     // Handle mobile player state
@@ -38,7 +40,7 @@
     backgroundImage={$store.meta?.thumbnails[0].url.replace("=w60-h60-l90-rj", "") || ""}
     blur={true}
 >
-    <MobilePlayer bind:show={showMobilePlayer} />
+    <MobilePlayer {user} bind:show={showMobilePlayer} />
 </MobileDrawer>
 
 <!-- Queue Drawer -->
@@ -53,5 +55,5 @@
 
 <!-- Mini Player (clickable to open mobile player) -->
 <button class="w-full cursor-pointer rounded-lg bg-slate-900" disabled={$store.state === "unstarted"}>
-    <Player onSongInfoClick={handlePlayerClick} />
+    <Player {user} onSongInfoClick={handlePlayerClick} />
 </button>

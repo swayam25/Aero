@@ -39,6 +39,7 @@ Aero makes listening to music feel light and breezy
         ![Client Info](./assets/client_info.png)
     - Get `DISCORD_BOT_TOKEN` from the Discord Developer Portal.
         ![Bot Token](./assets/bot_token.png)
+    - Set `YOUTUBE_DL_PATH` to the path of `youtube-dl` or `yt-dlp` executable. You can install it from [GitHub Releases](https://github.com/yt-dlp/yt-dlp/releases) (`yt-dlp`) or use a package manager.
     - Set `DOMAIN` to your domain name or `https://localhost` for local development. The variable is required for production.
         ```env
         DOMAIN="https://your-domain.com"
@@ -125,7 +126,7 @@ Aero makes listening to music feel light and breezy
     - **Content Layer (`z-10`)**: Drawer content and elevated cards.
     - **UI Components (`z-50`)**: Tooltips and popovers.
     - **Modals & Overlays (`z-100`)**: Dialog and alert popups.
-    - **Toast Notifications (`z-900`)**: Toast messages using `style="z-index: 900;"`.
+    - **Toast Notifications (`z-2000`)**: Toast messages using `style="z-index: 2000;"`.
     - **Context Menus (`z-[1000]`)**: Right-click context menu using `z-[1000]` class.
     - **Submenus (`z-[1001]`)**: Context menu submenus using `z-[1001]` class.
     - **Mobile Drawers**: Dynamic `zIndex` prop values:

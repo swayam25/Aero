@@ -1,29 +1,24 @@
 <script lang="ts">
     import { createQueueActions, openCtxMenu } from "$lib/ctxmenu";
-    import { previous, seekTo, setVolume, skip, store, toggleLyrics, togglePause, toggleQueue } from "$lib/player";
+    import type { UserData } from "$lib/discord/types";
+    import { previous, seekTo, setVolume, skip, store, togglePause } from "$lib/player";
     import { formatTime } from "$lib/utils/time";
     import { onMount } from "svelte";
+    import { toast } from "svelte-sonner";
     import { fly } from "svelte/transition";
-    import SolarMicrophoneLargeLinear from "~icons/solar/microphone-large-linear";
-    import SolarMutedLinear from "~icons/solar/muted-linear";
     import SolarPauseCircleBold from "~icons/solar/pause-circle-bold";
     import SolarPlayCircleBold from "~icons/solar/play-circle-bold";
-    import SolarPlaylist2Linear from "~icons/solar/playlist-2-linear";
-    import SolarRepeatLinear from "~icons/solar/repeat-linear";
-    import SolarRepeatOneLinear from "~icons/solar/repeat-one-linear";
-    import SolarShuffleLinear from "~icons/solar/shuffle-linear";
     import SolarSkipNextBold from "~icons/solar/skip-next-bold";
     import SolarSkipPreviousBold from "~icons/solar/skip-previous-bold";
-    import SolarVolumeLinear from "~icons/solar/volume-linear";
-    import SolarVolumeLoudLinear from "~icons/solar/volume-loud-linear";
-    import SolarVolumeSmallLinear from "~icons/solar/volume-small-linear";
+    import PlayerButtons from "./PlayerButtons.svelte";
     import MarqueeText from "./ui/MarqueeText.svelte";
-    import Popover from "./ui/Popover.svelte";
     import Slider from "./ui/Slider.svelte";
 
     let {
+        user,
         onSongInfoClick = () => {},
     }: {
+        user: UserData | null;
         onSongInfoClick?: () => void;
     } = $props();
 
@@ -67,6 +62,48 @@
             }
         });
     });
+
+    let downloadLoading: boolean = $state(false);
+    async function handleDownload() {
+        if (!user) {
+            toast.warning("Login to download songs");
+            return;
+        }
+        if (!$store.meta || !$store.meta.videoId) return;
+
+        downloadLoading = true;
+        const id = $store.meta.videoId;
+        toast.promise(
+            (async () => {
+                const response = await fetch(`/api/download?id=${encodeURIComponent(id)}`);
+                if (!response.ok) {
+                    const data = await response.json();
+                    throw new Error(data.error || "Unknown error");
+                }
+                const blob = await response.blob();
+                const url = window.URL.createObjectURL(blob);
+                const a = document.createElement("a");
+                a.href = url;
+                a.download = ($store.meta?.name || "song") + ".m4a";
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+                setTimeout(() => window.URL.revokeObjectURL(url), 100);
+            })(),
+            {
+                loading: "Downloading...",
+                success: () => {
+                    downloadLoading = false;
+                    return "Download complete!";
+                },
+                error: (err: any) => {
+                    downloadLoading = false;
+                    return err?.message || "Unknown error";
+                },
+                description: "Please be patient, this may take a while.",
+            },
+        );
+    }
 </script>
 
 <div id="player" class="relative flex h-15 w-full items-center justify-end gap-2 rounded-lg px-4 sm:justify-center">
@@ -145,91 +182,7 @@
     </div>
 
     <!-- Other Controls -->
-    <div
-        class="absolute right-5 hidden items-center justify-center gap-4 transition-all *:cursor-pointer sm:flex"
-        class:opacity-80={$store.state === "buffering" || $store.state === "unstarted"}
-        class:pointer-events-none={$store.state === "unstarted"}
-    >
-        <!-- Volume -->
-        <Popover side="top">
-            {#snippet trigger()}
-                <span class="size-5 cursor-pointer opacity-80 transition-opacity hover:opacity-100">
-                    {#if volume === 0}
-                        <SolarMutedLinear class="size-full" />
-                    {:else if volume < 50 && volume > 20}
-                        <SolarVolumeSmallLinear class="size-full" />
-                    {:else if volume < 20}
-                        <SolarVolumeLinear class="size-full" />
-                    {:else}
-                        <SolarVolumeLoudLinear class="size-full" />
-                    {/if}
-                </span>
-            {/snippet}
-            {#snippet content()}
-                <Slider bind:value={volume} class="w-40" onChange={handleVol} />
-            {/snippet}
-        </Popover>
-
-        <!-- Loop -->
-        <button
-            onclick={() => {
-                switch ($store.loop) {
-                    case "none":
-                        $store.loop = "single";
-                        break;
-                    case "single":
-                        $store.loop = $store.queue.length >= 2 ? "queue" : "none";
-                        break;
-                    case "queue":
-                        $store.loop = "none";
-                        break;
-                }
-            }}
-            class="size-5 cursor-pointer transition-opacity hover:opacity-100"
-            class:opacity-80={$store.loop === "none"}
-        >
-            {#if $store.loop === "none"}
-                <SolarRepeatLinear class="size-full" />
-            {:else if $store.loop === "single"}
-                <SolarRepeatOneLinear class="size-full" />
-            {:else}
-                <SolarRepeatLinear class="size-full text-sky-500" />
-            {/if}
-        </button>
-
-        <!-- Queue -->
-        <button
-            onclick={toggleQueue}
-            class="size-5 cursor-pointer opacity-80 transition-opacity not-disabled:hover:opacity-100"
-            class:!cursor-not-allowed={$store.queue.length < 2}
-            disabled={$store.queue.length < 2}
-        >
-            <SolarPlaylist2Linear class="size-full" />
-        </button>
-
-        <!-- Lyrics -->
-        <button
-            onclick={toggleLyrics}
-            class="size-5 cursor-pointer opacity-80 transition-opacity not-disabled:hover:opacity-100"
-            class:!cursor-not-allowed={!$store.meta}
-            disabled={!$store.meta}
-        >
-            <SolarMicrophoneLargeLinear class="size-full" />
-        </button>
-
-        <!-- Shuffle -->
-        <button
-            onclick={() => {
-                $store.shuffle = !$store.shuffle;
-            }}
-            class="size-5 cursor-pointer transition-opacity not-disabled:hover:opacity-100"
-            class:opacity-80={!$store.shuffle}
-            class:!cursor-not-allowed={$store.queue.length < 2}
-            disabled={$store.queue.length < 2}
-        >
-            <SolarShuffleLinear class="size-full {$store.shuffle ? 'text-sky-500' : ''}" />
-        </button>
-    </div>
+    <PlayerButtons {user} iconSize="size-5" gap="gap-4" py="" class="absolute right-5 hidden sm:flex" />
 
     <!-- Player Video Element (hidden) -->
     <div id="player-iframe" class="hidden opacity-0"></div>
