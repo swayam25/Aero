@@ -5,6 +5,7 @@
 
     interface Props {
         open: boolean;
+        dismissible?: boolean;
         onClose?: () => void;
         title?: string;
         showHandle?: boolean;
@@ -21,6 +22,7 @@
 
     let {
         open,
+        dismissible = true,
         onClose = () => {},
         title = "",
         showHandle = true,
@@ -36,9 +38,17 @@
     }: Props = $props();
 </script>
 
-<Drawer.Root {onClose} {open}>
+<Drawer.Root {onClose} {open} {dismissible}>
     <Drawer.Portal>
-        <Drawer.Overlay class="fixed inset-0 bg-black/50" style="z-index: {zIndex - 1};" />
+        <Drawer.Overlay
+            onclick={() => {
+                if (!dismissible) {
+                    open = false;
+                }
+            }}
+            class="fixed inset-0 bg-black/50"
+            style="z-index: {zIndex - 1};"
+        />
         <Drawer.Content
             class={cn(
                 "fixed inset-x-0 flex flex-col rounded-t-2xl border-t border-slate-700",
@@ -59,7 +69,15 @@
             <div class="relative z-10 flex h-full flex-col">
                 <!-- Handle -->
                 {#if showHandle}
-                    <div class={cn("mx-auto h-2 w-12 rounded-full bg-slate-600", fullScreen ? "mt-8" : "mt-4")}></div>
+                    <button
+                        aria-label="Close"
+                        onpointerdown={() => {
+                            if (!dismissible) {
+                                open = false;
+                            }
+                        }}
+                        class={cn("mx-auto h-2 w-12 rounded-full bg-slate-600", fullScreen ? "mt-8" : "mt-4")}
+                    ></button>
                 {/if}
 
                 <!-- Header -->

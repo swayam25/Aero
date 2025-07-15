@@ -42,7 +42,7 @@
 </MobileDrawer>
 
 <!-- Queue Drawer -->
-<MobileDrawer open={$store.showQueue} onClose={closeQueue} title="Queue" maxHeight="max-h-[80vh]" zIndex={1100}>
+<MobileDrawer open={$store.showQueue} dismissible={false} onClose={closeQueue} title="Queue" maxHeight="max-h-[80vh]" zIndex={1100}>
     <MobileQueue />
 </MobileDrawer>
 
