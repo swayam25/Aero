@@ -1,4 +1,4 @@
-import { invalidateAll } from "$app/navigation";
+import { goto, invalidateAll } from "$app/navigation";
 import type { InsertPlaylist } from "$lib/db/schema";
 import { addToQueue, play, store as playerStore, removeFromQueue, togglePause } from "$lib/player";
 import { showPlDeletePopup, showPlRenamePopup } from "$lib/stores/popups";
@@ -99,10 +99,9 @@ export function createSongActions(song: SongDetailed, loginUserID: string | null
             label: "Song Info",
             icon: SolarInfoCircleLinear,
             shortcut: shortcuts.i,
-            separator: true,
             onclick: async (ctx) => {
                 ctx.closeMenu();
-                toast.info(`${song.name} by ${song.artist.name}`);
+                goto(`/song?id=${song.videoId}`);
             },
         }),
     );

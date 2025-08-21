@@ -1,4 +1,6 @@
 <script lang="ts">
+    import { store } from "$lib/player";
+
     interface Props {
         title?: string;
         description?: string;
@@ -14,7 +16,11 @@
 </script>
 
 <svelte:head>
-    <title>Aero {title ? `| ${title}` : ""}</title>
+    {#if $store.state !== "playing"}
+        <title>Aero {title ? `| ${title}` : ""}</title>
+    {:else}
+        <title>{$store.meta?.name} by {$store.meta?.artist.name}</title>
+    {/if}
     <link rel="icon" type="image/svg" href="/aero.webp" />
     <meta name="description" content={description} />
     <meta name="theme-color" content="#0EA5E9" />
