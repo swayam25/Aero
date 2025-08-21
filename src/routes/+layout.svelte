@@ -131,6 +131,10 @@
     class:md:grid-cols-[5rem_1fr]={data.user && !($store.showQueue || $store.showLyrics)}
     class:md:grid-cols-[1fr_30vw]={!data.user && ($store.showQueue || $store.showLyrics)}
     class:md:grid-cols-[1fr]={!data.user && !($store.showQueue || $store.showLyrics)}
+    role="application"
+    oncontextmenu={(e) => {
+        e.preventDefault();
+    }}
 >
     <div class="md:col-span-full">
         <Navbar user={data.user} />
