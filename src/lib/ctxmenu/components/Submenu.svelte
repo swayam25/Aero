@@ -26,7 +26,7 @@
         transition:fade={{ duration: 100 }}
         bind:this={submenu}
         data-submenu
-        class="fixed z-[1001] flex min-w-48 flex-col items-start justify-center rounded-lg border border-slate-700 bg-slate-900 p-2 text-sm shadow-xl"
+        class="fixed z-1000 flex min-w-48 flex-col items-start justify-center rounded-lg border border-slate-700 bg-slate-900 p-2 text-sm shadow-xl"
         style="top: {$store.submenu.y}px; left: {$store.submenu.x}px;"
     >
         <div in:fade={{ duration: 50 }} class="flex w-full flex-col items-start justify-center">

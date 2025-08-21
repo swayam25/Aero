@@ -1,21 +1,12 @@
 <script lang="ts">
     import type { UserData } from "$lib/discord/types";
     import { store } from "$lib/player";
-    import Player from "../Player.svelte";
     import MobileDrawer from "../ui/MobileDrawer.svelte";
     import MobileLyrics from "./MobileLyrics.svelte";
     import MobilePlayer from "./MobilePlayer.svelte";
     import MobileQueue from "./MobileQueue.svelte";
 
-    let { user }: { user: UserData | null } = $props();
-    let showMobilePlayer = $state(false);
-
-    // Handle mobile player state
-    function handlePlayerClick() {
-        if ($store.state !== "unstarted") {
-            showMobilePlayer = true;
-        }
-    }
+    let { user, showMobilePlayer = $bindable(false) }: { user: UserData | null; showMobilePlayer: boolean } = $props();
 
     function closeMobilePlayer() {
         showMobilePlayer = false;
@@ -44,16 +35,11 @@
 </MobileDrawer>
 
 <!-- Queue Drawer -->
-<MobileDrawer open={$store.showQueue} dismissible={false} onClose={closeQueue} title="Queue" maxHeight="max-h-[80vh]" zIndex={1100}>
+<MobileDrawer open={$store.showQueue} dismissible={false} onClose={closeQueue} title="Queue" maxHeight="max-h-[80vh]" zIndex={801}>
     <MobileQueue />
 </MobileDrawer>
 
 <!-- Lyrics Drawer -->
-<MobileDrawer open={$store.showLyrics} onClose={closeLyrics} title="Lyrics" maxHeight="max-h-[80vh]" zIndex={1100}>
+<MobileDrawer open={$store.showLyrics} onClose={closeLyrics} title="Lyrics" maxHeight="max-h-[80vh]" zIndex={802}>
     <MobileLyrics />
 </MobileDrawer>
-
-<!-- Mini Player (clickable to open mobile player) -->
-<button class="w-full cursor-pointer rounded-lg bg-slate-900" disabled={$store.state === "unstarted"}>
-    <Player {user} onSongInfoClick={handlePlayerClick} />
-</button>

@@ -154,9 +154,11 @@ Aero makes listening to music feel light and breezy
     - **UI Components (`z-50`)**: Tooltips and popovers.
     - **Modals & Overlays (`z-100`)**: Dialog and alert popups.
     - **Toast Notifications (`z-2000`)**: Toast messages using `style="z-index: 2000;"`.
-    - **Context Menus (`z-[1000]`)**: Right-click context menu using `z-[1000]` class.
-    - **Submenus (`z-[1001]`)**: Context menu submenus using `z-[1001]` class.
+    - **Context Menus (`z-1000`)**: Right-click context menu.
+    - **Transparent Overlay (`z-900`)**: Disables the background interaction when context menu is open.
+    - **Submenus (`z-1000`)**: Context menu submenus.
     - **Mobile Drawers**: Dynamic `zIndex` prop values:
-        - Player drawer: `zIndex={1000}` (*default `MobileDrawer` component `zIndex` value*)
-        - Queue & Lyrics drawer: `zIndex={1100}`
-        - Context menu drawer: `zIndex={1300}`
+        - Player drawer: `zIndex={800}` (*default `MobileDrawer` component `zIndex` value*)
+        - Queue & Lyrics drawer: `zIndex={801}` and `zIndex={802}` respectively.
+        - Popover drawers: `zIndex={803}`
+        - Context menu drawer: `zIndex={1000}`

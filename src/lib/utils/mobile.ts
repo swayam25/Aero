@@ -4,7 +4,7 @@
 export function createMobileMediaQuery(callback: (isMobile: boolean) => void): () => void {
     if (typeof window === "undefined") return () => {};
 
-    const mediaQuery = window.matchMedia("(max-width: 767px)");
+    const mediaQuery = window.matchMedia("(max-width: 768px)");
 
     // Initial check
     callback(mediaQuery.matches);

@@ -33,7 +33,7 @@
         contentClass = "",
         backgroundImage = "",
         blur = false,
-        zIndex = 1000,
+        zIndex = 800,
         children,
     }: Props = $props();
 </script>

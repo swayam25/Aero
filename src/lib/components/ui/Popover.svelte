@@ -1,21 +1,19 @@
 <script lang="ts">
     /**
-     * Enhanced Popover Component with Mobile Support
-     *
-     * Features:
      * - Automatically switches to mobile drawer on mobile devices
-     * - Title shown only in mobile drawer (for better UX)
-     * - Desktop view is clean without titles (minimal design)
+     * - Title shown only in mobile drawer
+     * - Desktop view is clean without titles
      * - Default styling for list-style content (min-w-48, flex-col, gap-1)
      * - Optimized for CtxButton components
      *
      * Usage:
      * <Popover title="Account Menu">
      *   {#snippet trigger()}<button>Click me</button>{/snippet}
-     *   {#snippet content()}
-     *     <CtxButton>Profile</CtxButton>
-     *     <CtxButton>Settings</CtxButton>
-     *   {/snippet}
+     *       {#snippet content()}
+     *           <CtxButton>Profile</CtxButton>
+     *           <CtxButton>Settings</CtxButton>
+     *       {/snippet}
+     *    {/snippet}
      * </Popover>
      */
     import { cn } from "$lib/utils/cn";
@@ -83,7 +81,7 @@
     >
         {@render trigger()}
     </div>
-    <MobileDrawer {open} onClose={handleMobileClose} {title} zIndex={1200} {maxHeight} {fullScreen} contentClass={mobileContentClass}>
+    <MobileDrawer {open} onClose={handleMobileClose} {title} zIndex={803} {maxHeight} {fullScreen} contentClass={mobileContentClass}>
         <div class="flex min-w-48 flex-col items-start justify-center gap-1">
             {@render content()}
         </div>

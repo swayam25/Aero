@@ -92,7 +92,7 @@
     }
 </script>
 
-<MobileDrawer open={$store.isOpen} onClose={handleClose} title={currentTitle || "Menu"} zIndex={1300}>
+<MobileDrawer open={$store.isOpen} onClose={handleClose} title={currentTitle || "Menu"} zIndex={1000}>
     <div class="flex flex-col gap-1">
         {#each $store.actions as action, index}
             <CtxButton type={action.type || "normal"} disabled={action.disabled} onclick={(e) => handleActionClick(action, e)}>

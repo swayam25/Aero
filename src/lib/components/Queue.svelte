@@ -20,7 +20,7 @@
         <h1 class="text-3xl font-bold md:text-4xl">Queue</h1>
     </div>
 
-    <div id="queue" class="h-[calc(100vh-232px)] overflow-x-hidden overflow-y-auto px-2 pb-2 md:px-5 md:pb-5">
+    <div class="h-[calc(100vh-232px)] overflow-x-hidden overflow-y-auto px-2 pb-2 md:px-5 md:pb-5">
         {#each $store.queue as song, idx (song.videoId)}
             <Draggable items={$store.queue} onReorder={handleReorder} class="w-full">
                 {#snippet children({ isDragging, dragIndex }: { isDragging: boolean; dragIndex: number })}

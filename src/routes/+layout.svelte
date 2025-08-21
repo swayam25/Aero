@@ -2,13 +2,13 @@
     import { onNavigate } from "$app/navigation";
     import BottomBar from "$lib/components/BottomBar.svelte";
     import Lyrics from "$lib/components/Lyrics.svelte";
-    import MobilePlayerSystem from "$lib/components/mobile/MobilePlayerSystem.svelte";
+    import MobilePlayerDrawers from "$lib/components/mobile/MobileDrawers.svelte";
     import Navbar from "$lib/components/Navbar.svelte";
     import Player from "$lib/components/Player.svelte";
     import PlaylistDialogPopup from "$lib/components/PlaylistDialogPopup.svelte";
     import Queue from "$lib/components/Queue.svelte";
     import Sidebar from "$lib/components/Sidebar.svelte";
-    import { setupShortcuts } from "$lib/ctxmenu";
+    import { store as ctxStore, setupShortcuts } from "$lib/ctxmenu";
     import ContextMenu from "$lib/ctxmenu/components/ContextMenu.svelte";
     import type { InsertPlaylist } from "$lib/db/schema";
     import { store } from "$lib/player";
@@ -88,6 +88,14 @@
                 .subscribe();
         }
     });
+
+    // Handle mobile player state
+    let showMobilePlayer = $state(false);
+    function handlePlayerClick() {
+        if ($store.state !== "unstarted" && isMobile) {
+            showMobilePlayer = true;
+        }
+    }
 </script>
 
 <ContextMenu />
@@ -109,6 +117,14 @@
 
 <PlaylistDialogPopup />
 
+{#if isMobile}
+    <MobilePlayerDrawers user={data.user} bind:showMobilePlayer />
+{/if}
+
+{#if $ctxStore.isOpen}
+    <div class="absolute z-900 h-screen w-screen overflow-hidden bg-transparent"></div>
+{/if}
+
 <div
     class="grid h-screen w-screen grid-rows-[auto_1fr_auto] overflow-hidden md:gap-2 md:p-2"
     class:md:grid-cols-[5rem_1fr_30vw]={data.user && ($store.showQueue || $store.showLyrics)}
@@ -124,7 +140,7 @@
             <Sidebar user={data.user} {playlists} />
         </div>
     {/if}
-    <div id="body" class="size-full overflow-x-hidden overflow-y-auto rounded-lg p-2 md:row-start-2 md:bg-slate-900 md:p-5">
+    <div class="size-full overflow-x-hidden overflow-y-auto rounded-lg p-2 md:row-start-2 md:bg-slate-900 md:p-5">
         <div class="container m-auto size-full">
             {@render children()}
             <div class="{data.user ? 'h-40' : 'h-20'} md:hidden"></div>
@@ -151,12 +167,8 @@
         </div>
     {/if}
     <div class="fixed {data.user ? 'bottom-15' : 'bottom-2'} w-full p-2 md:relative md:bottom-0 md:col-span-full md:row-start-3 md:p-0">
-        {#if isMobile}
-            <MobilePlayerSystem user={data.user} />
-        {:else}
-            <div class="rounded-lg bg-slate-900 md:rounded-none md:bg-transparent">
-                <Player user={data.user} />
-            </div>
-        {/if}
+        <div class="rounded-lg bg-slate-900 md:rounded-none md:bg-transparent">
+            <Player user={data.user} onSongInfoClick={handlePlayerClick} />
+        </div>
     </div>
 </div>

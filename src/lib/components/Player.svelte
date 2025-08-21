@@ -4,7 +4,6 @@
     import { previous, seekTo, setVolume, skip, store, togglePause } from "$lib/player";
     import { formatTime } from "$lib/utils/time";
     import { onMount } from "svelte";
-    import { toast } from "svelte-sonner";
     import { fly } from "svelte/transition";
     import SolarPauseCircleBold from "~icons/solar/pause-circle-bold";
     import SolarPlayCircleBold from "~icons/solar/play-circle-bold";
@@ -42,10 +41,6 @@
     $effect(() => {
         setVolume(volume);
     });
-    function handleVol(value: number) {
-        if (localStorage) localStorage.setItem("volume", value.toString());
-        setVolume(value);
-    }
     onMount(() => {
         if (localStorage) {
             volume = localStorage.getItem("volume") ? Number(localStorage.getItem("volume")) : 100;
@@ -62,54 +57,12 @@
             }
         });
     });
-
-    let downloadLoading: boolean = $state(false);
-    async function handleDownload() {
-        if (!user) {
-            toast.warning("Login to download songs");
-            return;
-        }
-        if (!$store.meta || !$store.meta.videoId) return;
-
-        downloadLoading = true;
-        const id = $store.meta.videoId;
-        toast.promise(
-            (async () => {
-                const response = await fetch(`/api/download?id=${encodeURIComponent(id)}`);
-                if (!response.ok) {
-                    const data = await response.json();
-                    throw new Error(data.error || "Unknown error");
-                }
-                const blob = await response.blob();
-                const url = window.URL.createObjectURL(blob);
-                const a = document.createElement("a");
-                a.href = url;
-                a.download = ($store.meta?.name || "song") + ".m4a";
-                document.body.appendChild(a);
-                a.click();
-                document.body.removeChild(a);
-                setTimeout(() => window.URL.revokeObjectURL(url), 100);
-            })(),
-            {
-                loading: "Downloading...",
-                success: () => {
-                    downloadLoading = false;
-                    return "Download complete!";
-                },
-                error: (err: any) => {
-                    downloadLoading = false;
-                    return err?.message || "Unknown error";
-                },
-                description: "Please be patient, this may take a while.",
-            },
-        );
-    }
 </script>
 
-<div id="player" class="relative flex h-15 w-full items-center justify-end gap-2 rounded-lg px-4 sm:justify-center">
+<div class="relative flex h-15 w-full items-center justify-end gap-2 rounded-lg px-4 sm:justify-center">
     <!-- Song Info -->
     <button
-        class="absolute left-0 flex cursor-pointer items-center justify-center gap-2 transition-opacity md:left-5"
+        class="absolute left-0 flex cursor-pointer items-center justify-center gap-2 transition-opacity md:left-5 md:cursor-default"
         onclick={() => {
             if ($store.state !== "unstarted") {
                 onSongInfoClick();

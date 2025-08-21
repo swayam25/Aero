@@ -47,29 +47,6 @@
         }
     });
 
-    // Prevent body and queue scrolling when menu is open
-    $effect(() => {
-        const bodyElement = document.getElementById("body");
-        const queueElement = document.getElementById("queue");
-        if ($store.isOpen) {
-            if (bodyElement) {
-                bodyElement.style.overflow = "hidden";
-            }
-            if (queueElement) {
-                queueElement.style.overflow = "hidden";
-            }
-            document.body.style.overflow = "hidden";
-        } else {
-            if (bodyElement) {
-                bodyElement.style.overflow = "";
-            }
-            if (queueElement) {
-                queueElement.style.overflow = "";
-            }
-            document.body.style.overflow = "";
-        }
-    });
-
     // Close menu on click outside
     onMount(() => {
         // Set up mobile detection
@@ -164,7 +141,7 @@
         <div
             transition:fade={{ duration: 150 }}
             bind:this={ctxMenu}
-            class="fixed z-[1000] flex min-w-48 flex-col items-start justify-center rounded-lg border border-slate-700 bg-slate-900 p-2 text-sm shadow-xl"
+            class="fixed z-1000 flex min-w-48 flex-col items-start justify-center rounded-lg border border-slate-700 bg-slate-900 p-2 text-sm shadow-xl"
             style="top: {y}px; left: {x}px;"
         >
             <div in:fade={{ duration: 100 }} class="flex w-full flex-col items-start justify-center">
