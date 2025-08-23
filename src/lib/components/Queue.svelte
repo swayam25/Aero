@@ -1,10 +1,13 @@
 <script lang="ts">
     import Draggable from "$lib/components/ui/Draggable.svelte";
     import MarqueeText from "$lib/components/ui/MarqueeText.svelte";
-    import { createQueueActions, openCtxMenu } from "$lib/ctxmenu";
+    import { createSongActions, openCtxMenu } from "$lib/ctxmenu";
+    import type { UserData } from "$lib/discord/types";
     import { play, store } from "$lib/player";
     import { fade } from "svelte/transition";
     import HugeiconsCd from "~icons/hugeicons/cd";
+
+    let { user }: { user: UserData | null } = $props();
 
     function handleReorder(fromIndex: number, toIndex: number) {
         store.update((s) => {
@@ -30,7 +33,7 @@
                         }}
                         oncontextmenu={(e) => {
                             e.preventDefault();
-                            const actions = createQueueActions(song);
+                            const actions = createSongActions(song, user?.id);
                             openCtxMenu(e, actions);
                         }}
                         class="song-handle flex w-full cursor-pointer items-center justify-center gap-2 rounded-lg p-2 transition-colors duration-200 hover:bg-slate-800"

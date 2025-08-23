@@ -25,26 +25,43 @@ import SolarTrashBinTrashLinear from "~icons/solar/trash-bin-trash-linear";
 // This ensures the menu closes before any async operations like network requests or player actions.
 // This prevents issues where the menu might still be open when the action completes, which could lead to bad UX.
 
-// Song context menu factory
-export function createSongActions(song: SongDetailed, loginUserID: string | null): CtxAction[] {
+// Song context menu factory (handles both regular songs and queue songs)
+export function createSongActions(song: SongDetailed, loginUserID: string | null | undefined): CtxAction[] {
     const actions: CtxAction[] = [];
-
-    // Play action
-    actions.push(
-        createCtxAction({
-            label: "Play",
-            icon: SolarPlayLinear,
-            shortcut: shortcuts.space,
-            onclick: async (ctx) => {
-                ctx.closeMenu();
-                await play(song);
-            },
-        }),
-    );
-
-    // Add to Queue (only if queue exists)
     const playerState = get(playerStore);
-    if (playerState.queue.length > 0) {
+    const isCurrentlyPlaying = song.videoId === playerState.meta?.videoId;
+    const isFromQueue = playerState.queue.some((s) => s.videoId === song.videoId);
+
+    // Play/Pause/Resume action
+    if (isCurrentlyPlaying) {
+        const isPaused = playerState.state === "paused";
+        actions.push(
+            createCtxAction({
+                label: isPaused ? "Resume" : "Pause",
+                icon: isPaused ? SolarPlayLinear : SolarPauseLinear,
+                shortcut: shortcuts.space,
+                onclick: async (ctx) => {
+                    ctx.closeMenu();
+                    await togglePause();
+                },
+            }),
+        );
+    } else {
+        actions.push(
+            createCtxAction({
+                label: "Play",
+                icon: SolarPlayLinear,
+                shortcut: shortcuts.space,
+                onclick: async (ctx) => {
+                    ctx.closeMenu();
+                    await play(song, isFromQueue);
+                },
+            }),
+        );
+    }
+
+    // Add to Queue (only if queue exists and song is not currently playing)
+    if (playerState.queue.length > 0 && !isCurrentlyPlaying && !isFromQueue) {
         actions.push(
             createCtxAction({
                 label: "Add to Queue",
@@ -54,6 +71,23 @@ export function createSongActions(song: SongDetailed, loginUserID: string | null
                     ctx.closeMenu();
                     await addToQueue(song);
                     toast.success("Added to queue");
+                },
+            }),
+        );
+    }
+
+    // Remove from Queue (only if from queue and not currently playing)
+    if (isFromQueue && !isCurrentlyPlaying) {
+        actions.push(
+            createCtxAction({
+                label: "Remove from Queue",
+                icon: SolarNotificationLinesRemoveLinear,
+                type: "error",
+                shortcut: shortcuts.delete,
+                onclick: async (ctx) => {
+                    ctx.closeMenu();
+                    await removeFromQueue(song);
+                    toast.success("Removed from queue");
                 },
             }),
         );
@@ -105,56 +139,6 @@ export function createSongActions(song: SongDetailed, loginUserID: string | null
             },
         }),
     );
-
-    return actions;
-}
-
-// Queue context menu factory
-export function createQueueActions(song: SongDetailed): CtxAction[] {
-    const actions: CtxAction[] = [];
-    const playerState = get(playerStore);
-
-    // If this is the currently playing song
-    if (song.videoId === playerState.meta?.videoId) {
-        const isPaused = playerState.state === "paused";
-        actions.push(
-            createCtxAction({
-                label: isPaused ? "Resume" : "Pause",
-                icon: isPaused ? SolarPlayLinear : SolarPauseLinear,
-                shortcut: shortcuts.space,
-                onclick: async (ctx) => {
-                    ctx.closeMenu();
-                    await togglePause();
-                },
-            }),
-        );
-    } else {
-        actions.push(
-            createCtxAction({
-                label: "Play",
-                icon: SolarPlayLinear,
-                shortcut: shortcuts.space,
-                onclick: async (ctx) => {
-                    ctx.closeMenu();
-                    await play(song, true);
-                },
-            }),
-        );
-
-        actions.push(
-            createCtxAction({
-                label: "Remove from Queue",
-                icon: SolarNotificationLinesRemoveLinear,
-                type: "error",
-                shortcut: shortcuts.delete,
-                onclick: async (ctx) => {
-                    ctx.closeMenu();
-                    await removeFromQueue(song);
-                    toast.success("Removed from queue");
-                },
-            }),
-        );
-    }
 
     return actions;
 }

@@ -60,7 +60,7 @@
                         e.preventDefault();
                         const { createSongActions } = await import("$lib/ctxmenu/actions");
                         const { openCtxMenu, closeCtxMenu } = await import("$lib/ctxmenu");
-                        const actions = createSongActions(song, user?.id || null);
+                        const actions = createSongActions(song, user?.id);
                         openCtxMenu(e, actions);
                     }}
                 >

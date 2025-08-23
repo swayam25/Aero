@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { createQueueActions, openCtxMenu } from "$lib/ctxmenu";
+    import { createSongActions, openCtxMenu } from "$lib/ctxmenu";
     import type { UserData } from "$lib/discord/types";
     import { previous, seekTo, skip, store, togglePause } from "$lib/player";
     import { formatTime } from "$lib/utils/time";
@@ -36,7 +36,7 @@
     function handleContextMenu(e: MouseEvent) {
         if ($store.state === "unstarted" || !$store.meta) return;
         e.preventDefault();
-        const actions = createQueueActions($store.meta);
+        const actions = createSongActions($store.meta, user?.id);
         openCtxMenu(e, actions);
     }
 </script>

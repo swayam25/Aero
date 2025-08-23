@@ -1,9 +1,8 @@
 <script lang="ts">
-    import { createQueueActions, openCtxMenu } from "$lib/ctxmenu";
+    import { createSongActions, openCtxMenu } from "$lib/ctxmenu";
     import type { UserData } from "$lib/discord/types";
-    import { previous, seekTo, setVolume, skip, store, togglePause } from "$lib/player";
+    import { previous, seekTo, skip, store, togglePause } from "$lib/player";
     import { formatTime } from "$lib/utils/time";
-    import { onMount } from "svelte";
     import { fly } from "svelte/transition";
     import SolarPauseCircleBold from "~icons/solar/pause-circle-bold";
     import SolarPlayCircleBold from "~icons/solar/play-circle-bold";
@@ -35,28 +34,6 @@
         seekTo(value);
         isSeeking = false;
     }
-
-    // Update volume
-    let volume: number = $state(100);
-    $effect(() => {
-        setVolume(volume);
-    });
-    onMount(() => {
-        if (localStorage) {
-            volume = localStorage.getItem("volume") ? Number(localStorage.getItem("volume")) : 100;
-        }
-        document.addEventListener("keydown", (e: KeyboardEvent) => {
-            if (document.activeElement && document.activeElement.tagName.toLowerCase() === "input") {
-                return;
-            }
-            if ($store.meta) {
-                if (e.key === " " || e.key === "k") {
-                    e.preventDefault();
-                    togglePause();
-                }
-            }
-        });
-    });
 </script>
 
 <div class="relative flex h-15 w-full items-center justify-end gap-2 rounded-lg px-4 sm:justify-center">
@@ -72,7 +49,7 @@
             if ($store.state === "unstarted") return;
             e.preventDefault();
             if ($store.meta) {
-                const actions = createQueueActions($store.meta);
+                const actions = createSongActions($store.meta, user?.id);
                 openCtxMenu(e, actions);
             }
         }}

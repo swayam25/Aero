@@ -1,10 +1,12 @@
 <script lang="ts">
+    import type { UserData } from "$lib/discord/types";
     import Queue from "../Queue.svelte";
+    let { user }: { user: UserData | null } = $props();
 </script>
 
 <!-- Mobile Queue using original Queue component styled for drawer -->
 <div class="mobile-queue-wrapper">
-    <Queue />
+    <Queue {user} />
 </div>
 
 <style>

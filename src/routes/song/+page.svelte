@@ -58,7 +58,7 @@
 
 <Seo
     title={data.song.name}
-    description={`Listen to ${data.song.name} by ${data.song.artist.name}.\nDuration: ${formatTime(data.song.duration)}.`}
+    description={`Listen to ${data.song.name} by ${data.song.artist.name}.\n\nDuration: ${formatTime(data.song.duration)}`}
     image={data.song.thumbnails[0].url.replace("=w60-h60-l90-rj", "")}
 />
 

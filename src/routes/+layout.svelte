@@ -163,7 +163,7 @@
                 class="flex size-full items-end justify-center"
             >
                 {#if $store.showQueue}
-                    <Queue />
+                    <Queue user={data.user} />
                 {:else if $store.showLyrics}
                     <Lyrics />
                 {/if}

@@ -36,7 +36,7 @@
 
 <!-- Queue Drawer -->
 <MobileDrawer open={$store.showQueue} dismissible={false} onClose={closeQueue} title="Queue" maxHeight="max-h-[80vh]" zIndex={801}>
-    <MobileQueue />
+    <MobileQueue {user} />
 </MobileDrawer>
 
 <!-- Lyrics Drawer -->
