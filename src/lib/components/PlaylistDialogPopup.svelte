@@ -26,7 +26,6 @@
         invalidateAll();
     }
 
-    let input: HTMLInputElement | null = $state(null);
     let inputValue: string = $state("");
 
     async function renamePlaylist() {
@@ -70,15 +69,7 @@
         Enter the new name for your playlist. Be creative!
     {/snippet}
     {#snippet fields()}
-        <Input
-            bind:value={inputValue}
-            class="w-full"
-            placeholder="Playlist Name"
-            icon={SolarPlaylist2Linear}
-            onEnter={renamePlaylist}
-            max={10}
-            bind:ref={input}
-        />
+        <Input bind:value={inputValue} class="w-full" placeholder="Playlist Name" icon={SolarPlaylist2Linear} onEnter={renamePlaylist} max={10} />
     {/snippet}
     {#snippet actions()}
         <Dialog.Close class="disabled:cursor-not-allowed" onclick={renamePlaylist} disabled={!inputValue}>

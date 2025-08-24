@@ -139,12 +139,12 @@
     {:else}
         <!-- Desktop context menu -->
         <div
-            transition:fade={{ duration: 150 }}
+            transition:fade={{ duration: 100 }}
             bind:this={ctxMenu}
             class="fixed z-1000 flex min-w-48 flex-col items-start justify-center rounded-lg border border-slate-700 bg-slate-900 p-2 text-sm shadow-xl"
             style="top: {y}px; left: {x}px;"
         >
-            <div in:fade={{ duration: 100 }} class="flex w-full flex-col items-start justify-center">
+            <div class="flex w-full flex-col items-start justify-center">
                 {#each $store.actions as action, index}
                     <CtxButton
                         type={action.type || "normal"}

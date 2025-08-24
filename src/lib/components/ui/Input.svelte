@@ -60,6 +60,8 @@
         onkeydown={(e) => {
             if (e.key === "Enter") {
                 onEnter();
+            } else if (e.key === "Escape") {
+                ref?.blur();
             }
         }}
     />
