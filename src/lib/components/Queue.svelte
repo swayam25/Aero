@@ -47,7 +47,7 @@
                                 <span in:fade={{ duration: 100 }} class="size-full text-slate-200">{idx + 1}</span>
                             {/if}
                         </div>
-                        <img src={song.thumbnails[0].url.replace("=w60-h60-l90-rj", "")} alt="{song.name}'s Thumbnail" class="size-15 rounded-lg" />
+                        <img src={song.thumbnail.SMALL} alt="{song.name}'s Thumbnail" class="size-15 rounded-lg" />
                         <div class="flex w-full flex-col items-center justify-center text-left">
                             <MarqueeText class="w-10 font-bold" text={song.name} />
                             <MarqueeText class="w-10 text-sm text-slate-400" text={song.artist.name} />

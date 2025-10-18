@@ -1,7 +1,7 @@
 import { goto, invalidateAll } from "$app/navigation";
 import type { InsertPlaylist } from "$lib/db/schema";
-import { addToQueue, play, store as playerStore, removeFromQueue, togglePause } from "$lib/player";
-import { showPlDeletePopup, showPlRenamePopup } from "$lib/stores/popups";
+import { addToQueue, enhanceSong, play, store as playerStore, removeFromQueue, togglePause } from "$lib/player";
+import { showPlDeletePopup, showPlRenamePopup } from "$lib/stores";
 import { toast } from "svelte-sonner";
 import { get } from "svelte/store";
 import type { SongDetailed } from "ytmusic-api";
@@ -332,13 +332,14 @@ async function loadPlaylistSubmenu(song: SongDetailed): Promise<CtxAction[]> {
                 onclick: async (ctx) => {
                     ctx.closeMenu();
                     try {
+                        const enhanced = enhanceSong(song);
                         const resp = await fetch(`/api/playlist/${playlist.id}`, {
                             body: JSON.stringify({
                                 key: "add_song",
                                 value: {
                                     playlistID: playlist.id,
                                     songID: song.videoId,
-                                    songCover: song.thumbnails[0].url.replace("=w60-h60-l90-rj", ""),
+                                    songCover: enhanced.thumbnail.MEDIUM,
                                 },
                             }),
                             method: "POST",

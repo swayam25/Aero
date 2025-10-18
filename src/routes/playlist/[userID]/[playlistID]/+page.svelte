@@ -6,7 +6,7 @@
     import Switch from "$lib/components/ui/Switch.svelte";
     import Tooltip from "$lib/components/ui/Tooltip.svelte";
     import { createPlaylistSongActions, openCtxMenu } from "$lib/ctxmenu";
-    import { fetchSongDetailed, playPlaylist, store } from "$lib/player";
+    import { enhanceSong, fetchSongDetailed, playPlaylist, store } from "$lib/player";
     import { supabase } from "$lib/supabase";
     import { formatTime } from "$lib/utils/time";
     import { onDestroy } from "svelte";
@@ -216,6 +216,7 @@
                     </div>
                 </div>
             {:then song}
+                {@const enhanced = enhanceSong(song)}
                 <Draggable items={playlistObject} onReorder={handleReorder} onDragEnd={handleDragEnd} class="w-full">
                     {#snippet children()}
                         <li class="w-full">
@@ -249,11 +250,7 @@
                                         <span in:fade={{ duration: 100 }} class="text-slate-200">{idx + 1}</span>
                                     {/if}
                                 </div>
-                                <img
-                                    src={song.thumbnails[0].url.replace("=w60-h60-l90-rj", "")}
-                                    alt="{song.name}'s Thumbnail"
-                                    class="size-15 rounded-lg"
-                                />
+                                <img src={enhanced.thumbnail.SMALL} alt="{song.name}'s Thumbnail" class="size-15 rounded-lg" />
                                 <div class="flex w-full flex-col items-center justify-center text-left">
                                     <MarqueeText class="w-10 font-bold" text={song.name} />
                                     <MarqueeText class="w-10 text-sm text-slate-400" text={song.artist.name} />

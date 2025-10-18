@@ -57,7 +57,7 @@
     >
         <div
             class="size-15 rounded-l-lg bg-slate-800 bg-cover transition-all md:rounded-lg md:bg-slate-900"
-            style="background-image: url({$store.state !== 'unstarted' ? $store.meta?.thumbnails[0].url.replace('=w60-h60-l90-rj', '') : ''});"
+            style="background-image: url({$store.state !== 'unstarted' ? $store.meta?.thumbnail.SMALL : ''});"
         ></div>
         {#if $store.state === "unstarted"}
             <div class="flex max-w-40 flex-col items-start justify-center gap-2">

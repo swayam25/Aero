@@ -1,7 +1,7 @@
 <script lang="ts">
     import SongListX from "$lib/components/SongListX.svelte";
     import Seo from "$lib/components/ui/Seo.svelte";
-    import { songsCache } from "$lib/stores/songsCache";
+    import { songsCache } from "$lib/stores";
     import { onMount } from "svelte";
     import MaterialSymbolsDirectionsRunRounded from "~icons/material-symbols/directions-run-rounded";
     import MaterialSymbolsFavoriteRounded from "~icons/material-symbols/favorite-rounded";

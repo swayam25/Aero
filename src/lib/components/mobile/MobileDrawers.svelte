@@ -28,7 +28,7 @@
     open={showMobilePlayer}
     onClose={closeMobilePlayer}
     fullScreen={true}
-    backgroundImage={$store.meta?.thumbnails[0].url.replace("=w60-h60-l90-rj", "") || ""}
+    backgroundImage={$store.meta?.thumbnail.XLARGE || ""}
     blur={true}
 >
     <MobilePlayer {user} bind:show={showMobilePlayer} />

@@ -1,7 +1,7 @@
 <script lang="ts">
     import Button from "$lib/components/ui/Button.svelte";
     import type { UserData } from "$lib/discord/types";
-    import { play } from "$lib/player";
+    import { enhanceSong, play } from "$lib/player";
     import { cn } from "$lib/utils/cn";
     import { fade } from "svelte/transition";
     import type { SongDetailed } from "ytmusic-api";
@@ -50,7 +50,7 @@
             style="scrollbar-width: none;"
         >
             {#each songs as song}
-                {@const thumb = song.thumbnails[0].url.replace("=w60-h60-l90-rj", "")}
+                {@const enhanced = enhanceSong(song)}
                 <button
                     class="flex shrink-0 cursor-pointer flex-col items-start justify-center gap-2 rounded-lg p-3 transition-colors duration-200 hover:bg-slate-800"
                     onclick={async () => {
@@ -64,7 +64,7 @@
                         openCtxMenu(e, actions);
                     }}
                 >
-                    <img src={thumb} alt="{song.name}'s Thumbnail" class="size-40 rounded-lg md:size-50" />
+                    <img src={enhanced.thumbnail.LARGE} alt="{song.name}'s Thumbnail" class="size-40 rounded-lg md:size-50" />
                     <div class="text-left">
                         <p class="text-sm">{song.name.length > 20 ? song.name.slice(0, 20) + "..." : song.name}</p>
                         <p class="text-sm text-slate-400">

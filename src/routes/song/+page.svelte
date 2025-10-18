@@ -5,7 +5,7 @@
     import Tooltip from "$lib/components/ui/Tooltip.svelte";
     import CtxButton from "$lib/ctxmenu/components/CtxButton.svelte";
     import type { SelectPlaylist } from "$lib/db/schema";
-    import { fetchSongDetailed, play, store } from "$lib/player";
+    import { enhanceSong, fetchSongDetailed, play, store } from "$lib/player";
     import { supabase } from "$lib/supabase";
     import { formatTime } from "$lib/utils/time";
     import { toast } from "svelte-sonner";
@@ -18,6 +18,7 @@
     import type { PageData } from "./$types";
 
     let { data }: { data: PageData } = $props();
+    let enhancedSong = $derived(enhanceSong(data.song));
 
     let playlists: SelectPlaylist[] | null = $derived(data.playlists);
 
@@ -59,14 +60,11 @@
 <Seo
     title={data.song.name}
     description={`Listen to ${data.song.name} by ${data.song.artist.name}.\n\nDuration: ${formatTime(data.song.duration)}`}
-    image={data.song.thumbnails[0].url.replace("=w60-h60-l90-rj", "")}
+    image={enhancedSong.thumbnail.LARGE}
 />
 
 <div class="flex w-full flex-col items-center justify-center gap-4 md:flex-row md:justify-start">
-    <div
-        class="size-40 shrink-0 rounded-lg bg-slate-800 bg-cover md:size-50"
-        style="background-image: url({data.song.thumbnails[0].url.replace('=w60-h60-l90-rj', '')});"
-    ></div>
+    <div class="size-40 shrink-0 rounded-lg bg-slate-800 bg-cover md:size-50" style="background-image: url({enhancedSong.thumbnail.LARGE});"></div>
     <div class="flex flex-col items-start justify-center gap-2 text-left">
         <div class="flex flex-col items-start justify-center gap-2 text-left">
             <h1
@@ -151,7 +149,7 @@
                                                             value: {
                                                                 playlistID: playlist.id,
                                                                 songID: data.song.videoId,
-                                                                songCover: data.song.thumbnails[0].url.replace("=w60-h60-l90-rj", ""),
+                                                                songCover: enhancedSong.thumbnail.MEDIUM,
                                                             },
                                                         }),
                                                         method: "POST",

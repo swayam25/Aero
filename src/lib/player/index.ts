@@ -1,7 +1,29 @@
+import { getThumbnailUrl } from "$lib/stores";
 import { get, writable } from "svelte/store";
 import YouTubePlayer from "youtube-player";
 import type { SongDetailed, SongFull } from "ytmusic-api";
-import type { PlayerStore } from "./types";
+import type { EnhancedSong, PlayerStore } from "./types";
+
+/**
+ * Enhances a song with proxied thumbnail URLs
+ */
+export function enhanceSong(song: SongDetailed | any): EnhancedSong {
+    const originalUrl = song.thumbnails?.[0]?.url || "";
+    const cleanUrl = originalUrl.replace(/=w\d+-h\d+-l\d+-rj/g, "");
+
+    return {
+        ...song,
+        album: song.album || null,
+        duration: song.duration ?? null,
+        thumbnail: {
+            SMALL: getThumbnailUrl(cleanUrl, { width: 60, height: 60 }),
+            MEDIUM: getThumbnailUrl(cleanUrl, { width: 120, height: 120 }),
+            LARGE: getThumbnailUrl(cleanUrl, { width: 240, height: 240 }),
+            XLARGE: getThumbnailUrl(cleanUrl, { width: 480, height: 480 }),
+            FULL: getThumbnailUrl(cleanUrl, {}),
+        },
+    };
+}
 
 export const store = writable<PlayerStore>({
     player: null,
@@ -59,8 +81,9 @@ async function fetchLyrics() {
 export async function play(song: SongDetailed, fromQueue: boolean = false) {
     let { player } = get(store);
 
-    // Update player metadata
-    store.update((state) => ({ ...state, meta: song }));
+    // Enhance song with thumbnails and update player metadata
+    const enhancedSong = enhanceSong(song);
+    store.update((state) => ({ ...state, meta: enhancedSong }));
 
     // Initialize player if not already
     if (!player) await init();
@@ -89,8 +112,9 @@ export async function playPlaylist(song: SongDetailed, plSongs: Promise<SongFull
 
     let { player } = get(store);
 
-    // Update player metadata
-    store.update((state) => ({ ...state, meta: song }));
+    // Enhance song with thumbnails and update player metadata
+    const enhancedSong = enhanceSong(song);
+    store.update((state) => ({ ...state, meta: enhancedSong }));
 
     // Initialize player if not already
     if (!player) await init();
@@ -104,7 +128,7 @@ export async function playPlaylist(song: SongDetailed, plSongs: Promise<SongFull
 
     const songsAfter = songs.slice(songIndex + 1);
     const songsBefore = songs.slice(0, songIndex);
-    const reorderedPlaylist = [song, ...songsAfter, ...songsBefore];
+    const reorderedPlaylist = [enhancedSong, ...songsAfter, ...songsBefore].map((s) => enhanceSong(s));
 
     // Update the queue with the reordered playlist
     store.update((state) => ({
@@ -117,12 +141,14 @@ export async function addToQueue(song: SongDetailed) {
     const player = get(store).player;
     if (!player) return { error: "No player instance" };
 
+    const enhancedSong = enhanceSong(song);
+
     store.update((state) => {
         // Filter out the song if already in the queue
         state.queue = state.queue.filter((queuedSong) => queuedSong.videoId !== song.videoId);
 
         // Add the song at the end of the queue
-        state.queue.push(song);
+        state.queue.push(enhancedSong);
         return state;
     });
 }
