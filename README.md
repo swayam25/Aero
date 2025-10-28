@@ -27,9 +27,9 @@ Aero makes listening to music feel light and breezy
 
 <summary>Mobile</summary>
 
-| Mobile Homepage | Mobile Player |
-| --------------- | ------------- |
-|  ![Mobile Homepage](./assets/preview/mobile_home.png) | ![Mobile Player](./assets/preview/mobile_player.png) |
+| Mobile Homepage                                      | Mobile Player                                        |
+| ---------------------------------------------------- | ---------------------------------------------------- |
+| ![Mobile Homepage](./assets/preview/mobile_home.png) | ![Mobile Player](./assets/preview/mobile_player.png) |
 
 </details>
 
@@ -86,10 +86,7 @@ Aero makes listening to music feel light and breezy
 8. Navigate to **Authentication** > **Policies** in Supabase Dashboard and create policies for all the tables.
     ![Policies](./assets/policies.png)
 
-9.  Navigate to **Database** > **Publications** in Supabase Dashboard. Then click on `supabase_realtime` and enable the `playlist` table.
-    ![Realtime Publication](./assets/realtime_publication.png)
-
-10. Navigate to **Table Editor** in Supabase Dashboard and enable **Realtime** for `playlist` table.
+9. Navigate to **Table Editor** in Supabase Dashboard and enable **Realtime** for `playlist` table.
     ![Playlist Realtime](./assets/playlist_realtime.png)
 
 > [!NOTE]
