@@ -12,24 +12,36 @@
 
     let { data }: { data: PageData } = $props();
 
-    // Calculate initial limit immediately when component loads
-    const getInitialLimit = () => {
-        if (typeof window === "undefined") return 8;
-        const screenHeight = window.innerHeight;
-        const categoryHeight = 350;
-        const estimatedCategories = Math.ceil(screenHeight / categoryHeight);
-        return Math.min(Math.max(estimatedCategories, 8), 10);
+    // Constants
+    const BATCH_SIZE = 8; // Used for initial and subsequent fetches
+    const SCROLL_THRESHOLD = 800; // Trigger when 800px from bottom
+    const CACHE_TTL = 5 * 60 * 1000; // 5 minutes
+
+    // Calculate optimal initial batch size based on viewport
+    const getOptimalBatchSize = (): number => {
+        if (typeof window === "undefined") return BATCH_SIZE;
+        const viewportHeight = window.innerHeight;
+        const categoryHeight = 350; // Approximate height
+        const visibleCategories = Math.ceil(viewportHeight / categoryHeight);
+        // Load 1.5x viewport to ensure content fills screen + some buffer
+        return Math.min(Math.max(Math.ceil(visibleCategories * 1.5), BATCH_SIZE), 12);
     };
 
-    let initialLimit = $state(8);
-    let allSongs: Record<string, any> = $state({});
+    // State management
+    let categories: Record<string, any> = $state({});
     let currentOffset = $state(0);
-    let isLoading = $state(false);
     let hasMore = $state(true);
-    let loadingElement: HTMLDivElement | null = $state(null);
-    let initialLoaded = $state(false);
+    let isInitialized = $state(false);
 
-    // Funny end messages with icons
+    // Loading state with debounce tracking
+    let activeRequests = $state(0);
+    let lastFetchTime = $state(0);
+    const MIN_FETCH_INTERVAL = 300; // Minimum 300ms between fetches
+
+    const isLoading = $derived(activeRequests > 0);
+    const showContent = $derived(isInitialized && Object.keys(categories).length > 0);
+
+    // Funny end messages
     const endMessages = [
         {
             icon: MaterialSymbolsGrassRounded,
@@ -64,120 +76,127 @@
     ];
     const randomMessage = $state(endMessages[Math.floor(Math.random() * endMessages.length)]);
 
-    async function loadMoreCategories(limit = 8) {
-        if (isLoading || !hasMore) return;
-        isLoading = true;
+    async function fetchCategories(limit: number = BATCH_SIZE): Promise<boolean> {
+        // Prevent concurrent/rapid requests
+        const now = Date.now();
+        if (now - lastFetchTime < MIN_FETCH_INTERVAL) {
+            return false;
+        }
+        if (!hasMore || activeRequests > 0) {
+            return false;
+        }
+        activeRequests++;
+        lastFetchTime = now;
+
+        const scrollBefore = window.scrollY;
         try {
             const response = await fetch(`/api/songs/categories?offset=${currentOffset}&limit=${limit}`);
-            const result = await response.json();
-            if (response.ok) {
-                const newCategories = result.categories;
-                allSongs = { ...allSongs, ...newCategories };
-                currentOffset += Object.keys(newCategories).length;
-                hasMore = result.hasMore;
-
-                // Update cache
-                songsCache.updateCache(newCategories, currentOffset, hasMore);
-            } else {
+            if (!response.ok) {
+                console.error("Failed to fetch categories:", response.statusText);
                 hasMore = false;
+                return false;
             }
+            const result = await response.json();
+            const newCategories = result.categories;
+            const newCategoryCount = Object.keys(newCategories).length;
+            if (newCategoryCount === 0) {
+                hasMore = false;
+                return false;
+            }
+            categories = { ...categories, ...newCategories };
+            currentOffset += newCategoryCount;
+            hasMore = result.hasMore;
+            songsCache.updateCache(newCategories, currentOffset, hasMore);
+
+            // Restore scroll position to prevent jumping
+            requestAnimationFrame(() => {
+                if (scrollBefore > 0) {
+                    window.scrollTo(0, scrollBefore);
+                }
+            });
+            return true;
         } catch (error) {
+            console.error("Error fetching categories:", error);
             hasMore = false;
+            return false;
         } finally {
-            isLoading = false;
+            activeRequests--;
         }
     }
 
-    function loadFromCache() {
+    function shouldLoadMore(): boolean {
+        if (!isInitialized || !hasMore || activeRequests > 0) return false;
+
+        const scrollTop = window.scrollY;
+        const windowHeight = window.innerHeight;
+        const docHeight = document.documentElement.scrollHeight;
+
+        // Load more when within SCROLL_THRESHOLD pixels from bottom
+        return scrollTop + windowHeight >= docHeight - SCROLL_THRESHOLD;
+    }
+
+    async function initialize() {
         const cache = $songsCache;
-        if (cache && !songsCache.isStale(cache)) {
-            allSongs = cache.categories;
+        // Restore from cache if valid
+        if (cache && !songsCache.isStale(cache, CACHE_TTL)) {
+            categories = cache.categories;
             currentOffset = cache.currentOffset;
             hasMore = cache.hasMore;
-            initialLoaded = true;
-            return true;
+            isInitialized = true;
+            return;
         }
-        return false;
+        const initialBatch = getOptimalBatchSize();
+        await fetchCategories(initialBatch);
+        isInitialized = true;
     }
 
     onMount(() => {
-        // Set the initial limit based on screen size
-        initialLimit = getInitialLimit();
-        // Try to load from cache first
-        if (loadFromCache()) {
-            return;
+        initialize();
+    });
+
+    $effect(() => {
+        if (shouldLoadMore()) {
+            fetchCategories();
         }
-        // Load categories if not in cache
-        loadMoreCategories(initialLimit).then(() => {
-            initialLoaded = true;
-        });
-        const observer = new IntersectionObserver(
-            (entries) => {
-                if (entries[0].isIntersecting && hasMore && !isLoading && initialLoaded) {
-                    loadMoreCategories();
-                }
-            },
-            { threshold: 0.1, rootMargin: "100px" },
-        );
-        // Backup scroll event listener to handle edge cases
-        const handleScroll = async () => {
-            if (!hasMore || isLoading || !initialLoaded) return;
-            const scrollPosition = window.scrollY + window.innerHeight;
-            const documentHeight = document.documentElement.scrollHeight;
-
-            // Trigger loading when user is within 200px of the bottom
-            if (scrollPosition >= documentHeight - 200) {
-                await loadMoreCategories();
-
-                window.scrollTo({
-                    top: documentHeight - window.innerHeight,
-                    behavior: "smooth",
-                });
-            }
-        };
-        // Add scroll event listener
-        window.addEventListener("scroll", handleScroll, { passive: true });
-        $effect(() => {
-            if (loadingElement) observer.observe(loadingElement);
-        });
-        return () => {
-            observer.disconnect();
-            window.removeEventListener("scroll", handleScroll);
-        };
     });
 </script>
 
 <Seo />
 
-{#if !initialLoaded && Object.keys(allSongs).length === 0}
-    {#each Array(initialLimit) as _}
+<!-- Initial loading skeleton -->
+{#if !showContent}
+    {#each Array(BATCH_SIZE) as _}
         <div class="text-left">
             <div class="mb-2 h-8 w-48 animate-pulse rounded-lg bg-slate-800 md:h-10 md:w-64"></div>
             <SongListX skeleton />
         </div>
     {/each}
-{:else}
-    {#each Object.keys(allSongs) as categoryName}
-        <!-- Top margin/padding is not needed here as SongListX alr comes with padding -->
+{/if}
+
+<!-- Loaded content -->
+{#if showContent}
+    {#each Object.keys(categories) as categoryName}
         <div class="text-left">
             <h1 class="text-3xl font-bold md:text-4xl">{categoryName}</h1>
-            <SongListX user={data.user} songs={allSongs[categoryName]} />
+            <SongListX user={data.user} songs={categories[categoryName]} />
         </div>
     {/each}
 {/if}
 
-{#if hasMore && initialLoaded}
-    <div bind:this={loadingElement} class="flex flex-col gap-4 md:gap-8">
-        {#if isLoading}
-            {#each Array(8) as _}
-                <div class="text-left">
-                    <div class="mb-2 h-8 w-48 animate-pulse rounded-lg bg-slate-800 md:h-10 md:w-64"></div>
-                    <SongListX skeleton />
-                </div>
-            {/each}
-        {/if}
+<!-- Loading indicator -->
+{#if hasMore && isInitialized && isLoading}
+    <div class="flex flex-col gap-4 md:gap-8">
+        {#each Array(BATCH_SIZE) as _}
+            <div class="text-left">
+                <div class="mb-2 h-8 w-48 animate-pulse rounded-lg bg-slate-800 md:h-10 md:w-64"></div>
+                <SongListX skeleton />
+            </div>
+        {/each}
     </div>
-{:else if !hasMore && initialLoaded}
+{/if}
+
+<!-- End of content message -->
+{#if !hasMore && isInitialized}
     <div class="flex flex-col items-center justify-center py-10 text-center">
         <div class="flex flex-col items-center justify-center gap-2">
             <randomMessage.icon class="size-10 {randomMessage.color}" />
