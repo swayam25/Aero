@@ -10,6 +10,7 @@
         onDrag?: (index: number, translateY: number) => void;
         dragOptions?: Partial<DragOptions>;
         class?: string;
+        disabled?: boolean;
     };
 
     let {
@@ -20,6 +21,7 @@
         onDrag,
         dragOptions = {},
         class: className = "",
+        disabled = false,
         children,
     }: DraggableProps & { children: any } = $props();
 
@@ -64,8 +66,8 @@
         },
     };
 
-    // Merge user options with default options
-    const options: DragOptions = { ...defaultOptions, ...dragOptions };
+    // Merge user options with default options and apply disabled state
+    const options: DragOptions = { ...defaultOptions, ...dragOptions, disabled };
 
     function shiftItem(item: HTMLElement, shift: number) {
         const newIndex = currentDragIndex + shift;

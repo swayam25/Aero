@@ -217,7 +217,13 @@
                 </div>
             {:then song}
                 {@const enhanced = enhanceSong(song)}
-                <Draggable items={playlistObject} onReorder={handleReorder} onDragEnd={handleDragEnd} class="w-full">
+                <Draggable
+                    items={playlistObject}
+                    onReorder={handleReorder}
+                    onDragEnd={handleDragEnd}
+                    disabled={data.loginUser?.id !== data.user.id}
+                    class="w-full"
+                >
                     {#snippet children()}
                         <li class="w-full">
                             <button
