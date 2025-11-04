@@ -2,6 +2,7 @@
     import { invalidateAll } from "$app/navigation";
     import DialogPopup from "$lib/components/ui/DialogPopup.svelte";
     import Input from "$lib/components/ui/Input.svelte";
+    import { refreshPlaylistsCache } from "$lib/ctxmenu/playlist";
     import { Dialog } from "bits-ui";
     import { onMount, type Snippet } from "svelte";
     import { toast } from "svelte-sonner";
@@ -30,8 +31,12 @@
         });
         const respData = await resp.json();
 
-        if (resp.ok) toast.success("Playlist created successfully");
-        else toast.error(respData.error);
+        if (resp.ok) {
+            toast.success("Playlist created successfully");
+            await refreshPlaylistsCache();
+        } else {
+            toast.error(respData.error);
+        }
         invalidateAll();
     }
 

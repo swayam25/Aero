@@ -278,7 +278,7 @@ import {
 # Using pnpm (required)
 pnpm install           # Install dependencies
 pnpm run check         # TypeScript validation
-pnpm run dev          # Development server
+pnpm run dev           # Development server
 ```
 
 ## Examples
@@ -390,22 +390,3 @@ pnpm add vaul-svelte svelte-sonner
 5. **Test on mobile**: Verify drawer behavior on actual mobile devices
 6. **Optimize images**: Use appropriate sizes for thumbnails
 7. **Consider accessibility**: Ensure proper ARIA labels and keyboard navigation
-
-## Migration from Old System
-
-If migrating from the old playlist-specific system:
-
-```ts
-// Old way
-const oldActions = createPlaylistSubmenu(song);
-
-// New way
-const newActions = [
-    createCtxAction({
-        label: "Add to Playlist",
-        submenu: createSubmenuLoader(() => loadPlaylistSubmenu(song))
-    })
-];
-```
-
-The new system is backwards compatible, but you get better loading states and mobile support with the dynamic loader approach.

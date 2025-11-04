@@ -10,6 +10,7 @@
     import Sidebar from "$lib/components/Sidebar.svelte";
     import { store as ctxStore, setupShortcuts } from "$lib/ctxmenu";
     import ContextMenu from "$lib/ctxmenu/components/ContextMenu.svelte";
+    import { preloadPlaylistsCache } from "$lib/ctxmenu/playlist";
     import type { InsertPlaylist } from "$lib/db/schema";
     import { store } from "$lib/player";
     import { supabase } from "$lib/supabase";
@@ -43,6 +44,10 @@
         cleanupMobileQuery = createMobileMediaQuery((mobile) => {
             isMobile = mobile;
         });
+
+        if (data.user) {
+            preloadPlaylistsCache();
+        }
 
         return () => {
             cleanupShortcuts?.();

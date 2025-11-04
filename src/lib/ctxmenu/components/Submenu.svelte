@@ -26,10 +26,10 @@
         transition:fade={{ duration: 100 }}
         bind:this={submenu}
         data-submenu
-        class="fixed z-1000 flex min-w-48 flex-col items-start justify-center rounded-lg border border-slate-700 bg-slate-900 p-2 text-sm shadow-xl"
+        class="fixed z-1000 flex max-h-96 min-w-48 flex-col items-start justify-center overflow-hidden rounded-lg border border-slate-700 bg-slate-900 text-sm shadow-xl"
         style="top: {$store.submenu.y}px; left: {$store.submenu.x}px;"
     >
-        <div class="flex w-full flex-col items-start justify-center">
+        <div class="flex w-full flex-col items-start overflow-x-hidden overflow-y-auto p-2">
             {#each $store.submenu.actions as action, index}
                 <CtxButton
                     type={action.type || "normal"}

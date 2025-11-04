@@ -3,6 +3,7 @@
     import AlertPopup from "$lib/components/ui/AlertPopup.svelte";
     import DialogPopup from "$lib/components/ui/DialogPopup.svelte";
     import Input from "$lib/components/ui/Input.svelte";
+    import { refreshPlaylistsCache } from "$lib/ctxmenu/playlist";
     import { hidePlDeletePopup, hidePlRenamePopup, store as popupStore } from "$lib/stores";
     import { AlertDialog, Dialog } from "bits-ui";
     import { toast } from "svelte-sonner";
@@ -21,8 +22,12 @@
             },
         });
         const respData = await resp.json();
-        if (resp.ok) toast.success("Playlist deleted successfully");
-        else toast.error(respData.error);
+        if (resp.ok) {
+            toast.success("Playlist deleted successfully");
+            await refreshPlaylistsCache();
+        } else {
+            toast.error(respData.error);
+        }
         invalidateAll();
     }
 
@@ -41,8 +46,12 @@
             },
         });
         const respData = await resp.json();
-        if (resp.ok) toast.success("Playlist renamed successfully");
-        else toast.error(respData.error);
+        if (resp.ok) {
+            toast.success("Playlist renamed successfully");
+            await refreshPlaylistsCache();
+        } else {
+            toast.error(respData.error);
+        }
         invalidateAll();
     }
 </script>

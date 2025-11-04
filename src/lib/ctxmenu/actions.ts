@@ -1,7 +1,7 @@
 import { goto, invalidateAll } from "$app/navigation";
 import type { InsertPlaylist } from "$lib/db/schema";
 import { addToQueue, enhanceSong, play, store as playerStore, removeFromQueue, togglePause } from "$lib/player";
-import { showPlDeletePopup, showPlRenamePopup } from "$lib/stores";
+import { playlistsCache, showPlDeletePopup, showPlRenamePopup } from "$lib/stores";
 import { toast } from "svelte-sonner";
 import { get } from "svelte/store";
 import type { SongDetailed } from "ytmusic-api";
@@ -308,11 +308,25 @@ export function createPlaylistSongActions(
     return actions;
 }
 
-// Load playlist submenu dynamically
+// Load playlist submenu dynamically with caching
 async function loadPlaylistSubmenu(song: SongDetailed): Promise<CtxAction[]> {
     try {
-        const resp = await fetch(`/api/playlists`);
-        const playlists = (await resp.json()) as InsertPlaylist[];
+        // Get current cache state
+        const cache = get(playlistsCache);
+        let playlists: InsertPlaylist[] = [];
+
+        // Check if cache is valid and not stale
+        if (cache && !playlistsCache.isStale(cache)) {
+            // Use cached playlists
+            playlists = playlistsCache.getPlaylists(cache);
+        } else {
+            // Fetch fresh playlists from API
+            const resp = await fetch(`/api/playlists`);
+            playlists = (await resp.json()) as InsertPlaylist[];
+
+            // Update cache with fresh data
+            playlistsCache.setCache(playlists);
+        }
 
         if (playlists.length === 0) {
             return [
