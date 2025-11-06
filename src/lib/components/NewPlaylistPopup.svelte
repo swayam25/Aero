@@ -4,7 +4,7 @@
     import Input from "$lib/components/ui/Input.svelte";
     import { refreshPlaylistsCache } from "$lib/ctxmenu/playlist";
     import { Dialog } from "bits-ui";
-    import { onMount, type Snippet } from "svelte";
+    import { type Snippet } from "svelte";
     import { toast } from "svelte-sonner";
     import MaterialSymbolsAdd2Rounded from "~icons/material-symbols/add-2-rounded";
     import SolarPlaylist2Linear from "~icons/solar/playlist-2-linear";
@@ -22,30 +22,35 @@
         open = false;
         const plName = inputValue.trim();
         inputValue = "";
-        const resp = await fetch("/api/playlist", {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json",
-            },
-            body: JSON.stringify({ key: "create_pl", value: plName }),
-        });
-        const respData = await resp.json();
+        if (plName) {
+            const resp = await fetch("/api/playlist", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({ key: "create_pl", value: plName }),
+            });
+            const respData = await resp.json();
 
-        if (resp.ok) {
-            toast.success("Playlist created successfully");
-            await refreshPlaylistsCache();
-        } else {
-            toast.error(respData.error);
+            if (resp.ok) {
+                toast.success("Playlist created successfully");
+                await refreshPlaylistsCache();
+            } else {
+                toast.error(respData.error);
+            }
+            invalidateAll();
         }
-        invalidateAll();
     }
-
-    onMount(() => {
-        input?.focus();
-    });
 </script>
 
-<DialogPopup title="NEW PLAYLIST" bind:open>
+<DialogPopup
+    title="NEW PLAYLIST"
+    bind:open
+    onOpenAutoFocus={(e) => {
+        e.preventDefault();
+        input?.focus();
+    }}
+>
     {#snippet trigger()}
         {@render children()}
     {/snippet}
@@ -58,7 +63,7 @@
             class="w-full"
             placeholder="Playlist Name"
             icon={SolarPlaylist2Linear}
-            max={10}
+            max={20}
             onEnter={createPlaylist}
             bind:ref={input}
         />

@@ -147,7 +147,6 @@
                     downloadLoading = false;
                     return err?.message || "Unknown error";
                 },
-                description: "Please be patient, this may take a while.",
             },
         );
     }

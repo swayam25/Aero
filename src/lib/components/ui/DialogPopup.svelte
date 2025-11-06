@@ -11,8 +11,9 @@
         description?: Snippet;
         fields: Snippet;
         actions?: Snippet;
+        onOpenAutoFocus?: (e: Event) => void;
     }
-    let { title, open = $bindable(false), trigger, description, fields, actions }: Props = $props();
+    let { title, open = $bindable(false), trigger, description, fields, actions, onOpenAutoFocus }: Props = $props();
 </script>
 
 <Dialog.Root bind:open>
@@ -26,7 +27,11 @@
             {#snippet child({ props, open })}
                 {#if open}
                     <div {...props} transition:fade={{ duration: 100 }}>
-                        <Dialog.Content class="flex max-w-[90%] flex-col rounded-lg border border-slate-700 bg-slate-900 p-5 text-sm md:max-w-[50%]">
+                        <Dialog.Content
+                            class="flex max-w-[90%] flex-col rounded-lg border border-slate-700 bg-slate-900 p-5 text-sm md:max-w-[50%]"
+                            {onOpenAutoFocus}
+                            onCloseAutoFocus={(e) => e.preventDefault()}
+                        >
                             <div class="flex flex-col gap-2 text-left">
                                 <div class="flex items-center justify-between gap-2">
                                     <Dialog.Title class="text-xl font-extrabold">{title}</Dialog.Title>

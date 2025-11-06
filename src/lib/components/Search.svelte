@@ -16,18 +16,10 @@
 
     // Create enhanced options with current search as default first option
     const allOptions = $derived(() => {
-        const trimmedSearch = inputValue.trim();
-        if (!trimmedSearch) return searchSuggestions;
-
-        const searchExists = searchSuggestions.some(
-            (opt) => opt.value.toLowerCase() === trimmedSearch.toLowerCase() || opt.label.toLowerCase() === trimmedSearch.toLowerCase(),
-        );
-
-        if (!searchExists) {
-            return [{ value: trimmedSearch, label: trimmedSearch }, ...searchSuggestions];
+        if (!inputValue.trim()) {
+            return searchSuggestions;
         }
-
-        return searchSuggestions;
+        return [{ value: inputValue, label: inputValue }, ...searchSuggestions];
     });
 
     // Handle input changes for search suggestions
@@ -64,7 +56,6 @@
     }
 
     function handleSearch(query: string) {
-        console.log("Searching for:", query);
         if (query.trim()) {
             goto(`/search?q=${encodeURIComponent(query)}`, { keepFocus: true });
         }
