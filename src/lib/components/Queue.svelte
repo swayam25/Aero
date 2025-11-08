@@ -36,7 +36,7 @@
                             const actions = createSongActions(song, user?.id);
                             openCtxMenu(e, actions);
                         }}
-                        class="song-handle flex w-full cursor-pointer items-center justify-center gap-2 rounded-lg p-2 transition-colors duration-200 hover:bg-slate-800"
+                        class="group song-handle flex w-full cursor-pointer items-center justify-center gap-2 rounded-lg p-2 transition-colors duration-200 hover:bg-slate-800"
                     >
                         <div class="size-10 p-1 text-lg">
                             {#if song.videoId === $store.meta?.videoId}
@@ -47,7 +47,10 @@
                                 <span in:fade={{ duration: 100 }} class="size-full text-slate-200">{idx + 1}</span>
                             {/if}
                         </div>
-                        <img src={song.thumbnail.SMALL} alt="{song.name}'s Thumbnail" class="size-15 rounded-lg" />
+                        <div
+                            class="size-15 shrink-0 rounded-lg bg-slate-800 bg-cover transition-colors duration-200 group-hover:bg-slate-900"
+                            style="background-image: url({song.thumbnail.LARGE});"
+                        ></div>
                         <div class="flex w-full flex-col items-center justify-center text-left">
                             <MarqueeText class="w-10 font-bold" text={song.name} />
                             <MarqueeText class="w-10 text-sm text-slate-400" text={song.artist.name} />

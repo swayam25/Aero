@@ -57,9 +57,12 @@
                         const actions = createSongActions(songs[0], data.user?.id);
                         openCtxMenu(e, actions);
                     }}
-                    class="flex size-full cursor-pointer flex-col items-start justify-between gap-2 rounded-lg bg-slate-800 p-5 transition-colors duration-200 hover:bg-slate-700"
+                    class="group flex size-full cursor-pointer flex-col items-start justify-between gap-2 rounded-lg bg-slate-800 p-5 transition-colors duration-200 hover:bg-slate-700"
                 >
-                    <img src={firstSong.thumbnail.LARGE} alt="{songs[0].name}'s Thumbnail" class="size-30 rounded-lg md:size-45" />
+                    <div
+                        class="size-30 shrink-0 rounded-lg bg-slate-900 bg-cover transition-colors duration-200 group-hover:bg-slate-800 md:size-45"
+                        style="background-image: url({firstSong.thumbnail.LARGE});"
+                    ></div>
                     <div class="flex size-full flex-col items-start justify-center gap-1 text-left">
                         <p class="w-full text-3xl font-bold md:text-4xl">{songs[0].name}</p>
                         <p class="w-full text-xl text-slate-400 md:text-2xl">{songs[0].artist.name}</p>
@@ -81,9 +84,12 @@
                             const actions = createSongActions(song, data.user?.id);
                             openCtxMenu(e, actions);
                         }}
-                        class="flex h-auto w-full items-center justify-between gap-2 rounded-lg p-2 transition-colors duration-200 hover:bg-slate-800"
+                        class="group flex h-auto w-full items-center justify-between gap-2 rounded-lg p-2 transition-colors duration-200 hover:bg-slate-800"
                     >
-                        <img src={enhanced.thumbnail.SMALL} alt="{song.name}'s Thumbnail" class="size-15 rounded-lg" />
+                        <div
+                            class="size-15 shrink-0 rounded-lg bg-slate-800 bg-cover transition-colors duration-200 group-hover:bg-slate-900"
+                            style="background-image: url({enhanced.thumbnail.SMALL});"
+                        ></div>
                         <div class="flex w-full flex-col items-center justify-center text-left">
                             <MarqueeText class="w-10" text={song.name} />
                             <MarqueeText class="w-10 text-sm text-slate-400" text={song.artist.name} />

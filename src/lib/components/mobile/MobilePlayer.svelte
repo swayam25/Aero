@@ -47,7 +47,10 @@
         <!-- Album Art and Song Info -->
         <div class="flex flex-col items-center gap-4">
             <div oncontextmenu={handleContextMenu} role="button" tabindex="0" class="cursor-pointer">
-                <img src={$store.meta?.thumbnail.XLARGE} alt="thumbnail" class="size-72 rounded-2xl shadow-2xl" />
+                <div
+                    class="size-72 rounded-2xl bg-slate-800 bg-cover shadow-2xl"
+                    style="background-image: url({$store.meta?.thumbnail.XLARGE})"
+                ></div>
             </div>
             <div
                 class="flex w-full max-w-sm cursor-pointer flex-col items-center text-center"

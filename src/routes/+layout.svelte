@@ -180,7 +180,7 @@
             <Sidebar user={data.user} {playlists} />
         </div>
     {/if}
-    <div class="size-full overflow-x-hidden overflow-y-auto rounded-lg p-2 md:row-start-2 md:bg-slate-900 md:p-5">
+    <div id="body" class="size-full overflow-x-hidden overflow-y-auto rounded-lg p-2 md:row-start-2 md:bg-slate-900 md:p-5">
         <div class="container m-auto size-full">
             {@render children()}
             <div class="{data.user ? 'h-40' : 'h-20'} md:hidden"></div>

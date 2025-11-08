@@ -127,12 +127,17 @@
     function shouldLoadMore(): boolean {
         if (!isInitialized || !hasMore || activeRequests > 0) return false;
 
-        const scrollTop = window.scrollY;
-        const windowHeight = window.innerHeight;
-        const docHeight = document.documentElement.scrollHeight;
+        const body = document.getElementById("body")!;
+        const scrollTop = body.scrollTop;
+        const windowHeight = body.clientHeight;
+        const docHeight = body.scrollHeight;
 
-        // Load more when within SCROLL_THRESHOLD pixels from bottom
-        return scrollTop + windowHeight >= docHeight - SCROLL_THRESHOLD;
+        // Only load if page has scrollable content (docHeight > windowHeight)
+        // AND user has scrolled close to the bottom
+        const hasScrollableContent = docHeight > windowHeight;
+        const isNearBottom = scrollTop + windowHeight >= docHeight - SCROLL_THRESHOLD;
+
+        return hasScrollableContent && isNearBottom;
     }
 
     async function initialize() {
@@ -150,14 +155,20 @@
         isInitialized = true;
     }
 
-    onMount(() => {
-        initialize();
-    });
-
-    $effect(() => {
+    function handleScroll() {
         if (shouldLoadMore()) {
             fetchCategories();
         }
+    }
+
+    onMount(() => {
+        initialize();
+        // Add scroll listener
+        const body = document.getElementById("body")!;
+        body.addEventListener("scroll", handleScroll, { passive: true });
+        return () => {
+            body.removeEventListener("scroll", handleScroll);
+        };
     });
 </script>
 

@@ -353,7 +353,7 @@ async function loadPlaylistSubmenu(song: SongDetailed): Promise<CtxAction[]> {
                                 value: {
                                     playlistID: playlist.id,
                                     songID: song.videoId,
-                                    songCover: enhanced.thumbnail.MEDIUM,
+                                    songCover: enhanced.thumbnail.FULL,
                                 },
                             }),
                             method: "POST",

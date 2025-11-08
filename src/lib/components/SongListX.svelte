@@ -52,7 +52,7 @@
             {#each songs as song}
                 {@const enhanced = enhanceSong(song)}
                 <button
-                    class="flex shrink-0 cursor-pointer flex-col items-start justify-center gap-2 rounded-lg p-3 transition-colors duration-200 hover:bg-slate-800"
+                    class="group/btn flex shrink-0 cursor-pointer flex-col items-start justify-center gap-2 rounded-lg p-3 transition-colors duration-200 hover:bg-slate-800"
                     onclick={async () => {
                         await play(song);
                     }}
@@ -64,7 +64,10 @@
                         openCtxMenu(e, actions);
                     }}
                 >
-                    <img src={enhanced.thumbnail.LARGE} alt="{song.name}'s Thumbnail" class="size-40 rounded-lg md:size-50" />
+                    <div
+                        class="size-40 shrink-0 rounded-lg bg-slate-800 bg-cover transition-colors duration-200 group-hover/btn:bg-slate-900 md:size-50"
+                        style="background-image: url({enhanced.thumbnail.LARGE});"
+                    ></div>
                     <div class="text-left">
                         <p class="text-sm">{song.name.length > 20 ? song.name.slice(0, 20) + "..." : song.name}</p>
                         <p class="text-sm text-slate-400">
