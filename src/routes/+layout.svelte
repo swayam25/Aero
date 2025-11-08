@@ -13,6 +13,7 @@
     import { preloadPlaylistsCache } from "$lib/ctxmenu/playlist";
     import type { InsertPlaylist } from "$lib/db/schema";
     import { store } from "$lib/player";
+    import { playlistsCache } from "$lib/stores";
     import { supabase } from "$lib/supabase";
     import { createMobileMediaQuery } from "$lib/utils/mobile";
     import { onMount, type Snippet } from "svelte";
@@ -88,6 +89,36 @@
                             }
                             return playlist;
                         });
+                        // Update the playlists cache with the new data
+                        playlistsCache.updatePlaylist(newPlaylist.id, newPlaylist);
+                    },
+                )
+                .on(
+                    "postgres_changes",
+                    {
+                        event: "INSERT",
+                        schema: "public",
+                        table: "playlist",
+                        filter: `user_id=eq.${data.user?.id}`,
+                    },
+                    (payload) => {
+                        const newPlaylist = payload.new as InsertPlaylist;
+                        playlists = [newPlaylist, ...playlists];
+                        playlistsCache.addPlaylist(newPlaylist);
+                    },
+                )
+                .on(
+                    "postgres_changes",
+                    {
+                        event: "DELETE",
+                        schema: "public",
+                        table: "playlist",
+                        filter: `user_id=eq.${data.user?.id}`,
+                    },
+                    (payload) => {
+                        const { old: oldPlaylist } = payload;
+                        playlists = playlists.filter((p) => p.id !== oldPlaylist.id);
+                        playlistsCache.removePlaylist(oldPlaylist.id);
                     },
                 )
                 .subscribe();
