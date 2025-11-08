@@ -3,25 +3,45 @@
     import { createPlaylistActions, openCtxMenu } from "$lib/ctxmenu";
     import type { InsertPlaylist } from "$lib/db/schema";
     import type { UserData } from "$lib/discord/types";
+    import type { Component } from "svelte";
     import SolarMusicLibraryLinear from "~icons/solar/music-library-linear";
     import Tooltip from "./ui/Tooltip.svelte";
 
     let { user, playlists }: { user: UserData | null; playlists: InsertPlaylist[] } = $props();
+
+    interface Item {
+        name: string;
+        icon: Component;
+        href: string;
+    }
+    let items: Item[] = [
+        {
+            name: "Playlists",
+            icon: SolarMusicLibraryLinear,
+            href: "/playlist",
+        },
+    ];
+
+    const playlistHeight = `calc(100vh - ${140 + 40 + items.length * 52}px)`;
 </script>
 
 <div class="flex h-full w-20 flex-col items-center justify-start rounded-lg bg-slate-900">
-    <Tooltip side="right" class="my-5">
-        {#snippet trigger()}
-            <a href="/playlist" class="cursor-pointer opacity-80 transition-opacity hover:opacity-100">
-                <SolarMusicLibraryLinear class="size-8" />
-            </a>
-        {/snippet}
-        {#snippet content()}
-            Playlists
-        {/snippet}
-    </Tooltip>
+    <div class="flex flex-col items-center justify-start gap-5 py-5">
+        {#each items as item}
+            <Tooltip side="right">
+                {#snippet trigger()}
+                    <a href={item.href} class="cursor-pointer opacity-80 transition-opacity hover:opacity-100">
+                        <item.icon class="size-8" />
+                    </a>
+                {/snippet}
+                {#snippet content()}
+                    {item.name}
+                {/snippet}
+            </Tooltip>
+        {/each}
+    </div>
 
-    <div class="flex h-[calc(100vh-238px)] flex-col items-center justify-start gap-5 overflow-y-auto" style="scrollbar-width: none;">
+    <div class="flex flex-col items-center justify-start gap-5 overflow-y-auto" style="height: {playlistHeight}; scrollbar-width: none;">
         {#each playlists as playlist}
             <Tooltip side="right">
                 {#snippet trigger()}
