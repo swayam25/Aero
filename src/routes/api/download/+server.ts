@@ -42,10 +42,14 @@ export const GET = async ({ locals, url }) => {
         if (!response.ok) {
             return json({ error: "Failed to fetch audio stream" }, { status: 500 });
         }
+
+        const safeName = (song.name || "audio").replace(/[/\\?%*:|"<>]/g, "-");
+        const encodedFilename = encodeURIComponent(safeName);
+
         return new Response(response.body, {
             headers: {
                 "Content-Type": response.headers.get("Content-Type") || "audio/mp4",
-                "Content-Disposition": `attachment; filename="${song.name || "audio"}.m4a"`,
+                "Content-Disposition": `attachment; filename="audio.m4a"; filename*=UTF-8''${encodedFilename}.m4a`,
             },
         });
     } catch (err) {
