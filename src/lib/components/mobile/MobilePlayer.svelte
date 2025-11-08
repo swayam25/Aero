@@ -41,7 +41,7 @@
     }
 </script>
 
-<div class="flex h-full w-full flex-col justify-between p-4">
+<div class="flex h-full w-full flex-col justify-between">
     <!-- Main Content -->
     <div class="flex flex-1 flex-col items-center justify-center gap-8">
         <!-- Album Art and Song Info -->

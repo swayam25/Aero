@@ -88,8 +88,10 @@
                 {/if}
 
                 <!-- Content -->
-                <div class={cn("overflow-y-autos overflow-x-hidden", fullScreen ? "flex-1 px-4 pb-4" : `px-4 pb-8 ${maxHeight}`, contentClass)}>
-                    {@render children()}
+                <div class={cn("overflow-x-hidden overflow-y-auto", fullScreen ? "flex-1" : maxHeight, contentClass)}>
+                    <div class={cn("size-full", fullScreen ? "px-4 pb-4" : "px-4 pb-8")}>
+                        {@render children()}
+                    </div>
                 </div>
             </div>
         </Drawer.Content>

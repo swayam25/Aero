@@ -82,9 +82,7 @@
         {@render trigger()}
     </div>
     <MobileDrawer {open} onClose={handleMobileClose} {title} zIndex={803} {maxHeight} {fullScreen} contentClass={mobileContentClass}>
-        <div class="flex min-w-48 flex-col items-start justify-center gap-1">
-            {@render content()}
-        </div>
+        {@render content()}
     </MobileDrawer>
 {:else}
     <!-- Desktop popover -->
@@ -95,7 +93,11 @@
         <Popover.Portal>
             <Popover.Content
                 {side}
-                class={cn("z-50 min-w-48 rounded-lg border border-slate-700 bg-slate-900 p-2 text-sm", contentClass)}
+                class={cn(
+                    "z-50 flex min-w-48 flex-col items-start justify-center overflow-hidden rounded-lg border border-slate-700 bg-slate-900 text-sm",
+                    maxHeight,
+                    contentClass,
+                )}
                 sideOffset={8}
                 forceMount
             >
@@ -103,7 +105,7 @@
                     {#if open}
                         <div {...wrapperProps}>
                             <div {...props} transition:fade={{ duration: 100 }}>
-                                <div class="flex flex-col items-center justify-center">
+                                <div class="flex w-full flex-col items-start overflow-x-hidden overflow-y-auto p-2">
                                     {@render content()}
                                 </div>
                                 {#if arrow}
