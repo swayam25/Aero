@@ -7,19 +7,25 @@
 
     let { user }: { user: UserData | null } = $props();
 
-    let links: { name: string; href: string; icon: Component; hidden?: boolean }[] = [
-        { name: "Home", href: "/", icon: SolarHome2Linear },
-        { name: "Playlists", href: "/playlist", icon: SolarMusicLibraryLinear },
-        { name: "Profile", href: `/profile/${user?.id}`, icon: SolarUserCircleLinear, hidden: !user },
+    interface Item {
+        name: string;
+        icon: Component;
+        href: string;
+        hidden?: boolean;
+    }
+    let items: Item[] = [
+        { name: "Home", icon: SolarHome2Linear, href: "/" },
+        { name: "Playlists", icon: SolarMusicLibraryLinear, href: "/playlist" },
+        { name: "Profile", icon: SolarUserCircleLinear, href: `/profile/${user?.id}`, hidden: !user },
     ];
 </script>
 
 <div class="fixed bottom-0 flex h-15 w-full items-center justify-evenly gap-2 rounded-t-lg bg-slate-950/80 p-5 px-10 backdrop-blur-xs">
-    {#each links as link}
-        {@const Icon = link.icon}
-        <a href={link.href} class="flex cursor-pointer flex-col items-center justify-center gap-1 text-slate-200" class:hidden={link.hidden}>
+    {#each items as item}
+        {@const Icon = item.icon}
+        <a href={item.href} class="flex cursor-pointer flex-col items-center justify-center gap-1 text-slate-200" class:hidden={item.hidden}>
             <Icon class="size-6" />
-            <p class="text-xs font-bold">{link.name}</p>
+            <p class="text-xs font-bold">{item.name}</p>
         </a>
     {/each}
 </div>
