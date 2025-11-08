@@ -57,7 +57,8 @@ Aero makes listening to music feel light and breezy
     - Get `DATABASE_URL` from Supabase.
         ![Supabase DB URL](./assets/db_url.png)
     - Get `VITE_SUPABASE_URL` and `VITE_SUPABASE_KEY` from Supabase API Settings.
-        ![Supabase API Info](./assets/api_info.png)
+        ![Supabase API](./assets/db_api.png)
+        ![Supabase Publishable Key](./assets/publishable_key.png)
     - Get `JWT_SECRET` by running the following command.
         ```sh
         pnpm run gen-secret
