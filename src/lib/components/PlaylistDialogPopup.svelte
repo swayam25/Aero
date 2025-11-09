@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { invalidateAll } from "$app/navigation";
+    import { goto, invalidateAll } from "$app/navigation";
     import AlertPopup from "$lib/components/ui/AlertPopup.svelte";
     import DialogPopup from "$lib/components/ui/DialogPopup.svelte";
     import Input from "$lib/components/ui/Input.svelte";
@@ -27,6 +27,9 @@
             await refreshPlaylistsCache();
         } else {
             toast.error(respData.error);
+        }
+        if (window.location.pathname.includes(plID!)) {
+            await goto("/playlist");
         }
         invalidateAll();
     }
