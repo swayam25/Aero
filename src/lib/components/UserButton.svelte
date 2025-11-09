@@ -74,27 +74,26 @@
             console.error("Login failed:", error);
         }
     }
+
+    let animateAvatar: boolean = $state(false);
 </script>
 
 <div class="flex items-center justify-center">
     {#if user}
         <Popover side="bottom" title="Account Menu">
             {#snippet trigger()}
-                <div class="relative flex size-10 cursor-pointer items-center justify-center md:size-12">
-                    <img src={`https://cdn.discordapp.com/avatars/${user?.id}/${user?.avatar}`} alt="User Avatar" class="size-full rounded-full" />
+                <div
+                    role="img"
+                    class="relative flex size-10 cursor-pointer items-center justify-center md:size-12"
+                    onmouseenter={() => (animateAvatar = true)}
+                    onmouseleave={() => (animateAvatar = false)}
+                >
+                    <img src="{user.url?.avatar}{animateAvatar ? '' : '.webp'}" alt="User Avatar" class="size-full rounded-full" />
                     {#if user?.avatar_decoration_data?.asset}
                         <img
-                            src={`https://cdn.discordapp.com/avatar-decoration-presets/${user?.avatar_decoration_data?.asset}.webp`}
+                            src="{user.url?.avatarDecoration}{animateAvatar ? '' : '.webp'}"
                             alt="Avatar Decoration"
                             class="absolute size-full rounded-full"
-                            onmouseenter={(e) => {
-                                const img = e.target as HTMLImageElement;
-                                img.src = img.src.includes(".webp") ? img.src.replace(".webp", "") : `${img.src}.webp`;
-                            }}
-                            onmouseleave={(e) => {
-                                const img = e.target as HTMLImageElement;
-                                img.src = img.src.includes(".webp") ? img.src.replace(".webp", "") : `${img.src}.webp`;
-                            }}
                         />
                     {/if}
                 </div>

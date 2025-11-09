@@ -111,14 +111,14 @@
         }, 500);
     }
 
-    let userDecorElement: HTMLImageElement | null = $state(null);
+    let animateAvatar: boolean = $state(false);
 </script>
 
 {#if data.playlist.isPublic}
     <Seo
         title={`${data.playlist.name} Playlist`}
         description={`Created By ${data.user.global_name}`}
-        image={data.playlist.cover || `https://cdn.discordapp.com/avatars/${data.user?.id}/${data.user?.avatar}?size=4096`}
+        image={data.playlist.cover || (data.user?.url?.avatar ? `${data.user.url.avatar}?size=4096` : undefined)}
     />
 {:else}
     <Seo />
@@ -155,32 +155,19 @@
                     href="/profile/{data.user?.id}"
                     class="flex items-center justify-start gap-1 hover:underline"
                     onmouseenter={() => {
-                        if (userDecorElement) {
-                            userDecorElement.src = userDecorElement.src.includes(".webp")
-                                ? userDecorElement.src.replace(".webp", "")
-                                : `${userDecorElement.src}.webp`;
-                        }
+                        animateAvatar = true;
                     }}
                     onmouseleave={() => {
-                        if (userDecorElement) {
-                            userDecorElement.src = userDecorElement.src.includes(".webp")
-                                ? userDecorElement.src.replace(".webp", "")
-                                : `${userDecorElement.src}.webp`;
-                        }
+                        animateAvatar = false;
                     }}
                 >
                     <div class="relative flex size-8 items-center justify-center">
-                        <img
-                            src={`https://cdn.discordapp.com/avatars/${data.user?.id}/${data.user?.avatar}?size=4096`}
-                            alt="{data.user?.global_name}'s Avatar"
-                            class="rounded-full bg-slate-800"
-                        />
-                        {#if data.user?.avatar_decoration_data?.asset}
+                        <img src="{data.user.url?.avatar}{animateAvatar ? '' : '.webp'}" alt="User Avatar" class="size-full rounded-full" />
+                        {#if data.user?.url?.avatarDecoration}
                             <img
-                                src={`https://cdn.discordapp.com/avatar-decoration-presets/${data.user?.avatar_decoration_data?.asset}.webp`}
+                                src="{data.user.url?.avatarDecoration}{animateAvatar ? '' : '.webp'}"
                                 alt="Avatar Decoration"
-                                class="absolute"
-                                bind:this={userDecorElement}
+                                class="absolute size-full rounded-full"
                             />
                         {/if}
                     </div>

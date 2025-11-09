@@ -1,3 +1,11 @@
 import type { APIUser } from "discord-api-types/v10";
 
-export type UserData = APIUser & { owner?: boolean; dev?: boolean };
+export type UserData = APIUser & {
+    owner?: boolean;
+    dev?: boolean;
+    url?: {
+        avatar: string;
+        avatarDecoration: string | null;
+        banner: string | null;
+    };
+};

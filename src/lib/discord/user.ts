@@ -43,6 +43,18 @@ export async function getUserData(db: DB, access_token: string): Promise<UserDat
     } else if (devIDs.includes(userData.id)) {
         userData = { ...userData, dev: true };
     }
+    userData = {
+        ...userData,
+        url: {
+            avatar: userData.avatar
+                ? `https://cdn.discordapp.com/avatars/${userData.id}/${userData.avatar}`
+                : `https://cdn.discordapp.com/embed/avatars/${(BigInt(userData.id) >> 22n) % 6n}`,
+            avatarDecoration: userData.avatar_decoration_data?.asset
+                ? `https://cdn.discordapp.com/avatar-decoration-presets/${userData.avatar_decoration_data.asset}`
+                : null,
+            banner: userData.banner ? `https://cdn.discordapp.com/banners/${userData.id}/${userData.banner}` : null,
+        },
+    };
     return userData;
 }
 
@@ -65,5 +77,17 @@ export async function fetchUser(db: DB, baseURI: string, botToken: string, id: s
     } else if (devIDs.includes(userData.id)) {
         userData = { ...userData, dev: true };
     }
+    userData = {
+        ...userData,
+        url: {
+            avatar: userData.avatar
+                ? `https://cdn.discordapp.com/avatars/${userData.id}/${userData.avatar}`
+                : `https://cdn.discordapp.com/embed/avatars/${(BigInt(userData.id) >> 22n) % 6n}`,
+            avatarDecoration: userData.avatar_decoration_data?.asset
+                ? `https://cdn.discordapp.com/avatar-decoration-presets/${userData.avatar_decoration_data.asset}`
+                : null,
+            banner: userData.banner ? `https://cdn.discordapp.com/banners/${userData.id}/${userData.banner}` : null,
+        },
+    };
     return userData;
 }

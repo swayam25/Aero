@@ -11,17 +11,13 @@
 
 <Seo
     title={`${data.user?.global_name || data.user?.username}'s Profile`}
-    image={`https://cdn.discordapp.com/avatars/${data.user?.id}/${data.user?.avatar}?size=4096`}
+    image={data.user?.avatar ? `${data.user.url?.avatar}?size=4096` : undefined}
 />
 
 <div class="flex flex-col items-center justify-start">
     <div class="w-full">
-        {#if data.user?.banner}
-            <img
-                src={`https://cdn.discordapp.com/banners/${data.user?.id}/${data.user?.banner}?size=4096`}
-                alt="User Banner"
-                class="h-20 w-full rounded-lg object-cover md:h-30 lg:h-40"
-            />
+        {#if data.user?.url?.banner}
+            <img src="{data.user.url.banner}?size=4096" alt="User Banner" class="h-20 w-full rounded-lg object-cover md:h-30 lg:h-40" />
         {:else}
             <div
                 class="h-20 w-full rounded-lg md:h-30 lg:h-40"
@@ -32,16 +28,12 @@
     <div class="-mt-12 ml-10 flex w-full items-center justify-start gap-4">
         <div class="relative flex size-25 shrink-0 items-center justify-center md:size-30">
             <img
-                src={`https://cdn.discordapp.com/avatars/${data.user?.id}/${data.user?.avatar}?size=4096`}
+                src={data.user?.url?.avatar}
                 alt="User Avatar"
                 class="rounded-full border-8 border-slate-950 bg-slate-950 md:border-slate-900 md:bg-slate-900"
             />
-            {#if data.user?.avatar_decoration_data?.asset}
-                <img
-                    src={`https://cdn.discordapp.com/avatar-decoration-presets/${data.user?.avatar_decoration_data?.asset}`}
-                    alt="Avatar Decoration"
-                    class="absolute rounded-full"
-                />
+            {#if data.user?.url?.avatarDecoration}
+                <img src={data.user.url.avatarDecoration} alt="Avatar Decoration" class="absolute rounded-full" />
             {/if}
         </div>
         <div class="mt-14 flex flex-col items-start justify-center">
