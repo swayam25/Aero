@@ -67,6 +67,10 @@
                     class="size-6 cursor-pointer text-slate-400 transition-opacity duration-200 hover:opacity-80"
                     onclick={() => {
                         value = "";
+                        if (ref) {
+                            ref.value = "";
+                            onInput("");
+                        }
                         ref?.focus();
                     }}
                 >
