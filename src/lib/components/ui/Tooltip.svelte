@@ -8,16 +8,16 @@
         side?: "top" | "right" | "bottom" | "left" | undefined;
         class?: string;
         disabled?: boolean;
-        trigger: Snippet;
-        content: Snippet;
+        content: string;
+        children: Snippet;
     }
-    let { side = undefined, class: className, disabled = false, trigger, content }: Props = $props();
+    let { side = undefined, class: className, disabled = false, children, content }: Props = $props();
 </script>
 
 <Tooltip.Provider>
     <Tooltip.Root delayDuration={100} {disabled}>
         <Tooltip.Trigger class={cn(className)}>
-            {@render trigger()}
+            {@render children()}
         </Tooltip.Trigger>
         <Tooltip.Content
             {side}
@@ -29,7 +29,7 @@
                 {#if open}
                     <div {...wrapperProps}>
                         <div {...props} transition:fly={{ duration: 100 }}>
-                            {@render content()}
+                            <p>{content}</p>
                             <Tooltip.Arrow class="rounded-lg text-slate-700" />
                         </div>
                     </div>

@@ -1,16 +1,19 @@
 <script lang="ts">
+    import ImportPlaylist from "$lib/components/ImportPlaylist.svelte";
     import NewPlaylistPopup from "$lib/components/NewPlaylistPopup.svelte";
     import Button from "$lib/components/ui/Button.svelte";
     import Seo from "$lib/components/ui/Seo.svelte";
+    import Tooltip from "$lib/components/ui/Tooltip.svelte";
     import { createPlaylistActions, openCtxMenu } from "$lib/ctxmenu";
     import type { InsertPlaylist } from "$lib/db/schema";
-    import { playlistsCache } from "$lib/stores";
+    import { isCreatingPlaylist, isImportingPlaylist, playlistsCache } from "$lib/stores";
     import { supabase } from "$lib/supabase";
     import { onDestroy } from "svelte";
     import { expoOut } from "svelte/easing";
     import { fade, fly } from "svelte/transition";
     import MaterialSymbolsAdd2Rounded from "~icons/material-symbols/add-2-rounded";
     import SolarConfoundedCircleLinear from "~icons/solar/confounded-circle-linear";
+    import SolarImportLinear from "~icons/solar/import-linear";
     import type { PageData } from "./$types";
 
     let { data }: { data: PageData } = $props();
@@ -78,10 +81,19 @@
     <div in:fade={{ duration: 100 }} class="mb-2 flex size-fit items-center justify-center gap-2 md:mb-5">
         <h1 class="text-3xl font-bold md:text-4xl">Playlists</h1>
         <NewPlaylistPopup>
-            <Button class="size-fit rounded-lg p-2" size="" type="div">
-                <MaterialSymbolsAdd2Rounded class="size-5" />
-            </Button>
+            <Tooltip side="bottom" content="New playlist">
+                <Button class="size-fit rounded-lg p-2" size="" type="div" disabled={$isCreatingPlaylist}>
+                    <MaterialSymbolsAdd2Rounded class="size-5" />
+                </Button>
+            </Tooltip>
         </NewPlaylistPopup>
+        <ImportPlaylist>
+            <Tooltip side="bottom" content="Import playlist">
+                <Button class="size-fit rounded-lg p-2" size="" type="div" disabled={$isImportingPlaylist}>
+                    <SolarImportLinear class="size-5" />
+                </Button>
+            </Tooltip>
+        </ImportPlaylist>
     </div>
 {/if}
 
@@ -91,11 +103,17 @@
             <SolarConfoundedCircleLinear class="size-10 text-slate-400 md:size-15" />
             <p class="text-lg text-slate-400 md:text-xl">No playlists found</p>
             <NewPlaylistPopup>
-                <Button>
+                <Button disabled={$isCreatingPlaylist}>
                     <MaterialSymbolsAdd2Rounded class="size-5" />
                     <span>Create New</span>
                 </Button>
             </NewPlaylistPopup>
+            <ImportPlaylist>
+                <Button disabled={$isImportingPlaylist}>
+                    <SolarImportLinear class="size-5" />
+                    <span>Import</span>
+                </Button>
+            </ImportPlaylist>
         </div>
     </div>
 {:else}

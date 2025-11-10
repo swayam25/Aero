@@ -8,7 +8,7 @@
 </div>
 
 <style>
-    :global(.mobile-lyrics-wrapper .w-full.rounded-lg.bg-slate-900.md\\:h-full) {
+    :global(.mobile-lyrics-wrapper > div) {
         /* Remove the outer wrapper styling to match drawer theme */
         background-color: transparent !important;
         border-radius: 0 !important;
@@ -16,12 +16,12 @@
         height: 100% !important;
     }
 
-    :global(.mobile-lyrics-wrapper .flex.w-full.items-center.justify-start.gap-2.p-5) {
+    :global(.mobile-lyrics-wrapper > div > div:first-child) {
         /* Hide the header since drawer provides its own */
         display: none !important;
     }
 
-    :global(.mobile-lyrics-wrapper div[class*="h-[calc(100vh-232px)]"], .mobile-lyrics-wrapper div[class*="max-h-[calc(100vh-232px)]"]) {
+    :global(.mobile-lyrics-wrapper > div > div:last-child) {
         /* Adjust height for mobile drawer context and improve padding */
         height: 100% !important;
         max-height: 100% !important;
@@ -36,7 +36,7 @@
         text-align: center !important;
     }
 
-    :global(.mobile-lyrics-wrapper .flex.size-full.flex-col.items-center.justify-center.gap-2) {
+    :global(.mobile-lyrics-wrapper > div > div:last-child > div) {
         /* Center empty state content better */
         height: 16rem !important;
         gap: 1rem !important;

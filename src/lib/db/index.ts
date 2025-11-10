@@ -23,8 +23,9 @@ export async function fetchSettings(db: DB, key: string) {
     return db.query.settingsTable.findFirst({ where: eq(schema.settingsTable.key, key), columns: { value: true } });
 }
 
-export async function createPlaylist(db: DB, userID: string, name: string) {
-    await db.insert(schema.playlistTable).values({ userID, name, songs: [] });
+export async function createPlaylist(db: DB, userID: string, name: string): Promise<schema.InsertPlaylist> {
+    const [pl] = await db.insert(schema.playlistTable).values({ userID, name, songs: [] }).returning();
+    return pl;
 }
 
 export async function renamePlaylist(db: DB, playlistID: string, name: string) {

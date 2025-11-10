@@ -81,7 +81,7 @@
         Enter the new name for your playlist. Be creative!
     {/snippet}
     {#snippet fields()}
-        <Input bind:value={inputValue} class="w-full" placeholder="Playlist Name" icon={SolarPlaylist2Linear} onEnter={renamePlaylist} max={10} />
+        <Input bind:value={inputValue} class="w-full" placeholder="Playlist Name" icon={SolarPlaylist2Linear} onEnter={renamePlaylist} max={20} />
     {/snippet}
     {#snippet actions()}
         <Dialog.Close class="disabled:cursor-not-allowed" onclick={renamePlaylist} disabled={!inputValue}>

@@ -90,32 +90,27 @@
         <div class="flex w-full items-center justify-between gap-5 md:w-fit md:flex-row-reverse md:justify-start">
             <div class="flex items-center justify-center gap-2">
                 <!-- Copy Song Link -->
-                <Tooltip side="bottom">
-                    {#snippet trigger()}
-                        <div
-                            role="button"
-                            tabindex="0"
-                            class="size-6 cursor-pointer opacity-80 transition-colors duration-200 hover:opacity-100"
-                            onclick={() => {
+                <Tooltip side="bottom" content="Copy song link">
+                    <div
+                        role="button"
+                        tabindex="0"
+                        class="size-6 cursor-pointer opacity-80 transition-colors duration-200 hover:opacity-100"
+                        onclick={() => {
+                            const link = `${window.location.origin}/song?id=${data.song.videoId}`;
+                            navigator.clipboard.writeText(link);
+                            toast.success("Song link copied to clipboard");
+                        }}
+                        onkeydown={(e) => {
+                            if (e.key === "Enter" || e.key === " ") {
+                                e.preventDefault();
                                 const link = `${window.location.origin}/song?id=${data.song.videoId}`;
                                 navigator.clipboard.writeText(link);
                                 toast.success("Song link copied to clipboard");
-                            }}
-                            onkeydown={(e) => {
-                                if (e.key === "Enter" || e.key === " ") {
-                                    e.preventDefault();
-                                    const link = `${window.location.origin}/song?id=${data.song.videoId}`;
-                                    navigator.clipboard.writeText(link);
-                                    toast.success("Song link copied to clipboard");
-                                }
-                            }}
-                        >
-                            <SolarCopyLinear class="size-full" />
-                        </div>
-                    {/snippet}
-                    {#snippet content()}
-                        Copy Song Link
-                    {/snippet}
+                            }
+                        }}
+                    >
+                        <SolarCopyLinear class="size-full" />
+                    </div>
                 </Tooltip>
                 {#if data.user && playlists}
                     <!-- Add to Playlist -->

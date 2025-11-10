@@ -11,9 +11,19 @@
         icon?: Component;
         max?: number;
         onEnter?: () => void;
+        disabled?: boolean;
         ref?: HTMLInputElement | null;
     }
-    let { value = $bindable(""), class: className, placeholder, icon, max, onEnter = () => {}, ref = $bindable() }: Props = $props();
+    let {
+        value = $bindable(""),
+        class: className,
+        placeholder,
+        icon,
+        max,
+        onEnter = () => {},
+        disabled = false,
+        ref = $bindable(),
+    }: Props = $props();
 
     let inputFocus: boolean = $state(false);
 </script>
@@ -24,6 +34,8 @@
         className,
     )}
     class:!border-slate-400={inputFocus}
+    class:brightness-80={disabled}
+    class:cursor-not-allowed={disabled}
 >
     {#if icon}
         {#if !value}
@@ -47,12 +59,12 @@
     <input
         type="text"
         {placeholder}
-        class="w-full border-none text-slate-200 ring-0 outline-none placeholder:text-slate-400"
+        class="w-full border-none text-slate-200 ring-0 outline-none placeholder:text-slate-400 disabled:cursor-not-allowed"
         onfocusin={() => {
-            inputFocus = true;
+            if (!disabled) inputFocus = true;
         }}
         onfocusout={() => {
-            inputFocus = false;
+            if (!disabled) inputFocus = false;
         }}
         bind:this={ref}
         bind:value
@@ -64,6 +76,7 @@
                 ref?.blur();
             }
         }}
+        {disabled}
     />
     {#if max}
         <span class="text-slate-400">{value.length}/{max}</span>

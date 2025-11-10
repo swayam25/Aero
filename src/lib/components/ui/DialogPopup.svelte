@@ -12,13 +12,14 @@
         fields: Snippet;
         actions?: Snippet;
         onOpenAutoFocus?: (e: Event) => void;
+        disabled?: boolean;
     }
-    let { title, open = $bindable(false), trigger, description, fields, actions, onOpenAutoFocus }: Props = $props();
+    let { title, open = $bindable(false), trigger, description, fields, actions, onOpenAutoFocus, disabled = false }: Props = $props();
 </script>
 
 <Dialog.Root bind:open>
     {#if trigger}
-        <Dialog.Trigger class="flex w-full items-center justify-center">
+        <Dialog.Trigger class="flex w-full items-center justify-center" {disabled}>
             {@render trigger()}
         </Dialog.Trigger>
     {/if}

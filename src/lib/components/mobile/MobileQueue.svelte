@@ -10,7 +10,7 @@
 </div>
 
 <style>
-    :global(.mobile-queue-wrapper .w-full.rounded-lg.bg-slate-900.md\\:h-full) {
+    :global(.mobile-queue-wrapper > div) {
         /* Remove the outer wrapper styling to match drawer theme */
         background-color: transparent !important;
         border-radius: 0 !important;
@@ -18,15 +18,9 @@
         height: 100% !important;
     }
 
-    :global(.mobile-queue-wrapper .flex.w-full.items-center.justify-start.gap-2.p-5) {
+    :global(.mobile-queue-wrapper > div > div:first-child) {
         /* Hide the header since drawer provides its own */
         display: none !important;
-    }
-
-    :global(.mobile-queue-wrapper #queue) {
-        /* Adjust height for mobile drawer context */
-        height: 100% !important;
-        padding: 0 !important;
     }
 
     :global(.mobile-queue-wrapper .song-handle) {
@@ -45,5 +39,13 @@
         /* Slightly smaller thumbnails for mobile */
         width: 2.5rem !important;
         height: 2.5rem !important;
+    }
+
+    /* Target the scrollable content container */
+    :global(.mobile-queue-wrapper > div > div:last-child) {
+        height: auto !important;
+        overflow-x: hidden !important;
+        overflow-y: hidden !important;
+        padding: 0 !important;
     }
 </style>

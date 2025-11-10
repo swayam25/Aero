@@ -47,6 +47,8 @@
         className,
         sizeClass,
     )}
+    class:!cursor-not-allowed={disabled}
+    class:brightness-80={disabled}
     {onclick}
     {href}
     {disabled}

@@ -67,6 +67,13 @@ Aero makes listening to music feel light and breezy
         ![Client Info](./assets/client_info.png)
     - Get `DISCORD_BOT_TOKEN` from the Discord Developer Portal.
         ![Bot Token](./assets/bot_token.png)
+    - Get `SPOTIFY_CLIENT_ID` and `SPOTIFY_CLIENT_SECRET` from the [Spotify Developer Dashboard](https://developer.spotify.com/dashboard/applications).
+        - Create a new application and fill in the required details.
+        - Set Redirect URI to `http://localhost` (*we don't need it, but Spotify requires it to be set*).
+        - Select the API scopes required for the app.
+            ![Spotify App](./assets/spotify_scopes.png)
+        - Copy the Client ID and Client Secret.
+            ![Spotify Client Info](./assets/spotify_client_info.png)
     - Set `YOUTUBE_DL_PATH` to the path of `youtube-dl` or `yt-dlp` executable. You can install it from [GitHub Releases](https://github.com/yt-dlp/yt-dlp/releases) (`yt-dlp`) or use a package manager.
     - Set `DOMAIN` to your domain name or `https://localhost` for local development. The variable is required for production.
         ```env

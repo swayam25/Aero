@@ -5,7 +5,7 @@
     import MobilePlayerDrawers from "$lib/components/mobile/MobileDrawers.svelte";
     import Navbar from "$lib/components/Navbar.svelte";
     import Player from "$lib/components/Player.svelte";
-    import PlaylistDialogPopup from "$lib/components/PlaylistDialogPopup.svelte";
+    import PlaylistActionPopups from "$lib/components/PlaylistActionPopups.svelte";
     import Queue from "$lib/components/Queue.svelte";
     import Sidebar from "$lib/components/Sidebar.svelte";
     import { store as ctxStore, setupShortcuts } from "$lib/ctxmenu";
@@ -151,7 +151,7 @@
     }}
 />
 
-<PlaylistDialogPopup />
+<PlaylistActionPopups />
 
 {#if isMobile}
     <MobilePlayerDrawers user={data.user} bind:showMobilePlayer />

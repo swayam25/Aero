@@ -56,6 +56,7 @@
     "dependencies": {
         "@iconify/json": "^2.2.378",
         "@neodrag/svelte": "^2.3.3",
+        "@spotify/web-api-ts-sdk": "^1.2.0",
         "clsx": "^2.1.1",
         "svelte-range-slider-pips": "^3.2.2",
         "tailwind-merge": "^3.3.1",

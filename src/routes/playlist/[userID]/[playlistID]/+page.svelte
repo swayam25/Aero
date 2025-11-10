@@ -137,13 +137,8 @@
                 {data.playlist.name}
             </h1>
             {#if data.loginUser?.id === data.user?.id}
-                <Tooltip side="right" disabled={!enableToggleBtn}>
-                    {#snippet trigger()}
-                        <Switch size="md" checked={isPublic} disabled={!enableToggleBtn} onCheckedChange={togglePlaylistView} />
-                    {/snippet}
-                    {#snippet content()}
-                        {isPublic ? "Public" : "Private"} Playlist
-                    {/snippet}
+                <Tooltip side="right" disabled={!enableToggleBtn} content="{isPublic ? 'Public' : 'Private'} Playlist">
+                    <Switch size="md" checked={isPublic} disabled={!enableToggleBtn} onCheckedChange={togglePlaylistView} />
                 </Tooltip>
             {/if}
         </div>

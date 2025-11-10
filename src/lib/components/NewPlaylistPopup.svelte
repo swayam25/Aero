@@ -3,6 +3,7 @@
     import DialogPopup from "$lib/components/ui/DialogPopup.svelte";
     import Input from "$lib/components/ui/Input.svelte";
     import { refreshPlaylistsCache } from "$lib/ctxmenu/playlist";
+    import { isCreatingPlaylist } from "$lib/stores";
     import { Dialog } from "bits-ui";
     import { type Snippet } from "svelte";
     import { toast } from "svelte-sonner";
@@ -19,26 +20,33 @@
     let open: boolean = $state(false);
 
     async function createPlaylist() {
+        if ($isCreatingPlaylist) return;
+
         open = false;
         const plName = inputValue.trim();
         inputValue = "";
         if (plName) {
-            const resp = await fetch("/api/playlist", {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                },
-                body: JSON.stringify({ key: "create_pl", value: plName }),
-            });
-            const respData = await resp.json();
+            isCreatingPlaylist.set(true);
+            try {
+                const resp = await fetch("/api/playlist", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                    },
+                    body: JSON.stringify({ key: "create_pl", value: plName }),
+                });
+                const respData = await resp.json();
 
-            if (resp.ok) {
-                toast.success("Playlist created successfully");
-                await refreshPlaylistsCache();
-            } else {
-                toast.error(respData.error);
+                if (resp.ok) {
+                    toast.success("Playlist created successfully");
+                    await refreshPlaylistsCache();
+                } else {
+                    toast.error(respData.error);
+                }
+                invalidateAll();
+            } finally {
+                isCreatingPlaylist.set(false);
             }
-            invalidateAll();
         }
     }
 </script>
@@ -50,6 +58,7 @@
         e.preventDefault();
         input?.focus();
     }}
+    disabled={$isCreatingPlaylist}
 >
     {#snippet trigger()}
         {@render children()}
