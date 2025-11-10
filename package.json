@@ -37,6 +37,7 @@
         "svelte": "^5.38.5",
         "svelte-check": "^4.3.1",
         "svelte-sonner": "^0.3.28",
+        "sveltekit-view-transition": "^0.5.3",
         "tailwindcss": "^4.1.12",
         "typescript": "^5.9.2",
         "unplugin-icons": "^22.2.0",

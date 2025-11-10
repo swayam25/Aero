@@ -7,6 +7,7 @@
     import Tooltip from "$lib/components/ui/Tooltip.svelte";
     import { createPlaylistSongActions, openCtxMenu } from "$lib/ctxmenu";
     import { enhanceSong, fetchSongDetailed, playPlaylist, store } from "$lib/player";
+    import { isImportingPlaylist } from "$lib/stores";
     import { supabase } from "$lib/supabase";
     import { formatTime } from "$lib/utils/time";
     import { onDestroy } from "svelte";
@@ -203,7 +204,7 @@
                     items={playlistObject}
                     onReorder={handleReorder}
                     onDragEnd={handleDragEnd}
-                    disabled={data.loginUser?.id !== data.user.id}
+                    disabled={data.loginUser?.id !== data.user.id || $isImportingPlaylist}
                     class="w-full"
                 >
                     {#snippet children()}
