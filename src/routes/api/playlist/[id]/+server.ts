@@ -22,14 +22,11 @@ export const POST: RequestHandler = async ({ locals, request }) => {
         await addSongToPlaylist(locals.db, value.playlistID, value.songID);
         await setPlaylistCover(locals.db, value.playlistID, value.songCover);
     } else if (key === "remove_song") {
-        const currentIndex = playlistExists.songs.indexOf(value.songID);
-        const previousSongID = currentIndex > 0 ? playlistExists.songs[currentIndex - 1] : playlistExists.songs[currentIndex + 1];
-        await setPlaylistCover(
-            locals.db,
-            value.playlistID,
-            previousSongID ? enhanceSong(await locals.ytmusic.getSong(previousSongID)).thumbnail.FULL : "",
-        );
         await removeSongFromPlaylist(locals.db, value.playlistID, value.songID);
+        const lastSongID = playlistExists.songs.slice(-1)[0] === value.songID ? playlistExists.songs.slice(-2)[0] : null;
+        if (lastSongID) {
+            await setPlaylistCover(locals.db, value.playlistID, enhanceSong(await locals.ytmusic.getSong(lastSongID)).thumbnail.FULL);
+        }
     } else if (key === "toggle_view") {
         const isPublic = await toggleView(locals.db, value.playlistID);
         return json({ success: true, isPublic });
