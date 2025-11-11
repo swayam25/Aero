@@ -267,6 +267,19 @@ export function createPlaylistSongActions(
         }),
     );
 
+    // Song Info
+    actions.push(
+        createCtxAction({
+            label: "Song Info",
+            icon: SolarInfoCircleLinear,
+            shortcut: shortcuts.i,
+            onclick: async (ctx) => {
+                ctx.closeMenu();
+                goto(`/song?id=${song.videoId}`);
+            },
+        }),
+    );
+
     // Remove from Playlist (only if user owns the playlist)
     if (loginUserID && accessedUserID && loginUserID === accessedUserID) {
         actions.push(
@@ -304,19 +317,6 @@ export function createPlaylistSongActions(
             }),
         );
     }
-
-    // Song Info
-    actions.push(
-        createCtxAction({
-            label: "Song Info",
-            icon: SolarInfoCircleLinear,
-            shortcut: shortcuts.i,
-            onclick: async (ctx) => {
-                ctx.closeMenu();
-                goto(`/song?id=${song.videoId}`);
-            },
-        }),
-    );
 
     return actions;
 }
