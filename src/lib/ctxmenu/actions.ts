@@ -260,7 +260,7 @@ export function createPlaylistSongActions(
             shortcut: shortcuts.ctrl.c,
             onclick: async (ctx) => {
                 ctx.closeMenu();
-                const link = `https://music.youtube.com/watch?v=${song.videoId}`;
+                const link = `${window.location.origin}/song?id=${song.videoId}`;
                 navigator.clipboard.writeText(link);
                 toast.success("Song link copied to clipboard");
             },
@@ -304,6 +304,19 @@ export function createPlaylistSongActions(
             }),
         );
     }
+
+    // Song Info
+    actions.push(
+        createCtxAction({
+            label: "Song Info",
+            icon: SolarInfoCircleLinear,
+            shortcut: shortcuts.i,
+            onclick: async (ctx) => {
+                ctx.closeMenu();
+                goto(`/song?id=${song.videoId}`);
+            },
+        }),
+    );
 
     return actions;
 }

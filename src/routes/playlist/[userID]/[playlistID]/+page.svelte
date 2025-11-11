@@ -144,7 +144,10 @@
             {/if}
         </div>
         <div class="flex w-full flex-col items-center justify-center gap-1 text-sm text-slate-400 md:items-start">
-            <p>Created At {new Date(data.playlist.createdAt).toLocaleDateString()}, {data.playlist.songs.length} songs</p>
+            <div class="flex items-center justify-center gap-1 [&>*:not(:first-child)]:before:mr-1 [&>*:not(:first-child)]:before:content-['•']">
+                <p>Created At {new Date(data.playlist.createdAt).toLocaleDateString()}</p>
+                <p>{data.playlist.songs.length} songs</p>
+            </div>
             <div class="flex items-center justify-start gap-2">
                 <p>By</p>
                 <a

@@ -9,7 +9,7 @@ import type { EnhancedSong, PlayerStore } from "./types";
  */
 export function enhanceSong(song: SongDetailed | any): EnhancedSong {
     const originalUrl = song.thumbnails?.[0]?.url || "";
-    const cleanUrl = originalUrl.replace(/=w\d+-h\d+-l\d+-rj/g, "");
+    const cleanUrl = originalUrl.replace(/=w\d+-h\d+(-[a-z](\d+)?)*-rj/g, "");
 
     return {
         ...song,

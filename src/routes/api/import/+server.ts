@@ -1,4 +1,5 @@
 import { addSongToPlaylist, createPlaylist, setPlaylistCover, type DB } from "$lib/db";
+import { enhanceSong } from "$lib/player";
 import { getSpotifyPlaylist } from "$lib/services/spotify";
 import type { Track } from "@spotify/web-api-ts-sdk";
 import { json, type RequestHandler } from "@sveltejs/kit";
@@ -131,9 +132,10 @@ async function importPlaylistFromSource(source: string, playlistID: string, user
     }
 
     if (lastVideoId) {
-        const song = await ytmusic.getSong(lastVideoId);
+        let song = await ytmusic.getSong(lastVideoId);
         if (song && song.thumbnails && song.thumbnails.length > 0) {
-            await setPlaylistCover(db, playlistDbId, song.thumbnails[0].url.replace("=w60-h60-l90-rj", ""));
+            const enhancedSong = enhanceSong(song);
+            await setPlaylistCover(db, playlistDbId, enhancedSong.thumbnail.FULL);
         }
     }
 
