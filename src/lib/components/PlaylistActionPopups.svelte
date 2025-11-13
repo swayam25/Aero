@@ -35,6 +35,7 @@
     }
 
     let inputValue: string = $state("");
+    let input: HTMLInputElement | null = $state(null);
 
     async function renamePlaylist() {
         const plID = $popupStore.playlistData?.id;
@@ -75,13 +76,28 @@
 </AlertPopup>
 
 <!-- Rename Popup (triggered via context menu) -->
-<DialogPopup title="RENAME PLAYLIST" bind:open={$popupStore.showPlRenamePopup}>
+<DialogPopup
+    title="RENAME PLAYLIST"
+    bind:open={$popupStore.showPlRenamePopup}
+    onOpenAutoFocus={(e) => {
+        e.preventDefault();
+        input?.focus();
+    }}
+>
     <!-- No trigger snippet as this is controlled by the popup -->
     {#snippet description()}
         Enter the new name for your playlist. Be creative!
     {/snippet}
     {#snippet fields()}
-        <Input bind:value={inputValue} class="w-full" placeholder="Playlist Name" icon={SolarPlaylist2Linear} onEnter={renamePlaylist} max={20} />
+        <Input
+            bind:value={inputValue}
+            bind:ref={input}
+            class="w-full"
+            placeholder="Playlist Name"
+            icon={SolarPlaylist2Linear}
+            onEnter={renamePlaylist}
+            max={20}
+        />
     {/snippet}
     {#snippet actions()}
         <Dialog.Close class="disabled:cursor-not-allowed" onclick={renamePlaylist} disabled={!inputValue}>
