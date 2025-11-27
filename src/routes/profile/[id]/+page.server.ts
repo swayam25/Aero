@@ -1,6 +1,6 @@
 import { DISCORD_BOT_TOKEN } from "$env/static/private";
 import { PUBLIC_DISCORD_URL } from "$env/static/public";
-import { checkUser, getPublicPlaylists } from "$lib/db";
+import { getPublicPlaylists, getUser } from "$lib/db";
 import type { UserData } from "$lib/discord/types";
 import { fetchUser } from "$lib/discord/user";
 import { error } from "@sveltejs/kit";
@@ -8,7 +8,7 @@ import type { PageServerLoad } from "./$types";
 
 export const load: PageServerLoad = async ({ params, locals }) => {
     const userId = params.id;
-    const userExists = await checkUser(locals.db, userId);
+    const userExists = await getUser(locals.db, userId);
     let user: UserData | null;
 
     if (!userExists) {
