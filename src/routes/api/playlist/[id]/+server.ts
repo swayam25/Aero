@@ -1,4 +1,4 @@
-import { addSongToPlaylist, checkPlaylist, removeSongFromPlaylist, reorderPlaylist, setPlaylistCover, toggleView } from "$lib/db";
+import { addSongToPlaylist, getPlaylist, removeSongFromPlaylist, reorderPlaylist, setPlaylistCover, toggleView } from "$lib/db";
 import { enhanceSong } from "$lib/player";
 import { json, type RequestHandler } from "@sveltejs/kit";
 
@@ -9,7 +9,7 @@ export const POST: RequestHandler = async ({ locals, request }) => {
 
     if (!user) return json({ error: "Unauthorized" }, { status: 401 });
 
-    let playlistExists = await checkPlaylist(locals.db, user?.id, value.playlistID);
+    let playlistExists = await getPlaylist(locals.db, user?.id, value.playlistID);
     if (!playlistExists) {
         return json({ error: "Playlist not found" }, { status: 404 });
     } else {

@@ -1,5 +1,5 @@
 import { PUBLIC_DISCORD_URL } from "$env/static/public";
-import { checkUser, type DB } from "$lib/db";
+import { getUser, type DB } from "$lib/db";
 import { error } from "@sveltejs/kit";
 import type { UserData } from "./types";
 
@@ -35,7 +35,7 @@ export async function getUserData(db: DB, access_token: string): Promise<UserDat
     }
 
     let userData: UserData = await userDataResponse.json();
-    const dbUser = await checkUser(db, userData.id);
+    const dbUser = await getUser(db, userData.id);
     userData.role = dbUser?.role || "user";
 
     userData = {
@@ -64,7 +64,7 @@ export async function fetchUser(db: DB, baseURI: string, botToken: string, id: s
     }
 
     let userData: UserData = await resp.json();
-    const dbUser = await checkUser(db, userData.id);
+    const dbUser = await getUser(db, userData.id);
     userData.role = dbUser?.role || "user";
 
     userData = {

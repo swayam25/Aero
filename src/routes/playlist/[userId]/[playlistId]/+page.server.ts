@@ -1,6 +1,6 @@
 import { DISCORD_BOT_TOKEN } from "$env/static/private";
 import { PUBLIC_DISCORD_URL } from "$env/static/public";
-import { checkPlaylist, checkUser } from "$lib/db";
+import { getPlaylist, getUser } from "$lib/db";
 import type { SelectPlaylist } from "$lib/db/schema";
 import type { UserData } from "$lib/discord/types";
 import { fetchUser } from "$lib/discord/user";
@@ -12,7 +12,7 @@ export const load: PageServerLoad = async ({ params, locals }) => {
     const userId = params.userId;
     const playlistId = String(params.playlistId);
 
-    const userExists = await checkUser(locals.db, userId);
+    const userExists = await getUser(locals.db, userId);
     let loginUser: UserData | null = locals.user;
     let user: UserData | null;
     let playlist: SelectPlaylist;
@@ -32,7 +32,7 @@ export const load: PageServerLoad = async ({ params, locals }) => {
         }
 
         if (!playlistId) return error(404, "Playlist not found");
-        const playlistExists = await checkPlaylist(locals.db, userId, playlistId);
+        const playlistExists = await getPlaylist(locals.db, userId, playlistId);
         if (!playlistExists) {
             return error(404, "Playlist not found");
         } else {

@@ -17,7 +17,7 @@ export async function deleteUser(db: DB, id: string) {
     await db.delete(schema.userTable).where(eq(schema.userTable.userId, id));
 }
 
-export async function checkUser(db: DB, id: string) {
+export async function getUser(db: DB, id: string) {
     return db.query.userTable.findFirst({ where: eq(schema.userTable.userId, id) });
 }
 
@@ -42,7 +42,7 @@ export async function getPublicPlaylists(db: DB, userId: string) {
     return db.query.playlistTable.findMany({ where: and(eq(schema.playlistTable.userId, userId), eq(schema.playlistTable.isPublic, true)) });
 }
 
-export async function checkPlaylist(db: DB, userId: string, playlistID: string) {
+export async function getPlaylist(db: DB, userId: string, playlistID: string) {
     return db.query.playlistTable.findFirst({
         where: (fields) => and(eq(fields.userId, userId), eq(fields.id, playlistID)),
     });

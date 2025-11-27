@@ -1,6 +1,6 @@
 import { DISCORD_CLIENT_ID, DISCORD_CLIENT_SECRET, JWT_SECRET } from "$env/static/private";
 import { PUBLIC_DISCORD_URL } from "$env/static/public";
-import { addUser, checkUser } from "$lib/db";
+import { addUser, getUser } from "$lib/db";
 import { signData } from "$lib/discord/jwt";
 import { getUserData } from "$lib/discord/user";
 import { error } from "@sveltejs/kit";
@@ -58,7 +58,7 @@ export const GET: RequestHandler = async ({ fetch, url, cookies, locals }) => {
                     secure: true,
                 });
 
-                const dbUser = await checkUser(locals.db, userData.id);
+                const dbUser = await getUser(locals.db, userData.id);
                 if (!dbUser) {
                     await addUser(locals.db, userData.id);
                 }
