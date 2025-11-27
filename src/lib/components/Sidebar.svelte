@@ -1,7 +1,7 @@
 <script lang="ts">
     import { goto } from "$app/navigation";
     import { createPlaylistActions, openCtxMenu } from "$lib/ctxmenu";
-    import type { SelectUserWithRooms } from "$lib/db/schema";
+    import type { SelectRoomWithMembers } from "$lib/db/schema";
     import type { UserData } from "$lib/discord/types";
     import { playlistsCache } from "$lib/stores";
     import type { Component } from "svelte";
@@ -9,8 +9,7 @@
     import SolarUsersGroupRoundedLinear from "~icons/solar/users-group-rounded-linear";
     import Tooltip from "./ui/Tooltip.svelte";
 
-    let { user, dbUser }: { user: UserData | null; dbUser: SelectUserWithRooms | undefined } = $props();
-    let inAnyRoom: boolean = $derived(((dbUser?.hostedRooms?.length ?? 0) || (dbUser?.joinedRooms?.length ?? 0)) > 0);
+    let { user, userRoom }: { user: UserData | null; userRoom: SelectRoomWithMembers | null } = $props();
 
     interface Item {
         name: string;
@@ -25,10 +24,10 @@
             href: "/playlist",
         },
         {
-            name: inAnyRoom ? "Active Room" : "Rooms",
+            name: userRoom ? "Active Room" : "Rooms",
             icon: SolarUsersGroupRoundedLinear,
             href: "/room",
-            color: inAnyRoom ? "text-green-500" : "",
+            color: userRoom ? "text-green-500" : "",
         },
     ]);
 

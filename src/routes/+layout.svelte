@@ -29,7 +29,6 @@
     }
 
     let { data, children }: Props = $props();
-    let dbUser = $derived(data.dbUser);
 
     // Mobile detection state
     let isMobile = $state(false);
@@ -160,7 +159,7 @@
     </div>
     {#if data.user}
         <div class="hidden md:row-start-2 md:block">
-            <Sidebar user={data.user} {dbUser} />
+            <Sidebar user={data.user} userRoom={data.userRoom} />
         </div>
     {/if}
     <div id="body" class="size-full overflow-x-hidden overflow-y-auto rounded-lg p-2 md:row-start-2 md:bg-slate-900 md:p-5">

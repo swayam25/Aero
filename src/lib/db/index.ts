@@ -17,14 +17,23 @@ export async function deleteUser(db: DB, id: string) {
     await db.delete(schema.userTable).where(eq(schema.userTable.userId, id));
 }
 
-export async function getUser(db: DB, id: string): Promise<schema.SelectUserWithRooms | undefined> {
-    return db.query.userTable.findFirst({
+export async function getUser(db: DB, id: string) {
+    return db.query.userTable.findFirst({ where: eq(schema.userTable.userId, id) });
+}
+
+export async function getUserRoom(db: DB, id: string): Promise<schema.SelectRoomWithMembers | null> {
+    const user = await db.query.userTable.findFirst({
         where: eq(schema.userTable.userId, id),
         with: {
             hostedRooms: true,
             joinedRooms: true,
         },
     });
+
+    const roomId = user?.hostedRooms?.[0]?.id ?? user?.joinedRooms?.[0]?.roomId;
+    if (!roomId) return null;
+
+    return await getRoom(db, roomId);
 }
 
 export async function createPlaylist(db: DB, userId: string, name: string): Promise<schema.InsertPlaylist> {
