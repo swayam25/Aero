@@ -188,6 +188,5 @@ export function isSubmenuLoader(submenu: CtxAction[] | CtxSubmenuLoader | undefi
 export * from "./actions";
 export { default as ContextMenu } from "./components/ContextMenu.svelte";
 export { default as CtxButton } from "./components/CtxButton.svelte";
-export * from "./playlist";
 export * from "./shortcuts";
 export type * from "./types";

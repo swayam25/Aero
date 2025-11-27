@@ -4,10 +4,10 @@
     import Seo from "$lib/components/ui/Seo.svelte";
     import Tooltip from "$lib/components/ui/Tooltip.svelte";
     import CtxButton from "$lib/ctxmenu/components/CtxButton.svelte";
-    import type { SelectPlaylist } from "$lib/db/schema";
     import { enhanceSong, fetchSongDetailed, play, store } from "$lib/player";
-    import { createNormalizedChannel } from "$lib/supabase/channel";
+    import { playlistsCache } from "$lib/stores";
     import { formatTime } from "$lib/utils/time";
+    import { onMount } from "svelte";
     import { toast } from "svelte-sonner";
     import { fade } from "svelte/transition";
     import SolarConfoundedCircleLinear from "~icons/solar/confounded-circle-linear";
@@ -19,41 +19,13 @@
 
     let { data }: { data: PageData } = $props();
     let enhancedSong = $derived(enhanceSong(data.song));
+    let openPlaylistPopover = $state(false);
 
-    let playlists: SelectPlaylist[] | null = $derived(data.playlists);
-
-    $effect(() => {
-        if (data.user && playlists) {
-            // Sync playlist data with db
-            const channel = createNormalizedChannel("playlist-changes-song-info")
-                .on(
-                    "postgres_changes",
-                    {
-                        event: "UPDATE",
-                        schema: "public",
-                        table: "playlist",
-                        filter: `user_id=eq.${data.user?.id}`,
-                    },
-                    (payload) => {
-                        const { new: newPlaylist } = payload;
-                        if (playlists) {
-                            playlists = playlists.map((playlist: SelectPlaylist) => {
-                                if (playlist.id === newPlaylist.id) {
-                                    return { ...playlist, ...newPlaylist };
-                                }
-                                return playlist;
-                            });
-                        }
-                    },
-                )
-                .subscribe();
-
-            return () => {
-                channel.unsubscribe();
-            };
+    onMount(async () => {
+        if (playlistsCache.isStale($playlistsCache)) {
+            await playlistsCache.refresh();
         }
     });
-    let openPlaylistPopover = $state(false);
 </script>
 
 <Seo
@@ -111,7 +83,7 @@
                         <SolarCopyLinear class="size-full" />
                     </div>
                 </Tooltip>
-                {#if data.user && playlists}
+                {#if data.user && $playlistsCache.playlists}
                     <!-- Add to Playlist -->
                     <Popover arrow side="bottom" bind:open={openPlaylistPopover} title="Add to Playlist">
                         {#snippet trigger()}
@@ -121,18 +93,18 @@
                         {/snippet}
                         {#snippet content()}
                             {#if data.user}
-                                {#if !playlists}
+                                {#if !$playlistsCache.playlists}
                                     <CtxButton disabled>
                                         <SolarConfoundedCircleLinear class="size-5 shrink-0" />
                                         <span class="flex-1 text-left">Login to add to playlists</span>
                                     </CtxButton>
-                                {:else if playlists.length === 0}
+                                {:else if $playlistsCache.playlists.length === 0}
                                     <CtxButton disabled>
                                         <SolarConfoundedCircleLinear class="size-5 shrink-0" />
                                         <span class="flex-1 text-left">No playlists found</span>
                                     </CtxButton>
                                 {:else}
-                                    {#each playlists as playlist}
+                                    {#each $playlistsCache.playlists as playlist}
                                         <CtxButton
                                             onclick={async () => {
                                                 openPlaylistPopover = false;

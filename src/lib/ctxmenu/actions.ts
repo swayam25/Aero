@@ -325,22 +325,13 @@ export function createPlaylistSongActions(
 // Load playlist submenu dynamically with caching
 async function loadPlaylistSubmenu(song: SongDetailed): Promise<CtxAction[]> {
     try {
-        // Get current cache state
         const cache = get(playlistsCache);
         let playlists: InsertPlaylist[] = [];
 
-        // Check if cache is valid and not stale
         if (cache && !playlistsCache.isStale(cache)) {
-            // Use cached playlists
-            console.log("Using cached playlists for submenu");
             playlists = playlistsCache.getPlaylists(cache);
         } else {
-            // Fetch fresh playlists from API
-            const resp = await fetch(`/api/playlists`);
-            playlists = (await resp.json()) as InsertPlaylist[];
-
-            // Update cache with fresh data
-            playlistsCache.setCache(playlists);
+            await playlistsCache.refresh();
         }
 
         if (playlists.length === 0) {

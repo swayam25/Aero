@@ -3,8 +3,7 @@
     import AlertPopup from "$lib/components/ui/AlertPopup.svelte";
     import DialogPopup from "$lib/components/ui/DialogPopup.svelte";
     import Input from "$lib/components/ui/Input.svelte";
-    import { refreshPlaylistsCache } from "$lib/ctxmenu/playlist";
-    import { hidePlDeletePopup, hidePlRenamePopup, store as popupStore } from "$lib/stores";
+    import { hidePlDeletePopup, hidePlRenamePopup, playlistsCache, store as popupStore } from "$lib/stores";
     import { AlertDialog, Dialog } from "bits-ui";
     import { toast } from "svelte-sonner";
     import SolarPlaylist2Linear from "~icons/solar/playlist-2-linear";
@@ -25,7 +24,7 @@
                 });
                 const respData = await resp.json();
                 if (!resp.ok) throw new Error(respData.error || "Failed to delete playlist");
-                await refreshPlaylistsCache();
+                await playlistsCache.refresh();
                 return respData;
             })(),
             {
@@ -60,7 +59,7 @@
                 });
                 const respData = await resp.json();
                 if (!resp.ok) throw new Error(respData.error || "Failed to rename playlist");
-                await refreshPlaylistsCache();
+                await playlistsCache.refresh();
                 return respData;
             })(),
             {
