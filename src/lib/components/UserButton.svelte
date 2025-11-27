@@ -123,7 +123,7 @@
                         and all associated data. Please confirm that you want to proceed.
                     {/snippet}
                     {#snippet actions()}
-                        <AlertDialog.Action class="hover:!bg-red-500/10 hover:text-red-500" onclick={deleteAcc}>
+                        <AlertDialog.Action class="hover:bg-red-500/10! hover:text-red-500" onclick={deleteAcc}>
                             <SolarTrashBinTrashLinear class="size-5" />
                             Delete Account
                         </AlertDialog.Action>

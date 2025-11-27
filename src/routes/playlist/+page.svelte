@@ -7,8 +7,7 @@
     import { createPlaylistActions, openCtxMenu } from "$lib/ctxmenu";
     import type { InsertPlaylist } from "$lib/db/schema";
     import { isCreatingPlaylist, isImportingPlaylist, playlistsCache } from "$lib/stores";
-    import { supabase } from "$lib/supabase";
-    import { onDestroy } from "svelte";
+    import { createNormalizedChannel } from "$lib/supabase/channel";
     import { expoOut } from "svelte/easing";
     import { fade, fly } from "svelte/transition";
     import MaterialSymbolsAdd2Rounded from "~icons/material-symbols/add-2-rounded";
@@ -19,59 +18,59 @@
     let { data }: { data: PageData } = $props();
     let playlists: InsertPlaylist[] = $derived(data.playlists);
 
-    // Sync playlist data with db
-    const channel = supabase
-        .channel("playlist-changes-playlists")
-        .on(
-            "postgres_changes",
-            {
-                event: "UPDATE",
-                schema: "public",
-                table: "playlist",
-                filter: `user_id=eq.${data.user?.id}`,
-            },
-            (payload) => {
-                const { new: newPlaylist } = payload;
-                playlists = playlists.map((playlist: InsertPlaylist) => {
-                    if (playlist.id === newPlaylist.id) {
-                        return { ...playlist, ...newPlaylist };
-                    }
-                    return playlist;
-                });
-                playlistsCache.updatePlaylist(newPlaylist.id, newPlaylist);
-            },
-        )
-        .on(
-            "postgres_changes",
-            {
-                event: "INSERT",
-                schema: "public",
-                table: "playlist",
-                filter: `user_id=eq.${data.user?.id}`,
-            },
-            (payload) => {
-                const newPlaylist = payload.new as InsertPlaylist;
-                playlists = [newPlaylist, ...playlists];
-                playlistsCache.addPlaylist(newPlaylist);
-            },
-        )
-        .on(
-            "postgres_changes",
-            {
-                event: "DELETE",
-                schema: "public",
-                table: "playlist",
-                filter: `user_id=eq.${data.user?.id}`,
-            },
-            (payload) => {
-                const { old: oldPlaylist } = payload;
-                playlists = playlists.filter((p) => p.id !== oldPlaylist.id);
-                playlistsCache.removePlaylist(oldPlaylist.id);
-            },
-        )
-        .subscribe();
-    onDestroy(() => {
-        channel.unsubscribe();
+    $effect(() => {
+        const channel = createNormalizedChannel("playlist-changes-playlists")
+            .on(
+                "postgres_changes",
+                {
+                    event: "UPDATE",
+                    schema: "public",
+                    table: "playlist",
+                    filter: `user_id=eq.${data.user?.id}`,
+                },
+                (payload) => {
+                    const { new: newPlaylist } = payload;
+                    playlists = playlists.map((playlist: InsertPlaylist) => {
+                        if (playlist.id === newPlaylist.id) {
+                            return { ...playlist, ...newPlaylist };
+                        }
+                        return playlist;
+                    });
+                    if (newPlaylist.id) playlistsCache.updatePlaylist(newPlaylist.id, newPlaylist);
+                },
+            )
+            .on(
+                "postgres_changes",
+                {
+                    event: "INSERT",
+                    schema: "public",
+                    table: "playlist",
+                    filter: `user_id=eq.${data.user?.id}`,
+                },
+                (payload) => {
+                    const newPlaylist = payload.new as InsertPlaylist;
+                    playlists = [newPlaylist, ...playlists];
+                    playlistsCache.addPlaylist(newPlaylist);
+                },
+            )
+            .on(
+                "postgres_changes",
+                {
+                    event: "DELETE",
+                    schema: "public",
+                    table: "playlist",
+                    filter: `id=in.(${playlists.map((p) => p.id).join(",")})`,
+                },
+                (payload) => {
+                    const oldPlaylist = payload.old as { id: string };
+                    playlists = playlists.filter((p) => p.id !== oldPlaylist.id);
+                    if (oldPlaylist.id) playlistsCache.removePlaylist(oldPlaylist.id);
+                },
+            )
+            .subscribe();
+        return () => {
+            channel.unsubscribe();
+        };
     });
 </script>
 
@@ -82,14 +81,14 @@
         <h1 class="text-3xl font-bold md:text-4xl">Playlists</h1>
         <NewPlaylistPopup>
             <Tooltip side="bottom" content="New playlist">
-                <Button class="size-fit rounded-lg p-2" size="" type="div" disabled={$isCreatingPlaylist}>
+                <Button size="icon" type="div" disabled={$isCreatingPlaylist}>
                     <MaterialSymbolsAdd2Rounded class="size-5" />
                 </Button>
             </Tooltip>
         </NewPlaylistPopup>
         <ImportPlaylist>
             <Tooltip side="bottom" content="Import playlist">
-                <Button class="size-fit rounded-lg p-2" size="" type="div" disabled={$isImportingPlaylist}>
+                <Button size="icon" type="div" disabled={$isImportingPlaylist}>
                     <SolarImportLinear class="size-5" />
                 </Button>
             </Tooltip>

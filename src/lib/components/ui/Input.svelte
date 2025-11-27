@@ -3,9 +3,12 @@
     import type { Component } from "svelte";
     import { fade } from "svelte/transition";
     import MaterialSymbolsCloseRounded from "~icons/material-symbols/close-rounded";
+    import SolarEyeClosedLinear from "~icons/solar/eye-closed-linear";
+    import SolarEyeLinear from "~icons/solar/eye-linear";
 
     interface Props {
         value: string;
+        id?: string;
         class?: string;
         placeholder?: string;
         icon?: Component;
@@ -13,9 +16,11 @@
         onEnter?: () => void;
         disabled?: boolean;
         ref?: HTMLInputElement | null;
+        type?: string;
     }
     let {
         value = $bindable(""),
+        id,
         class: className,
         placeholder,
         icon,
@@ -23,9 +28,11 @@
         onEnter = () => {},
         disabled = false,
         ref = $bindable(),
+        type = "text",
     }: Props = $props();
 
     let inputFocus: boolean = $state(false);
+    let showPassword: boolean = $state(false);
 </script>
 
 <div
@@ -57,7 +64,8 @@
         {/if}
     {/if}
     <input
-        type="text"
+        {id}
+        {type}
         {placeholder}
         class="w-full border-none text-slate-200 ring-0 outline-none placeholder:text-slate-400 disabled:cursor-not-allowed"
         onfocusin={() => {
@@ -78,6 +86,28 @@
         }}
         {disabled}
     />
+    {#if type === "password"}
+        <button
+            class="size-6 cursor-pointer text-slate-400 transition-all duration-200 hover:brightness-80"
+            onclick={() => {
+                if (ref) {
+                    showPassword = !showPassword;
+                    ref.type = showPassword ? "text" : "password";
+                    ref.focus();
+                }
+            }}
+        >
+            {#if showPassword}
+                <div in:fade={{ duration: 100 }} class="size-full">
+                    <SolarEyeClosedLinear class="size-full" />
+                </div>
+            {:else}
+                <div in:fade={{ duration: 100 }} class="size-full">
+                    <SolarEyeLinear class="size-full" />
+                </div>
+            {/if}
+        </button>
+    {/if}
     {#if max}
         <span class="text-slate-400">{value.length}/{max}</span>
     {/if}

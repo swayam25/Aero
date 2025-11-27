@@ -1,7 +1,7 @@
 import { goto, invalidateAll } from "$app/navigation";
-import type { InsertPlaylist } from "$lib/db/schema";
+import type { InsertPlaylist, SelectRoom } from "$lib/db/schema";
 import { addToQueue, enhanceSong, play, store as playerStore, removeFromQueue, togglePause } from "$lib/player";
-import { playlistsCache, showPlDeletePopup, showPlRenamePopup } from "$lib/stores";
+import { isJoiningRoom, playlistsCache, showJoinRoomPopup, showPlDeletePopup, showPlRenamePopup } from "$lib/stores";
 import { toast } from "svelte-sonner";
 import { get } from "svelte/store";
 import type { SongDetailed } from "ytmusic-api";
@@ -12,6 +12,7 @@ import type { CtxAction } from "./types";
 import SolarConfoundedCircleLinear from "~icons/solar/confounded-circle-linear";
 import SolarCopyLinear from "~icons/solar/copy-linear";
 import SolarInfoCircleLinear from "~icons/solar/info-circle-linear";
+import SolarLoginLinear from "~icons/solar/login-linear";
 import SolarMusicLibraryLinear from "~icons/solar/music-library-linear";
 import SolarNotificationLinesRemoveLinear from "~icons/solar/notification-lines-remove-linear";
 import SolarPauseLinear from "~icons/solar/pause-linear";
@@ -26,7 +27,7 @@ import SolarTrashBinTrashLinear from "~icons/solar/trash-bin-trash-linear";
 // This prevents issues where the menu might still be open when the action completes, which could lead to bad UX.
 
 // Song context menu factory (handles both regular songs and queue songs)
-export function createSongActions(song: SongDetailed, loginUserID: string | null | undefined): CtxAction[] {
+export function createSongActions(song: SongDetailed, loginUserId: string | null | undefined): CtxAction[] {
     const actions: CtxAction[] = [];
     const playerState = get(playerStore);
     const isCurrentlyPlaying = song.videoId === playerState.meta?.videoId;
@@ -94,7 +95,7 @@ export function createSongActions(song: SongDetailed, loginUserID: string | null
     }
 
     // Add to Playlist (only if logged in)
-    if (loginUserID) {
+    if (loginUserId) {
         actions.push(
             createCtxAction({
                 label: "Add to Playlist",
@@ -144,7 +145,7 @@ export function createSongActions(song: SongDetailed, loginUserID: string | null
 }
 
 // Playlist context menu factory
-export function createPlaylistActions(playlistData: { name: string; id: string }, loginUserID: string | null): CtxAction[] {
+export function createPlaylistActions(playlistData: { name: string; id: string }, loginUserId: string | null): CtxAction[] {
     const actions: CtxAction[] = [];
 
     // Share
@@ -169,7 +170,7 @@ export function createPlaylistActions(playlistData: { name: string; id: string }
                     if (!resp.ok) {
                         toast.error(plData.error);
                     } else if (plData.isPublic) {
-                        const playlistURL = `${window.location.origin}/playlist/${loginUserID}/${playlistData.id}`;
+                        const playlistURL = `${window.location.origin}/playlist/${loginUserId}/${playlistData.id}`;
                         navigator.clipboard.writeText(playlistURL);
                         toast.success("Playlist URL copied to clipboard");
                     } else {
@@ -217,8 +218,8 @@ export function createPlaylistActions(playlistData: { name: string; id: string }
 export function createPlaylistSongActions(
     song: SongDetailed,
     playlistData: { name: string; id: string },
-    loginUserID: string | null,
-    accessedUserID: string | null,
+    loginUserId: string | null,
+    accessedUserId: string | null,
 ): CtxAction[] {
     const actions: CtxAction[] = [];
 
@@ -281,7 +282,7 @@ export function createPlaylistSongActions(
     );
 
     // Remove from Playlist (only if user owns the playlist)
-    if (loginUserID && accessedUserID && loginUserID === accessedUserID) {
+    if (loginUserId && accessedUserId && loginUserId === accessedUserId) {
         actions.push(
             createCtxAction({
                 label: "Remove from Playlist",
@@ -331,6 +332,7 @@ async function loadPlaylistSubmenu(song: SongDetailed): Promise<CtxAction[]> {
         // Check if cache is valid and not stale
         if (cache && !playlistsCache.isStale(cache)) {
             // Use cached playlists
+            console.log("Using cached playlists for submenu");
             playlists = playlistsCache.getPlaylists(cache);
         } else {
             // Fetch fresh playlists from API
@@ -388,4 +390,70 @@ async function loadPlaylistSubmenu(song: SongDetailed): Promise<CtxAction[]> {
     } catch (error) {
         throw new Error("Failed to load playlists");
     }
+}
+
+// Room context menu factory
+export function createRoomActions(room: SelectRoom, isHost: boolean): CtxAction[] {
+    const actions: CtxAction[] = [];
+
+    // Copy Room Link
+    actions.push(
+        createCtxAction({
+            label: "Copy Room Link",
+            icon: SolarCopyLinear,
+            shortcut: shortcuts.ctrl.c,
+            onclick: async (ctx) => {
+                ctx.closeMenu();
+                const link = `${window.location.origin}/room/${room.id}`;
+                navigator.clipboard.writeText(link);
+                toast.success("Room link copied to clipboard");
+            },
+        }),
+    );
+
+    // Join Room (non-host users)
+    if (!isHost) {
+        actions.push(
+            createCtxAction({
+                label: "Join Room",
+                icon: SolarLoginLinear,
+                disabled: get(isJoiningRoom),
+                onclick: async (ctx) => {
+                    ctx.closeMenu();
+                    if (room.password) showJoinRoomPopup(room);
+                    else {
+                        toast.promise(
+                            (async () => {
+                                isJoiningRoom.set(true);
+                                try {
+                                    const resp = await fetch(`/api/room/${room.id}`, {
+                                        method: "POST",
+                                        headers: {
+                                            "Content-Type": "application/json",
+                                        },
+                                        body: JSON.stringify({ key: "join", value: { password: "" } }),
+                                    });
+                                    const respData = await resp.json();
+                                    if (!resp.ok) throw new Error(respData.error || "Failed to join room");
+                                    return respData;
+                                } finally {
+                                    isJoiningRoom.set(false);
+                                }
+                            })(),
+                            {
+                                loading: "Joining room...",
+                                success: () => {
+                                    goto(`/room/${room.id}`, { invalidateAll: true });
+                                    return "Joined room successfully";
+                                },
+                                error: (err) => String(err) || "Failed to join room",
+                            },
+                        );
+                    }
+                },
+            }),
+        );
+    }
+
+    return actions;
 }

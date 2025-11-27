@@ -4,7 +4,7 @@
 
     interface Props {
         class?: string;
-        size?: "sm" | "md" | "lg" | "xl" | "";
+        size?: "sm" | "md" | "lg" | "xl" | "icon" | "";
         type?: "default" | "div";
         href?: string;
         disabled?: boolean;
@@ -32,6 +32,8 @@
                 return "text-lg px-4 py-3";
             case "xl":
                 return "text-xl px-6 py-5";
+            case "icon":
+                return "p-2";
             default:
                 return "";
         }

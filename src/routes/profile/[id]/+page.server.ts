@@ -7,16 +7,16 @@ import { error } from "@sveltejs/kit";
 import type { PageServerLoad } from "./$types";
 
 export const load: PageServerLoad = async ({ params, locals }) => {
-    const userID = params.id;
-    const userExists = await checkUser(locals.db, userID);
+    const userId = params.id;
+    const userExists = await checkUser(locals.db, userId);
     let user: UserData | null;
 
     if (!userExists) {
         return error(404, "User not found");
-    } else if (userID == locals.user?.id) {
+    } else if (userId == locals.user?.id) {
         user = locals.user;
     } else {
-        const resp = await fetchUser(locals.db, PUBLIC_DISCORD_URL, DISCORD_BOT_TOKEN, userID);
+        const resp = await fetchUser(locals.db, PUBLIC_DISCORD_URL, DISCORD_BOT_TOKEN, userId);
         if ("error" in resp) {
             return error(404, "User not found");
         }

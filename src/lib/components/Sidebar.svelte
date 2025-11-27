@@ -5,6 +5,7 @@
     import type { UserData } from "$lib/discord/types";
     import type { Component } from "svelte";
     import SolarMusicLibraryLinear from "~icons/solar/music-library-linear";
+    import SolarUsersGroupRoundedLinear from "~icons/solar/users-group-rounded-linear";
     import Tooltip from "./ui/Tooltip.svelte";
 
     let { user, playlists }: { user: UserData | null; playlists: InsertPlaylist[] } = $props();
@@ -19,6 +20,11 @@
             name: "Playlists",
             icon: SolarMusicLibraryLinear,
             href: "/playlist",
+        },
+        {
+            name: "Rooms",
+            icon: SolarUsersGroupRoundedLinear,
+            href: "/room",
         },
     ];
 

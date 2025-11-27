@@ -3,12 +3,13 @@
     import { Switch } from "bits-ui";
 
     interface Props {
+        id?: string;
         size?: "sm" | "md" | "lg" | "xl" | "";
         checked?: boolean;
         disabled?: boolean;
         onCheckedChange?: (checked: boolean) => void;
     }
-    let { size = "md", checked = $bindable(false), disabled, onCheckedChange }: Props = $props();
+    let { id, size = "md", checked = $bindable(false), disabled, onCheckedChange }: Props = $props();
 
     let sizeClass: string = $derived.by(() => {
         switch (size) {
@@ -42,7 +43,7 @@
 </script>
 
 <Switch.Root
-    name="applicationStatus"
+    name={id}
     bind:checked
     {disabled}
     {onCheckedChange}

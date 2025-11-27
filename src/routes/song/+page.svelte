@@ -6,7 +6,7 @@
     import CtxButton from "$lib/ctxmenu/components/CtxButton.svelte";
     import type { SelectPlaylist } from "$lib/db/schema";
     import { enhanceSong, fetchSongDetailed, play, store } from "$lib/player";
-    import { supabase } from "$lib/supabase";
+    import { createNormalizedChannel } from "$lib/supabase/channel";
     import { formatTime } from "$lib/utils/time";
     import { toast } from "svelte-sonner";
     import { fade } from "svelte/transition";
@@ -25,8 +25,7 @@
     $effect(() => {
         if (data.user && playlists) {
             // Sync playlist data with db
-            const channel = supabase
-                .channel("playlist-changes-song-info")
+            const channel = createNormalizedChannel("playlist-changes-song-info")
                 .on(
                     "postgres_changes",
                     {

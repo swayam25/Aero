@@ -13,8 +13,9 @@
     import type { InsertPlaylist } from "$lib/db/schema";
     import { store } from "$lib/player";
     import { playlistsCache } from "$lib/stores";
-    import { supabase } from "$lib/supabase";
+    import { createNormalizedChannel } from "$lib/supabase/channel";
     import { createMobileMediaQuery } from "$lib/utils/mobile";
+    import type { RealtimeChannel } from "@supabase/supabase-js";
     import { onMount, type Snippet } from "svelte";
     import { Toaster } from "svelte-sonner";
     import { expoOut } from "svelte/easing";
@@ -61,9 +62,9 @@
 
     // Sync playlist data with db
     $effect(() => {
+        let channel: RealtimeChannel;
         if (data.user) {
-            supabase
-                .channel("playlist-changes-layout")
+            channel = createNormalizedChannel("playlist-changes-layout")
                 .on(
                     "postgres_changes",
                     {
@@ -80,8 +81,7 @@
                             }
                             return playlist;
                         });
-                        // Update the playlists cache with the new data
-                        playlistsCache.updatePlaylist(newPlaylist.id, newPlaylist);
+                        if (newPlaylist.id) playlistsCache.updatePlaylist(newPlaylist.id, newPlaylist);
                     },
                 )
                 .on(
@@ -104,16 +104,19 @@
                         event: "DELETE",
                         schema: "public",
                         table: "playlist",
-                        filter: `user_id=eq.${data.user?.id}`,
+                        filter: `id=in.(${playlists.map((p) => p.id).join(",")})`, // Only id is returned on delete, so filter based on existing playlist ids
                     },
                     (payload) => {
-                        const { old: oldPlaylist } = payload;
+                        const oldPlaylist = payload.old as { id: string };
                         playlists = playlists.filter((p) => p.id !== oldPlaylist.id);
-                        playlistsCache.removePlaylist(oldPlaylist.id);
+                        if (oldPlaylist.id) playlistsCache.removePlaylist(oldPlaylist.id);
                     },
                 )
                 .subscribe();
         }
+        return () => {
+            if (channel) channel.unsubscribe();
+        };
     });
 
     // Handle mobile player state

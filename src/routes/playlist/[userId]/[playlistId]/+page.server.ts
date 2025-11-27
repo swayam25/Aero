@@ -9,10 +9,10 @@ import type { SongFull } from "ytmusic-api";
 import type { PageServerLoad } from "./$types";
 
 export const load: PageServerLoad = async ({ params, locals }) => {
-    const userID = params.userID;
-    const playlistID = String(params.playlistID);
+    const userId = params.userId;
+    const playlistId = String(params.playlistId);
 
-    const userExists = await checkUser(locals.db, userID);
+    const userExists = await checkUser(locals.db, userId);
     let loginUser: UserData | null = locals.user;
     let user: UserData | null;
     let playlist: SelectPlaylist;
@@ -21,18 +21,18 @@ export const load: PageServerLoad = async ({ params, locals }) => {
     if (!userExists) {
         return error(404, "User not found");
     } else {
-        if (userID == locals.user?.id) {
+        if (userId == locals.user?.id) {
             user = locals.user;
         } else {
-            const resp = await fetchUser(locals.db, PUBLIC_DISCORD_URL, DISCORD_BOT_TOKEN, userID);
+            const resp = await fetchUser(locals.db, PUBLIC_DISCORD_URL, DISCORD_BOT_TOKEN, userId);
             if ("error" in resp) {
                 return error(404, "User not found");
             }
             user = resp;
         }
 
-        if (!playlistID) return error(404, "Playlist not found");
-        const playlistExists = await checkPlaylist(locals.db, userID, playlistID);
+        if (!playlistId) return error(404, "Playlist not found");
+        const playlistExists = await checkPlaylist(locals.db, userId, playlistId);
         if (!playlistExists) {
             return error(404, "Playlist not found");
         } else {
