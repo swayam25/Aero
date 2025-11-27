@@ -81,10 +81,6 @@ export const userRelations = relations(userTable, ({ many }) => ({
 
 export type SelectUser = typeof userTable.$inferSelect;
 export type InsertUser = typeof userTable.$inferInsert;
-export type SelectUserWithRooms = SelectUser & {
-    hostedRooms: (typeof roomTable.$inferSelect)[];
-    joinedRooms: (typeof roomMemberTable.$inferSelect)[];
-};
 
 export type SelectPlaylist = typeof playlistTable.$inferSelect;
 export type InsertPlaylist = typeof playlistTable.$inferInsert;
