@@ -9,7 +9,6 @@
     import Sidebar from "$lib/components/Sidebar.svelte";
     import { store as ctxStore, setupShortcuts } from "$lib/ctxmenu";
     import ContextMenu from "$lib/ctxmenu/components/ContextMenu.svelte";
-    import { preloadPlaylistsCache } from "$lib/ctxmenu/playlist";
     import type { InsertPlaylist } from "$lib/db/schema";
     import { store } from "$lib/player";
     import { playlistsCache } from "$lib/stores";
@@ -30,7 +29,7 @@
     }
 
     let { data, children }: Props = $props();
-    let playlists: InsertPlaylist[] = $derived(data.playlists);
+    let dbUser = $derived(data.dbUser);
 
     // Mobile detection state
     let isMobile = $state(false);
@@ -39,6 +38,7 @@
     let cleanupShortcuts: (() => void) | undefined;
     let cleanupMobileQuery: (() => void) | undefined;
 
+    playlistsCache.load(data.playlists);
     onMount(() => {
         cleanupShortcuts = setupShortcuts();
 
@@ -46,10 +46,6 @@
         cleanupMobileQuery = createMobileMediaQuery((mobile) => {
             isMobile = mobile;
         });
-
-        if (data.user) {
-            preloadPlaylistsCache();
-        }
 
         return () => {
             cleanupShortcuts?.();
@@ -62,9 +58,10 @@
 
     // Sync playlist data with db
     $effect(() => {
-        let channel: RealtimeChannel;
+        let plChannel: RealtimeChannel;
+
         if (data.user) {
-            channel = createNormalizedChannel("playlist-changes-layout")
+            plChannel = createNormalizedChannel("playlist-changes-layout")
                 .on(
                     "postgres_changes",
                     {
@@ -75,12 +72,6 @@
                     },
                     (payload) => {
                         const { new: newPlaylist } = payload;
-                        playlists = playlists.map((playlist: InsertPlaylist) => {
-                            if (playlist.id === newPlaylist.id) {
-                                return { ...playlist, ...newPlaylist };
-                            }
-                            return playlist;
-                        });
                         if (newPlaylist.id) playlistsCache.updatePlaylist(newPlaylist.id, newPlaylist);
                     },
                 )
@@ -94,7 +85,6 @@
                     },
                     (payload) => {
                         const newPlaylist = payload.new as InsertPlaylist;
-                        playlists = [newPlaylist, ...playlists];
                         playlistsCache.addPlaylist(newPlaylist);
                     },
                 )
@@ -104,18 +94,17 @@
                         event: "DELETE",
                         schema: "public",
                         table: "playlist",
-                        filter: `id=in.(${playlists.map((p) => p.id).join(",")})`, // Only id is returned on delete, so filter based on existing playlist ids
+                        filter: `id=in.(${$playlistsCache.playlists.map((p) => p.id).join(",")})`, // Only id is returned on delete, so filter based on existing playlist ids
                     },
                     (payload) => {
                         const oldPlaylist = payload.old as { id: string };
-                        playlists = playlists.filter((p) => p.id !== oldPlaylist.id);
                         if (oldPlaylist.id) playlistsCache.removePlaylist(oldPlaylist.id);
                     },
                 )
                 .subscribe();
         }
         return () => {
-            if (channel) channel.unsubscribe();
+            if (plChannel) plChannel.unsubscribe();
         };
     });
 
@@ -171,7 +160,7 @@
     </div>
     {#if data.user}
         <div class="hidden md:row-start-2 md:block">
-            <Sidebar user={data.user} {playlists} />
+            <Sidebar user={data.user} {dbUser} />
         </div>
     {/if}
     <div id="body" class="size-full overflow-x-hidden overflow-y-auto rounded-lg p-2 md:row-start-2 md:bg-slate-900 md:p-5">

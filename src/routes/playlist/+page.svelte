@@ -5,9 +5,8 @@
     import Seo from "$lib/components/ui/Seo.svelte";
     import Tooltip from "$lib/components/ui/Tooltip.svelte";
     import { createPlaylistActions, openCtxMenu } from "$lib/ctxmenu";
-    import type { InsertPlaylist } from "$lib/db/schema";
     import { isCreatingPlaylist, isImportingPlaylist, playlistsCache } from "$lib/stores";
-    import { createNormalizedChannel } from "$lib/supabase/channel";
+    import { onMount } from "svelte";
     import { expoOut } from "svelte/easing";
     import { fade, fly } from "svelte/transition";
     import MaterialSymbolsAdd2Rounded from "~icons/material-symbols/add-2-rounded";
@@ -16,67 +15,17 @@
     import type { PageData } from "./$types";
 
     let { data }: { data: PageData } = $props();
-    let playlists: InsertPlaylist[] = $derived(data.playlists);
 
-    $effect(() => {
-        const channel = createNormalizedChannel("playlist-changes-playlists")
-            .on(
-                "postgres_changes",
-                {
-                    event: "UPDATE",
-                    schema: "public",
-                    table: "playlist",
-                    filter: `user_id=eq.${data.user?.id}`,
-                },
-                (payload) => {
-                    const { new: newPlaylist } = payload;
-                    playlists = playlists.map((playlist: InsertPlaylist) => {
-                        if (playlist.id === newPlaylist.id) {
-                            return { ...playlist, ...newPlaylist };
-                        }
-                        return playlist;
-                    });
-                    if (newPlaylist.id) playlistsCache.updatePlaylist(newPlaylist.id, newPlaylist);
-                },
-            )
-            .on(
-                "postgres_changes",
-                {
-                    event: "INSERT",
-                    schema: "public",
-                    table: "playlist",
-                    filter: `user_id=eq.${data.user?.id}`,
-                },
-                (payload) => {
-                    const newPlaylist = payload.new as InsertPlaylist;
-                    playlists = [newPlaylist, ...playlists];
-                    playlistsCache.addPlaylist(newPlaylist);
-                },
-            )
-            .on(
-                "postgres_changes",
-                {
-                    event: "DELETE",
-                    schema: "public",
-                    table: "playlist",
-                    filter: `id=in.(${playlists.map((p) => p.id).join(",")})`,
-                },
-                (payload) => {
-                    const oldPlaylist = payload.old as { id: string };
-                    playlists = playlists.filter((p) => p.id !== oldPlaylist.id);
-                    if (oldPlaylist.id) playlistsCache.removePlaylist(oldPlaylist.id);
-                },
-            )
-            .subscribe();
-        return () => {
-            channel.unsubscribe();
-        };
+    onMount(async () => {
+        if (playlistsCache.isStale($playlistsCache)) {
+            await playlistsCache.refresh();
+        }
     });
 </script>
 
 <Seo title="Playlists" />
 
-{#if playlists.length > 0}
+{#if $playlistsCache.playlists.length > 0}
     <div in:fade={{ duration: 100 }} class="mb-2 flex size-fit items-center justify-center gap-2 md:mb-5">
         <h1 class="text-3xl font-bold md:text-4xl">Playlists</h1>
         <NewPlaylistPopup>
@@ -96,7 +45,7 @@
     </div>
 {/if}
 
-{#if playlists.length <= 0}
+{#if $playlistsCache.playlists.length <= 0}
     <div in:fade={{ duration: 100 }} class="flex size-full items-center justify-center">
         <div class="flex flex-col items-center justify-center gap-2">
             <SolarConfoundedCircleLinear class="size-10 text-slate-400 md:size-15" />
@@ -117,7 +66,7 @@
     </div>
 {:else}
     <div in:fade={{ duration: 100 }} class="flex flex-wrap items-center justify-start gap-2">
-        {#each playlists as playlist}
+        {#each $playlistsCache.playlists as playlist}
             <a
                 in:fly={{ duration: 500, easing: expoOut, x: -100, y: 0 }}
                 out:fly={{ duration: 500, easing: expoOut, x: 100, y: 0 }}

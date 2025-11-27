@@ -2,8 +2,7 @@
     import { invalidateAll } from "$app/navigation";
     import DialogPopup from "$lib/components/ui/DialogPopup.svelte";
     import Input from "$lib/components/ui/Input.svelte";
-    import { refreshPlaylistsCache } from "$lib/ctxmenu/playlist";
-    import { isCreatingPlaylist } from "$lib/stores";
+    import { isCreatingPlaylist, playlistsCache } from "$lib/stores";
     import { Dialog } from "bits-ui";
     import { type Snippet } from "svelte";
     import { toast } from "svelte-sonner";
@@ -39,7 +38,7 @@
 
                 if (resp.ok) {
                     toast.success("Playlist created successfully");
-                    await refreshPlaylistsCache();
+                    await playlistsCache.refresh();
                 } else {
                     toast.error(respData.error);
                 }

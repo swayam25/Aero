@@ -17,8 +17,14 @@ export async function deleteUser(db: DB, id: string) {
     await db.delete(schema.userTable).where(eq(schema.userTable.userId, id));
 }
 
-export async function getUser(db: DB, id: string) {
-    return db.query.userTable.findFirst({ where: eq(schema.userTable.userId, id) });
+export async function getUser(db: DB, id: string): Promise<schema.SelectUserWithRooms | undefined> {
+    return db.query.userTable.findFirst({
+        where: eq(schema.userTable.userId, id),
+        with: {
+            hostedRooms: true,
+            joinedRooms: true,
+        },
+    });
 }
 
 export async function createPlaylist(db: DB, userId: string, name: string): Promise<schema.InsertPlaylist> {
@@ -75,66 +81,81 @@ export async function reorderPlaylist(db: DB, playlistID: string, songs: string[
     await db.update(schema.playlistTable).set({ songs }).where(eq(schema.playlistTable.id, playlistID));
 }
 
-export async function getRooms(db: DB) {
-    return db.query.roomTable.findMany();
+export async function getRooms(db: DB): Promise<schema.SelectRoomWithMembers[]> {
+    const rooms = await db.query.roomTable.findMany();
+
+    // Attach members from room_member table for compatibility with UI
+    const roomsWithMembers = await Promise.all(
+        rooms.map(async (room) => {
+            const members = await db.query.roomMemberTable.findMany({ where: eq(schema.roomMemberTable.roomId, room.id) });
+            return { ...room, members: members.map((m) => m.userData) };
+        }),
+    );
+    return roomsWithMembers;
 }
 
-export async function getRoom(db: DB, id: string) {
-    return db.query.roomTable.findFirst({ where: eq(schema.roomTable.id, id) });
+export async function getRoom(db: DB, id: string): Promise<schema.SelectRoomWithMembers | null> {
+    const room = await db.query.roomTable.findFirst({ where: eq(schema.roomTable.id, id) });
+    if (!room) return null;
+    const members = await db.query.roomMemberTable.findMany({ where: eq(schema.roomMemberTable.roomId, id) });
+    return { ...room, members: members.map((m) => m.userData) };
 }
 
 export async function createRoom(db: DB, name: string, password: string, hostUser: UserData, isPublic: boolean = true) {
-    const [room] = await db.insert(schema.roomTable).values({ name, password, hostUserId: hostUser.id, host: hostUser, isPublic }).returning();
+    const [room] = await db
+        .insert(schema.roomTable)
+        .values({ name, password, hostUserId: hostUser.id, hostUserData: hostUser, isPublic })
+        .returning();
     return room;
 }
 
-export async function addRoomMember(db: DB, roomID: string, user: UserData) {
-    const room = await db.query.roomTable.findFirst({ where: eq(schema.roomTable.id, roomID) });
-    const members = (room?.members || []).filter((m) => m.id !== user.id);
-    members.push(user);
-    await db.update(schema.roomTable).set({ members }).where(eq(schema.roomTable.id, roomID));
+export async function addRoomMember(db: DB, roomId: string, user: UserData) {
+    const room = await db.query.roomTable.findFirst({ where: eq(schema.roomTable.id, roomId) });
+    if (!room) throw new Error("Room not found");
+    await db
+        .insert(schema.roomMemberTable)
+        .values({ roomId: roomId, userId: user.id, userData: user })
+        .onConflictDoUpdate({ target: schema.roomMemberTable.userId, set: { userData: user } });
 }
 
-export async function removeRoomMember(db: DB, roomID: string, user: UserData) {
-    const room = await db.query.roomTable.findFirst({ where: eq(schema.roomTable.id, roomID) });
-    const members = (room?.members || []).filter((m) => m.id !== user.id);
-    await db.update(schema.roomTable).set({ members }).where(eq(schema.roomTable.id, roomID));
+export async function removeRoomMember(db: DB, roomId: string, user: UserData) {
+    await db.delete(schema.roomMemberTable).where(and(eq(schema.roomMemberTable.roomId, roomId), eq(schema.roomMemberTable.userId, user.id)));
 }
 
-export async function addSongToQueue(db: DB, roomID: string, song: EnhancedSong) {
-    const room = await db.query.roomTable.findFirst({ where: eq(schema.roomTable.id, roomID) });
+export async function addSongToQueue(db: DB, roomId: string, song: EnhancedSong) {
+    const room = await db.query.roomTable.findFirst({ where: eq(schema.roomTable.id, roomId) });
     const queue = (room?.queue || []).filter((s) => s.videoId !== (song as any).videoId);
     queue.push(song as any);
-    const [r] = await db.update(schema.roomTable).set({ queue }).where(eq(schema.roomTable.id, roomID)).returning();
+    const [r] = await db.update(schema.roomTable).set({ queue }).where(eq(schema.roomTable.id, roomId)).returning();
     return r;
 }
 
-export async function removeSongFromQueue(db: DB, roomID: string, songID: string) {
-    const room = await db.query.roomTable.findFirst({ where: eq(schema.roomTable.id, roomID) });
+export async function removeSongFromQueue(db: DB, roomId: string, songID: string) {
+    const room = await db.query.roomTable.findFirst({ where: eq(schema.roomTable.id, roomId) });
     const queue = (room?.queue || []).filter((s) => s.videoId !== songID);
-    await db.update(schema.roomTable).set({ queue }).where(eq(schema.roomTable.id, roomID));
+    await db.update(schema.roomTable).set({ queue }).where(eq(schema.roomTable.id, roomId));
 }
 
-export async function toggleRoomVisibility(db: DB, roomID: string) {
-    const room = await db.query.roomTable.findFirst({ where: eq(schema.roomTable.id, roomID) });
-    await db.update(schema.roomTable).set({ isPublic: !room!.isPublic }).where(eq(schema.roomTable.id, roomID));
+export async function toggleRoomVisibility(db: DB, roomId: string) {
+    const room = await db.query.roomTable.findFirst({ where: eq(schema.roomTable.id, roomId) });
+    await db.update(schema.roomTable).set({ isPublic: !room!.isPublic }).where(eq(schema.roomTable.id, roomId));
     return !room!.isPublic;
 }
 
-export async function reorderQueue(db: DB, roomID: string, videoIds: string[]) {
-    const room = await db.query.roomTable.findFirst({ where: eq(schema.roomTable.id, roomID) });
+export async function reorderQueue(db: DB, roomId: string, videoIds: string[]) {
+    const room = await db.query.roomTable.findFirst({ where: eq(schema.roomTable.id, roomId) });
     const existing = room?.queue || [];
     const reordered = videoIds.map((id) => existing.find((s) => s.videoId === id)).filter(Boolean);
     await db
         .update(schema.roomTable)
         .set({ queue: reordered as any })
-        .where(eq(schema.roomTable.id, roomID));
+        .where(eq(schema.roomTable.id, roomId));
 }
 
-export async function renameRoom(db: DB, roomID: string, name: string) {
-    await db.update(schema.roomTable).set({ name }).where(eq(schema.roomTable.id, roomID));
+export async function renameRoom(db: DB, roomId: string, name: string) {
+    await db.update(schema.roomTable).set({ name }).where(eq(schema.roomTable.id, roomId));
 }
 
-export async function deleteRoom(db: DB, roomID: string) {
-    await db.delete(schema.roomTable).where(eq(schema.roomTable.id, roomID));
+export async function deleteRoom(db: DB, roomId: string) {
+    await db.delete(schema.roomTable).where(eq(schema.roomTable.id, roomId));
 }

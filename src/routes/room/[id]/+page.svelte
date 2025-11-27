@@ -127,7 +127,7 @@
 </script>
 
 {#if data.room.isPublic}
-    <Seo title={`${data.room.name} Room`} description={`Created By ${data.room.host?.global_name}`} />
+    <Seo title={`${data.room.name} Room`} description={`Created By ${data.room.hostUserData?.global_name}`} />
 {:else}
     <Seo />
 {/if}
@@ -163,16 +163,20 @@
                     }}
                 >
                     <div class="relative flex size-8 items-center justify-center">
-                        <img src="{data.room.host?.url?.avatar}{animateAvatar ? '' : '.webp'}" alt="User Avatar" class="size-full rounded-full" />
-                        {#if data.room.host?.url?.avatarDecoration}
+                        <img
+                            src="{data.room.hostUserData?.url?.avatar}{animateAvatar ? '' : '.webp'}"
+                            alt="User Avatar"
+                            class="size-full rounded-full"
+                        />
+                        {#if data.room.hostUserData?.url?.avatarDecoration}
                             <img
-                                src="{data.room.host.url?.avatarDecoration}{animateAvatar ? '' : '.webp'}"
+                                src="{data.room.hostUserData.url?.avatarDecoration}{animateAvatar ? '' : '.webp'}"
                                 alt="Avatar Decoration"
                                 class="absolute size-full rounded-full"
                             />
                         {/if}
                     </div>
-                    <p>{data.room.host?.global_name}</p>
+                    <p>{data.room.hostUserData?.global_name}</p>
                 </a>
             </div>
         </div>

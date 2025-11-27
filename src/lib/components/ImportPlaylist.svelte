@@ -3,8 +3,7 @@
     import DialogPopup from "$lib/components/ui/DialogPopup.svelte";
     import Input from "$lib/components/ui/Input.svelte";
     import Select from "$lib/components/ui/Select.svelte";
-    import { refreshPlaylistsCache } from "$lib/ctxmenu/playlist";
-    import { isImportingPlaylist } from "$lib/stores";
+    import { isImportingPlaylist, playlistsCache } from "$lib/stores";
     import { Dialog } from "bits-ui";
     import { type Component, type Snippet } from "svelte";
     import { toast } from "svelte-sonner";
@@ -67,7 +66,7 @@
                     const respData = await resp.json();
 
                     if (resp.ok) {
-                        await refreshPlaylistsCache();
+                        await playlistsCache.refresh();
                         invalidateAll();
                         return respData.message;
                     } else {
@@ -138,7 +137,7 @@
     {/snippet}
     {#snippet actions()}
         <Dialog.Close
-            class="not-disabled:hover:!bg-green-500/10 not-disabled:hover:text-green-500 disabled:cursor-not-allowed"
+            class="not-disabled:hover:bg-green-500/10! not-disabled:hover:text-green-500 disabled:cursor-not-allowed"
             onclick={importPlaylist}
             disabled={!inputValue}
         >

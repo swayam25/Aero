@@ -7,10 +7,28 @@ interface PlaylistsCacheData {
 }
 
 const createPlaylistsCache = () => {
-    const { subscribe, set, update } = writable<PlaylistsCacheData | null>(null);
+    const { subscribe, set, update } = writable<PlaylistsCacheData>({
+        playlists: [],
+        lastUpdated: 0,
+    });
 
     return {
         subscribe,
+        load: (playlists: InsertPlaylist[]) => {
+            set({ playlists, lastUpdated: Date.now() });
+        },
+        refresh: async () => {
+            try {
+                const resp = await fetch(`/api/playlists`);
+                if (!resp.ok) {
+                    throw new Error(`Failed to fetch playlists: ${resp.status} ${resp.statusText}`);
+                }
+                const playlists = (await resp.json()) as InsertPlaylist[];
+                update((cache) => ({ playlists, lastUpdated: Date.now() }));
+            } catch (error) {
+                console.error("Failed to refresh playlists cache:", error);
+            }
+        },
         setCache: (playlists: InsertPlaylist[]) => {
             set({
                 playlists,
@@ -41,7 +59,7 @@ const createPlaylistsCache = () => {
         },
         removePlaylist: (playlistId: string) => {
             update((cache) => {
-                if (!cache) return null;
+                if (!cache) return { playlists: [], lastUpdated: 0 };
                 return {
                     playlists: cache.playlists.filter((p) => p.id !== playlistId),
                     lastUpdated: Date.now(),
@@ -50,16 +68,16 @@ const createPlaylistsCache = () => {
         },
         updatePlaylist: (playlistId: string, updates: Partial<InsertPlaylist>) => {
             update((cache) => {
-                if (!cache) return null;
+                if (!cache) return { playlists: [], lastUpdated: 0 };
                 return {
                     playlists: cache.playlists.map((p) => (p.id === playlistId ? { ...p, ...updates } : p)),
                     lastUpdated: Date.now(),
                 };
             });
         },
-        clearCache: () => set(null),
-        isStale: (cache: PlaylistsCacheData | null, maxAge = 60 * 1000) => {
-            // 1 min
+        clearCache: () => set({ playlists: [], lastUpdated: 0 }),
+        isStale: (cache: PlaylistsCacheData | null, maxAge = 2 * 60 * 1000) => {
+            // 2 min
             if (!cache) return true;
             return Date.now() - cache.lastUpdated > maxAge;
         },

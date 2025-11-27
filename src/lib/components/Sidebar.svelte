@@ -1,34 +1,38 @@
 <script lang="ts">
     import { goto } from "$app/navigation";
     import { createPlaylistActions, openCtxMenu } from "$lib/ctxmenu";
-    import type { InsertPlaylist } from "$lib/db/schema";
+    import type { SelectUserWithRooms } from "$lib/db/schema";
     import type { UserData } from "$lib/discord/types";
+    import { playlistsCache } from "$lib/stores";
     import type { Component } from "svelte";
     import SolarMusicLibraryLinear from "~icons/solar/music-library-linear";
     import SolarUsersGroupRoundedLinear from "~icons/solar/users-group-rounded-linear";
     import Tooltip from "./ui/Tooltip.svelte";
 
-    let { user, playlists }: { user: UserData | null; playlists: InsertPlaylist[] } = $props();
+    let { user, dbUser }: { user: UserData | null; dbUser: SelectUserWithRooms | undefined } = $props();
+    let inAnyRoom: boolean = $derived(((dbUser?.hostedRooms?.length ?? 0) || (dbUser?.joinedRooms?.length ?? 0)) > 0);
 
     interface Item {
         name: string;
         icon: Component;
         href: string;
+        color?: string;
     }
-    let items: Item[] = [
+    let items: Item[] = $derived([
         {
             name: "Playlists",
             icon: SolarMusicLibraryLinear,
             href: "/playlist",
         },
         {
-            name: "Rooms",
+            name: inAnyRoom ? "Active Room" : "Rooms",
             icon: SolarUsersGroupRoundedLinear,
             href: "/room",
+            color: inAnyRoom ? "text-green-500" : "",
         },
-    ];
+    ]);
 
-    const playlistHeight = `calc(100vh - ${140 + 40 + items.length * 52}px)`;
+    const playlistHeight = $derived(`calc(100vh - ${140 + 40 + items.length * 52}px)`);
 </script>
 
 <div class="flex h-full w-20 flex-col items-center justify-start rounded-lg bg-slate-900">
@@ -36,14 +40,14 @@
         {#each items as item}
             <Tooltip side="right" content={item.name}>
                 <a href={item.href} class="cursor-pointer opacity-80 transition-opacity hover:opacity-100">
-                    <item.icon class="size-8" />
+                    <item.icon class="size-8 {item.color} transition-colors duration-200" />
                 </a>
             </Tooltip>
         {/each}
     </div>
 
     <div class="flex flex-col items-center justify-start gap-5 overflow-y-auto" style="height: {playlistHeight}; scrollbar-width: none;">
-        {#each playlists as playlist}
+        {#each $playlistsCache.playlists as playlist}
             <Tooltip side="right" content={playlist.name || "Unnamed playlist"}>
                 <!-- Using <button> here breaks the tooltip, which leads the app to crash -->
                 <div

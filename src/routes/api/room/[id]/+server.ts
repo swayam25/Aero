@@ -41,21 +41,6 @@ export const POST: RequestHandler = async ({ locals, request, params }) => {
         } else {
             await removeRoomMember(locals.db, params.id, user);
         }
-    } else if (key === "fetch_members") {
-        // value: { offset?: number, limit?: number }
-        const offset = value?.offset || 0;
-        const limit = value?.limit || 8;
-        const members = roomExists.members || [];
-        const slice = members.slice(offset, offset + limit);
-        const users = [] as any[];
-        for (const member of slice) {
-            const resp = await fetchUser(locals.db, PUBLIC_DISCORD_URL, DISCORD_BOT_TOKEN, member.id);
-            if (!("error" in resp)) {
-                users.push(resp);
-            }
-        }
-        const hasMore = offset + limit < members.length;
-        return json({ members: users, hasMore, nextOffset: offset + users.length });
     }
 
     // Queue
