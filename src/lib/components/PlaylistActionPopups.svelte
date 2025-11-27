@@ -14,24 +14,31 @@
     async function deletePlaylist() {
         const plID = $popupStore.playlistData?.id;
         hidePlDeletePopup();
-        const resp = await fetch(`/api/playlist`, {
-            body: JSON.stringify({ id: plID }),
-            method: "DELETE",
-            headers: {
-                "Content-Type": "application/json",
+        toast.promise(
+            (async () => {
+                const resp = await fetch(`/api/playlist`, {
+                    body: JSON.stringify({ id: plID }),
+                    method: "DELETE",
+                    headers: {
+                        "Content-Type": "application/json",
+                    },
+                });
+                const respData = await resp.json();
+                if (!resp.ok) throw new Error(respData.error || "Failed to delete playlist");
+                await refreshPlaylistsCache();
+                return respData;
+            })(),
+            {
+                loading: "Deleting playlist...",
+                success: (data) => {
+                    if (window.location.pathname.includes(plID!)) {
+                        goto("/playlist", { invalidateAll: true });
+                    }
+                    return "Playlist deleted successfully";
+                },
+                error: (err) => String(err) || "Failed to delete playlist",
             },
-        });
-        const respData = await resp.json();
-        if (resp.ok) {
-            toast.success("Playlist deleted successfully");
-            await refreshPlaylistsCache();
-        } else {
-            toast.error(respData.error);
-        }
-        if (window.location.pathname.includes(plID!)) {
-            await goto("/playlist");
-        }
-        invalidateAll();
+        );
     }
 
     let inputValue: string = $state("");
@@ -42,21 +49,29 @@
         const newName = inputValue.trim();
         hidePlRenamePopup();
         inputValue = "";
-        const resp = await fetch(`/api/playlist`, {
-            body: JSON.stringify({ key: "rename_pl", value: { playlistID: plID, name: newName } }),
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json",
+        toast.promise(
+            (async () => {
+                const resp = await fetch(`/api/playlist`, {
+                    body: JSON.stringify({ key: "rename_pl", value: { playlistID: plID, name: newName } }),
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                    },
+                });
+                const respData = await resp.json();
+                if (!resp.ok) throw new Error(respData.error || "Failed to rename playlist");
+                await refreshPlaylistsCache();
+                return respData;
+            })(),
+            {
+                loading: "Renaming playlist...",
+                success: (data) => {
+                    invalidateAll();
+                    return "Playlist renamed successfully";
+                },
+                error: (err) => String(err) || "Failed to rename playlist",
             },
-        });
-        const respData = await resp.json();
-        if (resp.ok) {
-            toast.success("Playlist renamed successfully");
-            await refreshPlaylistsCache();
-        } else {
-            toast.error(respData.error);
-        }
-        invalidateAll();
+        );
     }
 </script>
 
@@ -68,7 +83,7 @@
         <span class="font-semibold text-sky-500">{$popupStore.playlistData?.name}</span>. Please confirm that you want to proceed.
     {/snippet}
     {#snippet actions()}
-        <AlertDialog.Action class="hover:!bg-red-500/10 hover:text-red-500" onclick={deletePlaylist}>
+        <AlertDialog.Action class="hover:bg-red-500/10! hover:text-red-500" onclick={deletePlaylist}>
             <SolarTrashBinTrashLinear class="size-5" />
             Delete Playlist
         </AlertDialog.Action>
@@ -82,6 +97,7 @@
     onOpenAutoFocus={(e) => {
         e.preventDefault();
         input?.focus();
+        inputValue = $popupStore.playlistData?.name || "";
     }}
 >
     <!-- No trigger snippet as this is controlled by the popup -->

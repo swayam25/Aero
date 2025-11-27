@@ -8,9 +8,8 @@
     import { createPlaylistSongActions, openCtxMenu } from "$lib/ctxmenu";
     import { enhanceSong, fetchSongDetailed, playPlaylist, store } from "$lib/player";
     import { isImportingPlaylist } from "$lib/stores";
-    import { supabase } from "$lib/supabase";
+    import { createNormalizedChannel } from "$lib/supabase/channel";
     import { formatTime } from "$lib/utils/time";
-    import { onDestroy } from "svelte";
     import { toast } from "svelte-sonner";
     import { expoOut } from "svelte/easing";
     import { fade, fly } from "svelte/transition";
@@ -76,21 +75,22 @@
     });
 
     // Sync playlist data with db
-    const channel = supabase
-        .channel("playlist-changes-playlists")
-        .on(
-            "postgres_changes",
-            {
-                event: "UPDATE",
-                schema: "public",
-                table: "playlist",
-                filter: `user_id=eq.${data.user?.id}`,
-            },
-            () => invalidateAll(),
-        )
-        .subscribe();
-    onDestroy(() => {
-        channel.unsubscribe();
+    $effect(() => {
+        const channel = createNormalizedChannel("playlist-changes-playlists")
+            .on(
+                "postgres_changes",
+                {
+                    event: "UPDATE",
+                    schema: "public",
+                    table: "playlist",
+                    filter: `user_id=eq.${data.user?.id}`,
+                },
+                () => invalidateAll(),
+            )
+            .subscribe();
+        return () => {
+            channel.unsubscribe();
+        };
     });
 
     async function togglePlaylistView() {
@@ -128,7 +128,6 @@
 <div class="flex w-full flex-col items-center justify-center gap-4 md:flex-row md:justify-start">
     <div class="size-40 shrink-0 rounded-lg bg-slate-800 bg-cover md:size-50" style="background-image: url({data.playlist.cover});"></div>
     <div class="flex flex-col items-center justify-center gap-2 md:items-start">
-        <div class="flex items-center justify-center gap-2"></div>
         <div class="flex items-center justify-center gap-2 md:items-end">
             <h1
                 class="text-4xl font-bold"

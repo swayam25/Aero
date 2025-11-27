@@ -79,7 +79,7 @@
     {/snippet}
     {#snippet actions()}
         <Dialog.Close
-            class="not-disabled:hover:!bg-green-500/10 not-disabled:hover:text-green-500 disabled:cursor-not-allowed"
+            class="not-disabled:hover:bg-green-500/10! not-disabled:hover:text-green-500 disabled:cursor-not-allowed"
             onclick={createPlaylist}
             disabled={!inputValue}
         >

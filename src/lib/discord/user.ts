@@ -1,5 +1,5 @@
 import { PUBLIC_DISCORD_URL } from "$env/static/public";
-import { fetchSettings, type DB } from "$lib/db";
+import { checkUser, type DB } from "$lib/db";
 import { error } from "@sveltejs/kit";
 import type { UserData } from "./types";
 
@@ -34,15 +34,10 @@ export async function getUserData(db: DB, access_token: string): Promise<UserDat
         error(userDataResponse.status, userDataResponse.statusText);
     }
 
-    const ownerIDs = (await fetchSettings(db, "ownerIDs"))?.value || [];
-    const devIDs = (await fetchSettings(db, "devIDs"))?.value || [];
-
     let userData: UserData = await userDataResponse.json();
-    if (ownerIDs.includes(userData.id)) {
-        userData = { ...userData, owner: true };
-    } else if (devIDs.includes(userData.id)) {
-        userData = { ...userData, dev: true };
-    }
+    const dbUser = await checkUser(db, userData.id);
+    userData.role = dbUser?.role || "user";
+
     userData = {
         ...userData,
         url: {
@@ -68,15 +63,10 @@ export async function fetchUser(db: DB, baseURI: string, botToken: string, id: s
         return { error: true };
     }
 
-    const ownerIDs = (await fetchSettings(db, "ownerIDs"))?.value || [];
-    const devIDs = (await fetchSettings(db, "devIDs"))?.value || [];
-
     let userData: UserData = await resp.json();
-    if (ownerIDs.includes(userData.id)) {
-        userData = { ...userData, owner: true };
-    } else if (devIDs.includes(userData.id)) {
-        userData = { ...userData, dev: true };
-    }
+    const dbUser = await checkUser(db, userData.id);
+    userData.role = dbUser?.role || "user";
+
     userData = {
         ...userData,
         url: {

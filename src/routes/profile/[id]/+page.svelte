@@ -1,9 +1,8 @@
 <script lang="ts">
+    import Badge from "$lib/components/ui/Badge.svelte";
     import Seo from "$lib/components/ui/Seo.svelte";
     import { expoOut } from "svelte/easing";
     import { fly } from "svelte/transition";
-    import SolarCode2Linear from "~icons/solar/code-2-linear";
-    import SolarCrownLineLinear from "~icons/solar/crown-line-linear";
     import type { PageData } from "./$types";
 
     let { data }: { data: PageData } = $props();
@@ -39,17 +38,7 @@
         <div class="mt-14 flex flex-col items-start justify-center">
             <div class="flex items-center justify-center gap-1">
                 <p class="text-3xl font-bold md:text-4xl">{data.user?.global_name || data.user?.username}</p>
-                {#if data.user?.owner || data.user?.dev}
-                    {@const Icon = data.user?.owner ? SolarCrownLineLinear : SolarCode2Linear}
-                    <div
-                        class="flex size-full items-center justify-center gap-1 rounded-lg px-2 py-1.5 text-sm {data.user?.owner
-                            ? 'bg-yellow-500/10 text-yellow-500'
-                            : 'bg-green-500/10 text-green-500'}"
-                    >
-                        <Icon class="size-5" />
-                        {data.user?.owner ? "Owner" : "Dev"}
-                    </div>
-                {/if}
+                <Badge role={data.user?.role} />
             </div>
             <p class="font-mono text-sm text-slate-400">{data.user?.id}</p>
         </div>
