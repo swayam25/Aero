@@ -9,14 +9,15 @@
     import Sidebar from "$lib/components/Sidebar.svelte";
     import { store as ctxStore, setupShortcuts } from "$lib/ctxmenu";
     import ContextMenu from "$lib/ctxmenu/components/ContextMenu.svelte";
-    import type { InsertPlaylist } from "$lib/db/schema";
+    import type { InsertPlaylist, SelectRoom, SelectRoomMember } from "$lib/db/schema";
     import { store } from "$lib/player";
     import { playlistsCache } from "$lib/stores";
-    import { createNormalizedChannel } from "$lib/supabase/channel";
+    import { userRoomStore } from "$lib/stores/userRoom";
+    import createNormalizedChannel from "$lib/supabase/channel";
     import { createMobileMediaQuery } from "$lib/utils/mobile";
     import type { RealtimeChannel } from "@supabase/supabase-js";
     import { onMount, type Snippet } from "svelte";
-    import { Toaster } from "svelte-sonner";
+    import { toast, Toaster } from "svelte-sonner";
     import { expoOut } from "svelte/easing";
     import { fly } from "svelte/transition";
     import { setupViewTransition } from "sveltekit-view-transition";
@@ -107,6 +108,63 @@
         };
     });
 
+    // Room data
+    userRoomStore.set(data.userRoom);
+    $effect(() => {
+        let channel: RealtimeChannel;
+        if (data.user) {
+            channel = createNormalizedChannel("user-room-global-events");
+            channel.on(
+                "postgres_changes",
+                { event: "INSERT", schema: "public", table: "room", filter: `host_user_id=eq.${data.user.id}` },
+                (payload) => {
+                    const newRoom = payload.new as SelectRoom;
+                    userRoomStore.set(newRoom);
+                },
+            );
+            if ($userRoomStore && $userRoomStore.id) {
+                channel.on("postgres_changes", { event: "DELETE", schema: "public", table: "room", filter: `id=eq.${$userRoomStore.id}` }, () => {
+                    if ($userRoomStore?.hostUserData.id !== data.user.id) {
+                        toast.info(`${$userRoomStore?.name} room has been deleted`);
+                    }
+                    userRoomStore.clear();
+                });
+            }
+            channel.on(
+                "postgres_changes",
+                { event: "*", schema: "public", table: "room_member", filter: `user_id=eq.${data.user.id}` },
+                async (payload) => {
+                    const member = payload.new as SelectRoomMember;
+                    const resp = await fetch("/api/room/" + member.roomId, {
+                        method: "GET",
+                        headers: {
+                            "Content-Type": "application/json",
+                        },
+                    });
+                    if (resp.ok) {
+                        const respData = await resp.json();
+                        if (respData.room) {
+                            userRoomStore.set(respData.room as SelectRoom);
+                        }
+                    }
+                },
+            );
+            if ($userRoomStore && $userRoomStore.id) {
+                channel.on(
+                    "postgres_changes",
+                    { event: "DELETE", schema: "public", table: "room_member", filter: `user_id=eq.${data.user.id}` },
+                    () => {
+                        userRoomStore.clear();
+                    },
+                );
+            }
+            channel.subscribe();
+        }
+        return () => {
+            if (channel) channel.unsubscribe();
+        };
+    });
+
     // Handle mobile player state
     let showMobilePlayer = $state(false);
     function handlePlayerClick() {
@@ -159,7 +217,7 @@
     </div>
     {#if data.user}
         <div class="hidden md:row-start-2 md:block">
-            <Sidebar user={data.user} userRoom={data.userRoom} />
+            <Sidebar user={data.user} />
         </div>
     {/if}
     <div id="body" class="size-full overflow-x-hidden overflow-y-auto rounded-lg p-2 md:row-start-2 md:bg-slate-900 md:p-5">

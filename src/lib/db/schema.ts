@@ -30,22 +30,22 @@ export const roomTable = pgTable("room", {
         .notNull()
         .unique()
         .references(() => userTable.userId, { onDelete: "cascade" }),
-    hostUserData: jsonb("host_user").$type<UserData>().notNull(),
+    hostUserData: jsonb("host_user_data").$type<UserData>().notNull(),
     createdAt: timestamp("created_at").notNull().defaultNow(),
+    nowPlaying: jsonb("now_playing").$type<EnhancedSong | null>().default(null),
     queue: jsonb("queue").$type<EnhancedSong[]>().notNull().default([]),
     isPublic: boolean("is_public").notNull().default(true),
 });
 
 export const roomMemberTable = pgTable("room_member", {
-    roomId: uuid("room_id")
+    userId: text("user_id")
         .unique()
         .primaryKey()
-        .references(() => roomTable.id, { onDelete: "cascade" }),
-    userId: text("user_id")
-        .notNull()
-        .unique()
         .references(() => userTable.userId, { onDelete: "cascade" }),
-    userData: jsonb("user").$type<UserData>().notNull(),
+    roomId: uuid("room_id")
+        .unique()
+        .references(() => roomTable.id, { onDelete: "cascade" }),
+    userData: jsonb("user_data").$type<UserData>().notNull(),
     joinedAt: timestamp("joined_at").notNull().defaultNow(),
 });
 

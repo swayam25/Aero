@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { invalidateAll } from "$app/navigation";
+    import { goto, invalidateAll } from "$app/navigation";
     import DialogPopup from "$lib/components/ui/DialogPopup.svelte";
     import Input from "$lib/components/ui/Input.svelte";
     import { isCreatingRoom, isJoiningRoom } from "$lib/stores";
@@ -52,6 +52,7 @@
                     inputValue = "";
                     passwordValue = "";
                     open = false;
+                    goto(`/room/${data.room.id}`, { invalidateAll: true });
                     return "Room created successfully";
                 },
                 error: (err) => String(err) || "Failed to create room",

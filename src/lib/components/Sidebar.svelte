@@ -1,15 +1,15 @@
 <script lang="ts">
     import { goto } from "$app/navigation";
     import { createPlaylistActions, openCtxMenu } from "$lib/ctxmenu";
-    import type { SelectRoomWithMembers } from "$lib/db/schema";
     import type { UserData } from "$lib/discord/types";
     import { playlistsCache } from "$lib/stores";
+    import { userRoomStore } from "$lib/stores/userRoom";
     import type { Component } from "svelte";
     import SolarMusicLibraryLinear from "~icons/solar/music-library-linear";
     import SolarUsersGroupRoundedLinear from "~icons/solar/users-group-rounded-linear";
     import Tooltip from "./ui/Tooltip.svelte";
 
-    let { user, userRoom }: { user: UserData | null; userRoom: SelectRoomWithMembers | null } = $props();
+    let { user }: { user: UserData | null } = $props();
 
     interface Item {
         name: string;
@@ -24,10 +24,10 @@
             href: "/playlist",
         },
         {
-            name: userRoom ? "Active Room" : "Rooms",
+            name: $userRoomStore ? "Active Room" : "Rooms",
             icon: SolarUsersGroupRoundedLinear,
             href: "/room",
-            color: userRoom ? "text-green-500" : "",
+            color: $userRoomStore ? "text-green-500" : "",
         },
     ]);
 

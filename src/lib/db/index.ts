@@ -21,7 +21,7 @@ export async function getUser(db: DB, id: string) {
     return db.query.userTable.findFirst({ where: eq(schema.userTable.userId, id) });
 }
 
-export async function getUserRoom(db: DB, id: string): Promise<schema.SelectRoomWithMembers | null> {
+export async function getUserRoom(db: DB, id: string): Promise<schema.SelectRoom | null> {
     const user = await db.query.userTable.findFirst({
         where: eq(schema.userTable.userId, id),
         with: {
@@ -33,7 +33,7 @@ export async function getUserRoom(db: DB, id: string): Promise<schema.SelectRoom
     const roomId = user?.hostedRooms?.[0]?.id ?? user?.joinedRooms?.[0]?.roomId;
     if (!roomId) return null;
 
-    return await getRoom(db, roomId);
+    return await getRoom(db, roomId, false);
 }
 
 export async function createPlaylist(db: DB, userId: string, name: string): Promise<schema.InsertPlaylist> {
@@ -103,11 +103,15 @@ export async function getRooms(db: DB): Promise<schema.SelectRoomWithMembers[]> 
     return roomsWithMembers;
 }
 
-export async function getRoom(db: DB, id: string): Promise<schema.SelectRoomWithMembers | null> {
+export function getRoom(db: DB, id: string): Promise<schema.SelectRoomWithMembers | null>;
+export function getRoom(db: DB, id: string, withMembers: true): Promise<schema.SelectRoomWithMembers | null>;
+export function getRoom(db: DB, id: string, withMembers: false): Promise<schema.SelectRoom | null>;
+export async function getRoom(db: DB, id: string, withMembers: boolean = true): Promise<schema.SelectRoomWithMembers | schema.SelectRoom | null> {
     const room = await db.query.roomTable.findFirst({ where: eq(schema.roomTable.id, id) });
     if (!room) return null;
+    if (!withMembers) return room;
     const members = await db.query.roomMemberTable.findMany({ where: eq(schema.roomMemberTable.roomId, id) });
-    return { ...room, members: members.map((m) => m.userData) };
+    return { ...room, members: members.map((m) => m.userData) } as schema.SelectRoomWithMembers;
 }
 
 export async function createRoom(db: DB, name: string, password: string, hostUser: UserData, isPublic: boolean = true) {
