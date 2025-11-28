@@ -179,7 +179,7 @@
 <ul class="mt-2 flex list-none flex-col items-start justify-center gap-2 py-2 md:mt-5 md:py-5" class:!mt-20={playlistSongs.length <= 0}>
     {#if playlistSongs.length <= 0}
         <div in:fade={{ duration: 100 }} class="flex size-full items-center justify-center">
-            <div in:fade={{ duration: 100 }} class="flex flex-col items-center justify-center gap-2">
+            <div class="flex flex-col items-center justify-center gap-2">
                 <SolarConfoundedCircleLinear class="size-10 text-slate-400 md:size-15" />
                 <p class="text-lg text-slate-400 md:text-xl">Playlist is empty</p>
             </div>

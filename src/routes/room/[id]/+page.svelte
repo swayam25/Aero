@@ -108,17 +108,29 @@
     }
 
     $effect(() => {
-        const channel = createNormalizedChannel(`room-${data.room.id}-updates`)
-            .on("postgres_changes", { event: "UPDATE", schema: "public", table: "room", filter: `id=eq.${data.room.id}` }, () => {
-                invalidateAll();
-            })
-            .on("postgres_changes", { event: "DELETE", schema: "public", table: "room", filter: `id=eq.${data.room.id}` }, () => {
-                if (data.room.hostUserId !== data.user?.id) {
-                    toast.info("This room has been deleted");
-                    goto("/room", { invalidateAll: true });
-                }
-            })
-            .subscribe();
+        const channel = createNormalizedChannel(`room-${data.room.id}-updates`);
+        channel.on("postgres_changes", { event: "UPDATE", schema: "public", table: "room", filter: `id=eq.${data.room.id}` }, () => {
+            invalidateAll();
+        });
+        channel.on("postgres_changes", { event: "DELETE", schema: "public", table: "room", filter: `id=eq.${data.room.id}` }, () => {
+            if (data.room.hostUserId !== data.user?.id) {
+                goto("/room", { invalidateAll: true });
+            }
+        });
+        channel.on("postgres_changes", { event: "*", schema: "public", table: "room_member", filter: `room_id=eq.${data.room.id}` }, () => {
+            invalidateAll();
+        });
+        if (data.room.members.length > 0) {
+            console.log(data.room.members.map((m) => m.id).join(","));
+            channel.on(
+                "postgres_changes",
+                { event: "DELETE", schema: "public", table: "room_member", filter: `user_id=in.(${data.room.members.map((m) => m.id).join(",")})` },
+                () => {
+                    invalidateAll();
+                },
+            );
+        }
+        channel.subscribe();
 
         return () => {
             channel.unsubscribe();
@@ -266,7 +278,7 @@
 <ul class="mt-2 flex list-none flex-col items-start justify-center gap-2 py-2 md:mt-5 md:py-5" class:!mt-20={data.room.members.length <= 0}>
     {#if data.room.members.length <= 0}
         <div in:fade={{ duration: 100 }} class="flex size-full items-center justify-center">
-            <div in:fade={{ duration: 100 }} class="flex flex-col items-center justify-center gap-2">
+            <div class="flex flex-col items-center justify-center gap-2">
                 <SolarConfoundedCircleLinear class="size-10 text-slate-400 md:size-15" />
                 <p class="text-lg text-slate-400 md:text-xl">No members yet</p>
             </div>
