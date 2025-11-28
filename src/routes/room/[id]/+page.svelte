@@ -1,11 +1,14 @@
 <script lang="ts">
-    import { goto, invalidateAll } from "$app/navigation";
+    import { invalidateAll } from "$app/navigation";
     import Badge from "$lib/components/ui/Badge.svelte";
     import Button from "$lib/components/ui/Button.svelte";
     import Seo from "$lib/components/ui/Seo.svelte";
     import Switch from "$lib/components/ui/Switch.svelte";
     import Tooltip from "$lib/components/ui/Tooltip.svelte";
+    import type { SelectRoomMember } from "$lib/db/schema";
+    import type { UserData } from "$lib/discord/types";
     import { isJoiningRoom, showJoinRoomPopup, showRoomDeletePopup, showRoomRenamePopup } from "$lib/stores";
+    import { userRoomStore } from "$lib/stores/userRoom";
     import { createNormalizedChannel } from "$lib/supabase/channel";
     import { toast } from "svelte-sonner";
     import { fade, fly } from "svelte/transition";
@@ -23,6 +26,7 @@
     let animateAvatar: boolean = $state(false);
     let enableToggleBtn: boolean = $state(true);
     let isPublic: boolean = $derived(data.room.isPublic);
+    let members: UserData[] = $derived(data.room.members);
 
     async function toggleRoomVisibility() {
         toast.promise(
@@ -112,19 +116,21 @@
         channel.on("postgres_changes", { event: "UPDATE", schema: "public", table: "room", filter: `id=eq.${data.room.id}` }, () => {
             invalidateAll();
         });
-        channel.on("postgres_changes", { event: "DELETE", schema: "public", table: "room", filter: `id=eq.${data.room.id}` }, () => {
-            if (data.room.hostUserId !== data.user?.id) {
-                goto("/room", { invalidateAll: true });
-            }
-        });
-        channel.on("postgres_changes", { event: "*", schema: "public", table: "room_member", filter: `room_id=eq.${data.room.id}` }, () => {
-            invalidateAll();
-        });
-        if (data.room.members.length > 0) {
-            console.log(data.room.members.map((m) => m.id).join(","));
+        if ($userRoomStore) {
             channel.on(
                 "postgres_changes",
-                { event: "DELETE", schema: "public", table: "room_member", filter: `user_id=in.(${data.room.members.map((m) => m.id).join(",")})` },
+                { event: "*", schema: "public", table: "room_member", filter: `room_id=eq.${data.room.id}` },
+                (payload) => {
+                    members = payload.new
+                        ? [...members, (payload.new as SelectRoomMember).userData]
+                        : members.filter((m) => m.id !== (payload.old as SelectRoomMember).userData.id);
+                },
+            );
+        }
+        if (members.length > 0) {
+            channel.on(
+                "postgres_changes",
+                { event: "DELETE", schema: "public", table: "room_member", filter: `user_id=in.(${members.map((m) => m.id).join(",")})` },
                 () => {
                     invalidateAll();
                 },
@@ -239,7 +245,7 @@
                 </Button>
             </Tooltip>
             {#if data.room.hostUserId !== data.user?.id}
-                {@const isMember = data.room.members.some((member) => member.id === data.user?.id)}
+                {@const isMember = members.some((member) => member.id === data.user?.id)}
                 <Tooltip content={isMember ? "Leave" : "Join"} side="bottom">
                     <Button
                         size="icon"
@@ -275,8 +281,8 @@
     </div>
 </div>
 
-<ul class="mt-2 flex list-none flex-col items-start justify-center gap-2 py-2 md:mt-5 md:py-5" class:!mt-20={data.room.members.length <= 0}>
-    {#if data.room.members.length <= 0}
+<ul class="mt-2 flex list-none flex-col items-start justify-center gap-2 py-2 md:mt-5 md:py-5" class:!mt-20={members.length <= 0}>
+    {#if members.length <= 0}
         <div in:fade={{ duration: 100 }} class="flex size-full items-center justify-center">
             <div class="flex flex-col items-center justify-center gap-2">
                 <SolarConfoundedCircleLinear class="size-10 text-slate-400 md:size-15" />
@@ -284,7 +290,7 @@
             </div>
         </div>
     {:else}
-        {#each data.room.members as member (member.id)}
+        {#each members as member (member.id)}
             <a
                 in:fade={{ duration: 100 }}
                 aria-label={member.global_name}
