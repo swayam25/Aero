@@ -1,6 +1,7 @@
 import { goto, invalidateAll } from "$app/navigation";
 import type { InsertPlaylist, SelectRoom } from "$lib/db/schema";
 import { addToQueue, enhanceSong, play, store as playerStore, removeFromQueue, togglePause } from "$lib/player";
+import { joinRoomAPI } from "$lib/room";
 import { isJoiningRoom, playlistsCache, showJoinRoomPopup, showPlDeletePopup, showPlRenamePopup } from "$lib/stores";
 import { toast } from "svelte-sonner";
 import { get } from "svelte/store";
@@ -417,16 +418,9 @@ export function createRoomActions(room: SelectRoom, isHost: boolean): CtxAction[
                             (async () => {
                                 isJoiningRoom.set(true);
                                 try {
-                                    const resp = await fetch(`/api/room/${room.id}`, {
-                                        method: "POST",
-                                        headers: {
-                                            "Content-Type": "application/json",
-                                        },
-                                        body: JSON.stringify({ key: "join", value: { password: "" } }),
-                                    });
-                                    const respData = await resp.json();
-                                    if (!resp.ok) throw new Error(respData.error || "Failed to join room");
-                                    return respData;
+                                    const resp = await joinRoomAPI(room.id, "");
+                                    if ("error" in resp) throw new Error(resp.error || "Failed to join room");
+                                    return resp;
                                 } finally {
                                     isJoiningRoom.set(false);
                                 }

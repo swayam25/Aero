@@ -2,6 +2,7 @@
     import { goto } from "$app/navigation";
     import DialogPopup from "$lib/components/ui/DialogPopup.svelte";
     import Input from "$lib/components/ui/Input.svelte";
+    import { joinRoomAPI } from "$lib/room";
     import { hideJoinRoomPopup, isCreatingRoom, isJoiningRoom, store } from "$lib/stores";
     import { toast } from "svelte-sonner";
     import SolarLoginLinear from "~icons/solar/login-linear";
@@ -19,16 +20,9 @@
             (async () => {
                 $isJoiningRoom = true;
                 try {
-                    const resp = await fetch(`/api/room/${roomID}`, {
-                        method: "POST",
-                        headers: {
-                            "Content-Type": "application/json",
-                        },
-                        body: JSON.stringify({ key: "join", value: { password: roomPass } }),
-                    });
-                    const respData = await resp.json();
-                    if (!resp.ok) throw new Error(respData.error || "Failed to join room");
-                    return respData;
+                    const resp = await joinRoomAPI(roomID, roomPass);
+                    if ("error" in resp) throw new Error(resp.error || "Failed to join room");
+                    return resp;
                 } finally {
                     $isJoiningRoom = false;
                 }

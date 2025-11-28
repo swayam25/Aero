@@ -2,6 +2,7 @@
     import { goto, invalidateAll } from "$app/navigation";
     import DialogPopup from "$lib/components/ui/DialogPopup.svelte";
     import Input from "$lib/components/ui/Input.svelte";
+    import { createRoomAPI } from "$lib/room";
     import { isCreatingRoom, isJoiningRoom } from "$lib/stores";
     import { type Snippet } from "svelte";
     import { toast } from "svelte-sonner";
@@ -31,17 +32,10 @@
             (async () => {
                 $isCreatingRoom = true;
                 try {
-                    const resp = await fetch("/api/room", {
-                        method: "POST",
-                        headers: {
-                            "Content-Type": "application/json",
-                        },
-                        body: JSON.stringify({ key: "create_room", value: { name: roomName, password: roomPass, isPublic } }),
-                    });
-                    const respData = await resp.json();
-                    if (!resp.ok) throw new Error(respData.error || "Failed to create room");
+                    const resp = await createRoomAPI(roomName, roomPass, isPublic);
+                    if ("error" in resp) throw new Error(resp.error || "Failed to create room");
                     await invalidateAll();
-                    return respData;
+                    return resp;
                 } finally {
                     $isCreatingRoom = false;
                 }
