@@ -1,4 +1,5 @@
 <script lang="ts">
+    import { goto } from "$app/navigation";
     import BottomBar from "$lib/components/BottomBar.svelte";
     import Lyrics from "$lib/components/Lyrics.svelte";
     import MobilePlayerDrawers from "$lib/components/mobile/MobileDrawers.svelte";
@@ -126,6 +127,9 @@
                 channel.on("postgres_changes", { event: "DELETE", schema: "public", table: "room", filter: `id=eq.${$userRoomStore.id}` }, () => {
                     if ($userRoomStore?.hostUserData.id !== data.user.id) {
                         toast.info(`${$userRoomStore?.name} room has been deleted`);
+                    }
+                    if (window.location.pathname.includes($userRoomStore.id!)) {
+                        goto("/room", { invalidateAll: true });
                     }
                     userRoomStore.clear();
                 });

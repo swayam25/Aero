@@ -1,30 +1,25 @@
 import { supabase } from "$lib/supabase";
 import type { RealtimeChannel, RealtimeChannelOptions } from "@supabase/supabase-js";
 
-// local camelize utilities
 function camelize(str: string): string {
     return str.replace(/_([a-z])/g, (g) => g[1].toUpperCase());
 }
 
+// Only camelize the top-level keys of an object and return values as-is (no deep recursion).
 function camelizeKeys<T = any>(input: unknown): T {
     if (input === null || input === undefined) return input as T;
-    if (Array.isArray(input)) {
-        return (input as any[]).map((v) => camelizeKeys(v)) as unknown as T;
+    if (Array.isArray(input) || typeof input !== "object") return input as T;
+    const obj = input as Record<string, unknown>;
+    const out: Record<string, unknown> = {};
+    for (const key of Object.keys(obj)) {
+        const camelKey = camelize(key);
+        out[camelKey] = obj[key]; // Do not recurse into values: keep nested objects/arrays as-is.
     }
-    if (typeof input === "object") {
-        const obj = input as Record<string, unknown>;
-        const out: Record<string, unknown> = {};
-        for (const key of Object.keys(obj)) {
-            const camelKey = camelize(key);
-            const value = obj[key];
-            out[camelKey] = camelizeKeys(value);
-        }
-        return out as T;
-    }
-    return input as T;
+    return out as T;
 }
 
-// Create a wrapper around a Supabase Realtime channel that normalizes incoming payload keys (snake_case -> camelCase) automatically before calling event handlers. The wrapper returns a Proxy to maintain API compatibility and keep chaining behavior.
+// Create a wrapper around a Supabase Realtime channel that normalizes incoming payload keys (snake_case -> camelCase) automatically before calling event handlers.
+// The wrapper returns a Proxy to maintain API compatibility and keep chaining behavior.
 export function createNormalizedChannel(name: string, options?: RealtimeChannelOptions): RealtimeChannel {
     const channel: any = supabase.channel(name, options);
     const proxy = new Proxy(channel, {

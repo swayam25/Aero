@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { goto, invalidateAll } from "$app/navigation";
+    import { invalidateAll } from "$app/navigation";
     import AlertPopup from "$lib/components/ui/AlertPopup.svelte";
     import DialogPopup from "$lib/components/ui/DialogPopup.svelte";
     import Input from "$lib/components/ui/Input.svelte";
@@ -33,9 +33,6 @@
             {
                 loading: "Deleting room...",
                 success: (data) => {
-                    if (window.location.pathname.includes(roomID!)) {
-                        goto("/room", { invalidateAll: true });
-                    }
                     return "Room deleted successfully";
                 },
                 error: (err) => String(err) || "Failed to delete room",
