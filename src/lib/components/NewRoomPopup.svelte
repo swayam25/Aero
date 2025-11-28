@@ -104,7 +104,7 @@
         <button
             class="not-disabled:hover:bg-green-500/10! not-disabled:hover:text-green-500 disabled:cursor-not-allowed"
             onclick={createRoom}
-            disabled={!inputValue || $isCreatingRoom}
+            disabled={!inputValue.trim() || $isCreatingRoom}
             class:!cursor-progress={$isCreatingRoom}
         >
             <MaterialSymbolsAdd2Rounded class="size-5" />
