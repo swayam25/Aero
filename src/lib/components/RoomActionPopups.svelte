@@ -110,7 +110,7 @@
         />
     {/snippet}
     {#snippet actions()}
-        <Dialog.Close class="disabled:cursor-not-allowed" onclick={renameRoom} disabled={!inputValue}>
+        <Dialog.Close class="disabled:cursor-not-allowed" onclick={renameRoom} disabled={!inputValue.trim()}>
             <SolarRestartLinear class="size-5" />
             Rename
         </Dialog.Close>

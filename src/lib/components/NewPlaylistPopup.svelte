@@ -80,7 +80,7 @@
         <Dialog.Close
             class="not-disabled:hover:bg-green-500/10! not-disabled:hover:text-green-500 disabled:cursor-not-allowed"
             onclick={createPlaylist}
-            disabled={!inputValue}
+            disabled={!inputValue.trim()}
         >
             <MaterialSymbolsAdd2Rounded class="size-5" />
             Create
