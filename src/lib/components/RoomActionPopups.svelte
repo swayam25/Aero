@@ -3,6 +3,7 @@
     import AlertPopup from "$lib/components/ui/AlertPopup.svelte";
     import DialogPopup from "$lib/components/ui/DialogPopup.svelte";
     import Input from "$lib/components/ui/Input.svelte";
+    import { deleteRoomAPI, renameRoomAPI } from "$lib/room";
     import { hideRoomDeletePopup, hideRoomRenamePopup, store as popupStore } from "$lib/stores";
     import { AlertDialog, Dialog } from "bits-ui";
     import { toast } from "svelte-sonner";
@@ -16,19 +17,13 @@
     // Room actions
     async function deleteRoom() {
         const roomID = $popupStore.roomData?.id;
+        if (!roomID) return;
         hideRoomDeletePopup();
         toast.promise(
             (async () => {
-                const resp = await fetch(`/api/room`, {
-                    body: JSON.stringify({ id: roomID }),
-                    method: "DELETE",
-                    headers: {
-                        "Content-Type": "application/json",
-                    },
-                });
-                const respData = await resp.json();
-                if (!resp.ok) throw new Error(respData.error || "Failed to delete room");
-                return respData;
+                const resp = await deleteRoomAPI(roomID);
+                if ("error" in resp) throw new Error(resp.error || "Failed to delete room");
+                return resp;
             })(),
             {
                 loading: "Deleting room...",
@@ -42,21 +37,15 @@
 
     async function renameRoom() {
         const roomID = $popupStore.roomData?.id;
+        if (!roomID) return;
         const newName = inputValue.trim();
         hideRoomRenamePopup();
         inputValue = "";
         toast.promise(
             (async () => {
-                const resp = await fetch(`/api/room`, {
-                    body: JSON.stringify({ key: "rename_room", value: { roomID: roomID, name: newName } }),
-                    method: "POST",
-                    headers: {
-                        "Content-Type": "application/json",
-                    },
-                });
-                const respData = await resp.json();
-                if (!resp.ok) throw new Error(respData.error || "Failed to rename room");
-                return respData;
+                const resp = await renameRoomAPI(roomID, newName);
+                if ("error" in resp) throw new Error(resp.error || "Failed to rename room");
+                return resp;
             })(),
             {
                 loading: "Renaming room...",

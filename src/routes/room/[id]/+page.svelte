@@ -7,6 +7,7 @@
     import Tooltip from "$lib/components/ui/Tooltip.svelte";
     import type { SelectRoomMember } from "$lib/db/schema";
     import type { UserData } from "$lib/discord/types";
+    import { joinRoomAPI, leaveRoomAPI, toggleRoomVisibilityAPI } from "$lib/room";
     import { isJoiningRoom, showJoinRoomPopup, showRoomDeletePopup, showRoomRenamePopup } from "$lib/stores";
     import { userRoomStore } from "$lib/stores/userRoom";
     import { createNormalizedChannel } from "$lib/supabase/channel";
@@ -33,17 +34,10 @@
             (async () => {
                 enableToggleBtn = false;
                 try {
-                    const resp = await fetch(`/api/room/${data.room.id}`, {
-                        method: "POST",
-                        headers: {
-                            "Content-Type": "application/json",
-                        },
-                        body: JSON.stringify({ key: "toggle_visibility" }),
-                    });
-                    const respData = await resp.json();
-                    if (!resp.ok) throw new Error(respData.error || "Failed to toggle room visibility");
-                    isPublic = respData.isPublic;
-                    return respData;
+                    const resp = await toggleRoomVisibilityAPI(data.room.id);
+                    if ("error" in resp) throw new Error(resp.error || "Failed to toggle room visibility");
+                    isPublic = resp.isPublic;
+                    return resp;
                 } finally {
                     enableToggleBtn = true;
                 }
@@ -61,16 +55,9 @@
             (async () => {
                 $isJoiningRoom = true;
                 try {
-                    const resp = await fetch(`/api/room/${data.room.id}`, {
-                        method: "POST",
-                        headers: {
-                            "Content-Type": "application/json",
-                        },
-                        body: JSON.stringify({ key: "join", value: { password: "" } }),
-                    });
-                    const respData = await resp.json();
-                    if (!resp.ok) throw new Error(respData.error || "Failed to join room");
-                    return respData;
+                    const resp = await joinRoomAPI(data.room.id, "");
+                    if ("error" in resp) throw new Error(resp.error || "Failed to join room");
+                    return resp;
                 } finally {
                     $isJoiningRoom = false;
                 }
@@ -89,16 +76,9 @@
     async function leaveRoom() {
         toast.promise(
             (async () => {
-                const resp = await fetch(`/api/room/${data.room.id}`, {
-                    method: "POST",
-                    headers: {
-                        "Content-Type": "application/json",
-                    },
-                    body: JSON.stringify({ key: "leave" }),
-                });
-                const respData = await resp.json();
-                if (!resp.ok) throw new Error(respData.error || "Failed to leave room");
-                return respData;
+                const resp = await leaveRoomAPI(data.room.id);
+                if ("error" in resp) throw new Error(resp.error || "Failed to leave room");
+                return resp;
             })(),
             {
                 loading: "Leaving room...",

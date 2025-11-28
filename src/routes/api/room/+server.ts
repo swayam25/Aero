@@ -9,7 +9,7 @@ export const POST: RequestHandler = async ({ locals, request }) => {
     if (!user) return json({ error: "Unauthorized" }, { status: 401 });
 
     if (key === "create_room") {
-        const room = await createRoom(locals.db, value.name.substring(0, 20).trim(), value.password, user, value.isPublic);
+        const room = await createRoom(locals.db, value.name.substring(0, 20).trim(), value.password || "", user, value.isPublic);
         return json({ success: true, room });
     } else if (key === "rename_room") {
         await renameRoom(locals.db, value.roomID, value.name.substring(0, 20).trim());

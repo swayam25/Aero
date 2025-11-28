@@ -12,6 +12,7 @@
     import ContextMenu from "$lib/ctxmenu/components/ContextMenu.svelte";
     import type { InsertPlaylist, SelectRoom, SelectRoomMember } from "$lib/db/schema";
     import { store } from "$lib/player";
+    import { fetchRoomAPI } from "$lib/room";
     import { playlistsCache } from "$lib/stores";
     import { userRoomStore } from "$lib/stores/userRoom";
     import createNormalizedChannel from "$lib/supabase/channel";
@@ -139,16 +140,10 @@
                 { event: "*", schema: "public", table: "room_member", filter: `user_id=eq.${data.user.id}` },
                 async (payload) => {
                     const member = payload.new as SelectRoomMember;
-                    const resp = await fetch("/api/room/" + member.roomId, {
-                        method: "GET",
-                        headers: {
-                            "Content-Type": "application/json",
-                        },
-                    });
-                    if (resp.ok) {
-                        const respData = await resp.json();
-                        if (respData.room) {
-                            userRoomStore.set(respData.room as SelectRoom);
+                    if (member.roomId) {
+                        const room = await fetchRoomAPI(member.roomId);
+                        if (!("error" in room)) {
+                            userRoomStore.set(room);
                         }
                     }
                 },
