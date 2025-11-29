@@ -1,3 +1,4 @@
+import { addToQueueAPI, isRoomHost, playInRoomAPI, removeFromQueueAPI, sendPlayerRoomEvent, setQueueAPI } from "$lib/room";
 import { getThumbnailUrl } from "$lib/stores";
 import { get, writable } from "svelte/store";
 import YouTubePlayer from "youtube-player";
@@ -39,7 +40,7 @@ export const store = writable<PlayerStore>({
     showLyrics: false,
 });
 
-export async function init() {
+export function init() {
     const newPlayer = YouTubePlayer(document.getElementById("player-iframe") || "", { height: "0", width: "0" });
     newPlayer.on("stateChange", async (event) => {
         store.update((state) => {
@@ -54,7 +55,7 @@ export async function init() {
             return { ...state, state: stateMap[event.data as keyof typeof stateMap] as PlayerStore["state"] };
         });
         if (event.data === 0) {
-            await skip();
+            await skip(null, true); // Auto-skip when a song ends
         }
     });
     newPlayer.on("volumeChange", (event) => {
@@ -78,19 +79,25 @@ async function fetchLyrics() {
     }
 }
 
-export async function play(song: SongDetailed, fromQueue: boolean = false) {
+export async function play(song: SongDetailed, userId: string | null | undefined, fromQueue: boolean = false, fromRoom: boolean = false) {
     let { player } = get(store);
+
+    const isRmHost = isRoomHost(userId);
+    if (!fromRoom && !isRmHost) {
+        if (!player) init();
+        return;
+    }
 
     // Enhance song with thumbnails and update player metadata
     const enhancedSong = enhanceSong(song);
     store.update((state) => ({ ...state, meta: enhancedSong }));
 
     // Initialize player if not already
-    if (!player) await init();
+    if (!player) init();
 
     player = get(store).player;
     player?.loadVideoById(song.videoId);
-    if (!fromQueue) await addToQueue(song);
+    if (!fromQueue) await addToQueue(song, userId);
     player?.playVideo();
 
     // Continuously update current time and total duration
@@ -103,11 +110,16 @@ export async function play(song: SongDetailed, fromQueue: boolean = false) {
         }
         requestAnimationFrame(updateTime);
     };
+
+    if (isRmHost) {
+        await playInRoomAPI(enhancedSong);
+    }
+    sendPlayerRoomEvent(userId, "play", { queue: get(store).queue, nowPlaying: enhancedSong });
     await fetchLyrics();
     updateTime();
 }
 
-export async function playPlaylist(song: SongDetailed, plSongs: Promise<SongFull>[]) {
+export async function playPlaylist(song: SongDetailed, plSongs: Promise<SongFull>[], userId: string | null | undefined) {
     const songs = (await Promise.all(plSongs)).map((item) => fetchSongDetailed(item));
 
     let { player } = get(store);
@@ -117,10 +129,10 @@ export async function playPlaylist(song: SongDetailed, plSongs: Promise<SongFull
     store.update((state) => ({ ...state, meta: enhancedSong }));
 
     // Initialize player if not already
-    if (!player) await init();
+    if (!player) init();
 
     // Play the given song
-    await play(song);
+    await play(song, userId);
 
     // Split the playlist into two parts: songs after the given song and songs before it
     const songIndex = songs.findIndex((s) => s.videoId === song.videoId);
@@ -135,9 +147,12 @@ export async function playPlaylist(song: SongDetailed, plSongs: Promise<SongFull
         ...state,
         queue: reorderedPlaylist,
     }));
+
+    // Room
+    setQueueAPI(reorderedPlaylist);
 }
 
-export async function addToQueue(song: SongDetailed) {
+export async function addToQueue(song: SongDetailed, userId: string | null | undefined) {
     const player = get(store).player;
     if (!player) return { error: "No player instance" };
 
@@ -151,9 +166,15 @@ export async function addToQueue(song: SongDetailed) {
         state.queue.push(enhancedSong);
         return state;
     });
+
+    // Room
+    const isRmHost = isRoomHost(userId);
+    if (isRmHost) {
+        await addToQueueAPI(enhancedSong);
+    }
 }
 
-export async function removeFromQueue(song: SongDetailed) {
+export async function removeFromQueue(song: SongDetailed, userId: string | null | undefined) {
     const player = get(store).player;
     if (!player) return { error: "No player instance" };
 
@@ -162,24 +183,44 @@ export async function removeFromQueue(song: SongDetailed) {
         return state;
     });
     if (get(store).queue.length < 2) store.update((state) => ({ ...state, shuffle: false, showQueue: false }));
+
+    // Room
+    const isRmHost = isRoomHost(userId);
+    if (isRmHost) {
+        await removeFromQueueAPI(song.videoId);
+    }
 }
 
-export async function togglePause() {
+export function clearQueue() {
+    const player = get(store).player;
+    if (!player) return { error: "No player instance" };
+
+    store.update((state) => ({ ...state, queue: [], shuffle: false, showQueue: false }));
+}
+
+export async function togglePause(userId: string | null | undefined) {
     const player = get(store).player;
     if (!player) return { error: "No player instance" };
 
     const state = get(store).state;
     state === "playing" ? player.pauseVideo() : player.playVideo();
+
+    // Room
+    if (state === "playing") {
+        sendPlayerRoomEvent(userId, "pause");
+    } else {
+        sendPlayerRoomEvent(userId, "resume");
+    }
 }
 
-export async function setVolume(vol: number) {
+export function setVolume(vol: number) {
     const player = get(store).player;
     if (!player) return { error: "No player instance" };
 
     player.setVolume(vol);
 }
 
-export async function previous() {
+export async function previous(userId: string | null | undefined) {
     const player = get(store).player;
     if (!player) return { error: "No player instance" };
 
@@ -207,10 +248,11 @@ export async function previous() {
             player.playVideo();
         }
     }
+    sendPlayerRoomEvent(userId, "previous");
     await fetchLyrics();
 }
 
-export async function skip() {
+export async function skip(userId: string | null | undefined, auto: boolean = false) {
     const player = get(store).player;
     if (!player) return { error: "No player instance" };
 
@@ -247,10 +289,12 @@ export async function skip() {
         }
     }
     if (get(store).queue.length < 2) store.update((state) => ({ ...state, shuffle: false, showQueue: false }));
+
+    if (!auto) sendPlayerRoomEvent(userId, "skip");
     await fetchLyrics();
 }
 
-export async function setLoop(loop: PlayerStore["loop"]) {
+export function setLoop(loop: PlayerStore["loop"]) {
     const player = get(store).player;
     if (!player) return { error: "No player instance" };
 
@@ -258,18 +302,21 @@ export async function setLoop(loop: PlayerStore["loop"]) {
     store.update((state) => ({ ...state, loop }));
 }
 
-export async function seekTo(time: number) {
+export function seekTo(time: number, userId: string | null | undefined) {
     const player = get(store).player;
     if (!player) return { error: "No player instance" };
 
     player.seekTo(time, true);
+
+    // Rooms
+    sendPlayerRoomEvent(userId, "seek", { time: String(time) });
 }
 
-export async function toggleQueue() {
+export function toggleQueue() {
     store.update((state) => ({ ...state, showQueue: !state.showQueue, showLyrics: false }));
 }
 
-export async function toggleLyrics() {
+export function toggleLyrics() {
     store.update((state) => ({ ...state, showQueue: false, showLyrics: !state.showLyrics }));
 }
 

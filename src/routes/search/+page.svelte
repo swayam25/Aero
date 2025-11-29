@@ -50,7 +50,7 @@
                 {@const firstSong = enhanceSong(songs[0])}
                 <button
                     onclick={async () => {
-                        await play(songs[0]);
+                        await play(songs[0], data.user?.id);
                     }}
                     oncontextmenu={(e) => {
                         e.preventDefault();
@@ -77,7 +77,7 @@
                     {@const enhanced = enhanceSong(song)}
                     <button
                         onclick={async () => {
-                            await play(song);
+                            await play(song, data.user?.id);
                         }}
                         oncontextmenu={(e) => {
                             e.preventDefault();

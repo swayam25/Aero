@@ -1,4 +1,8 @@
 import type { SelectRoom } from "$lib/db/schema";
+import type { EnhancedSong } from "$lib/player/types";
+import { userRoomStore } from "$lib/stores/userRoom";
+import supabaseChannel from "$lib/supabase/channel";
+import { get } from "svelte/store";
 
 type APIResult<T = unknown> = { success: true } & T;
 
@@ -83,18 +87,48 @@ export async function leaveRoomAPI(roomId: string): Promise<{ success: true } | 
     return await postToRoom(roomId, "leave");
 }
 
-export async function addToQueueAPI(roomId: string, songId: string): Promise<{ success: true } | { error: string }> {
-    return await postToRoom(roomId, "add_to_queue", { songId });
+export async function playInRoomAPI(song: EnhancedSong): Promise<{ success: true } | { error: string }> {
+    const roomId = get(userRoomStore)?.id;
+    if (!roomId) return { error: "User is not in a room" };
+    return await postToRoom(roomId, "play", { song });
 }
 
-export async function removeFromQueueAPI(roomId: string, songId: string): Promise<{ success: true } | { error: string }> {
+export async function addToQueueAPI(song: EnhancedSong): Promise<{ success: true } | { error: string }> {
+    const roomId = get(userRoomStore)?.id;
+    if (!roomId) return { error: "User is not in a room" };
+    return await postToRoom(roomId, "add_to_queue", { song });
+}
+
+export async function removeFromQueueAPI(songId: string): Promise<{ success: true } | { error: string }> {
+    const roomId = get(userRoomStore)?.id;
+    if (!roomId) return { error: "User is not in a room" };
     return await postToRoom(roomId, "remove_from_queue", { songId });
 }
 
-export async function reorderQueueAPI(roomId: string, videoIds: string[]): Promise<{ success: true } | { error: string }> {
-    return await postToRoom(roomId, "reorder_queue", { videoIds });
+export async function setQueueAPI(songs: EnhancedSong[]): Promise<{ success: true } | { error: string }> {
+    const roomId = get(userRoomStore)?.id;
+    if (!roomId) return { error: "User is not in a room" };
+    return await postToRoom(roomId, "set_queue", { songs });
 }
 
 export async function toggleRoomVisibilityAPI(roomId: string): Promise<{ success: true; isPublic: boolean } | { error: string }> {
     return await postToRoom<{ isPublic: boolean }>(roomId, "toggle_visibility");
+}
+
+export function isRoomHost(userId: string | null | undefined): boolean {
+    const userRoom = get(userRoomStore);
+    if (userRoom && userId) {
+        return userRoom.hostUserId === userId;
+    } else {
+        return true;
+    }
+}
+
+export function sendPlayerRoomEvent(userId: string | null | undefined, event: string, payload: Object = {}): void {
+    const room = get(userRoomStore);
+    const isRmHost = isRoomHost(userId);
+    if (room && isRmHost) {
+        const roomChannel = supabaseChannel(`room:${room.id}-player-events`);
+        roomChannel.httpSend(event, payload);
+    }
 }

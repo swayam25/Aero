@@ -2,6 +2,7 @@
     import { createSongActions, openCtxMenu } from "$lib/ctxmenu";
     import type { UserData } from "$lib/discord/types";
     import { previous, seekTo, skip, store, togglePause } from "$lib/player";
+    import { userRoomStore } from "$lib/stores/userRoom";
     import { formatTime } from "$lib/utils/time";
     import SolarPauseCircleBold from "~icons/solar/pause-circle-bold";
     import SolarPlayCircleBold from "~icons/solar/play-circle-bold";
@@ -29,7 +30,8 @@
 
     function handleSeek(value: number) {
         isSeeking = true;
-        seekTo(value);
+        seekTo(value, user?.id);
+        $store.player?.playVideo();
         isSeeking = false;
     }
 
@@ -39,6 +41,15 @@
         const actions = createSongActions($store.meta, user?.id);
         openCtxMenu(e, actions);
     }
+
+    // Room
+    let isRoomHost: boolean = $derived.by(() => {
+        if ($userRoomStore && user) {
+            return $userRoomStore.hostUserId === user.id;
+        } else {
+            return true;
+        }
+    });
 </script>
 
 <div class="flex h-full w-full flex-col justify-between">
@@ -66,23 +77,23 @@
         <!-- Player Controls -->
         <div
             class="flex w-full max-w-sm flex-col items-center gap-6 transition-all"
-            class:opacity-80={$store.state === "buffering" || $store.state === "unstarted"}
-            class:pointer-events-none={$store.state === "unstarted"}
+            class:opacity-80={$store.state === "buffering" || $store.state === "unstarted" || !isRoomHost}
+            class:pointer-events-none={$store.state === "unstarted" || !isRoomHost}
         >
             <!-- Progress Slider -->
             <div class="flex w-full items-center gap-3">
                 <span class="min-w-10 text-center text-xs text-slate-300">{formatTime(currentTime)}</span>
-                <Slider max={$store.totalDuration} value={currentTime} class="flex-1" onChange={handleSeek} />
+                <Slider max={$store.totalDuration} value={currentTime} class="flex-1" onChange={$store.player?.pauseVideo} onStop={handleSeek} />
                 <span class="min-w-10 text-center text-xs text-slate-300">{formatTime($store.totalDuration)}</span>
             </div>
 
             <!-- Main Playback Controls -->
             <div class="flex items-center justify-center gap-6">
-                <button onclick={previous} class="size-12 opacity-80 transition-opacity hover:opacity-100">
+                <button onclick={() => previous(user?.id)} class="size-12 opacity-80 transition-opacity hover:opacity-100">
                     <SolarSkipPreviousBold class="size-full text-white" />
                 </button>
 
-                <button class="size-20 transition-colors duration-200 hover:text-sky-400" onclick={togglePause}>
+                <button class="size-20 transition-colors duration-200 hover:text-sky-400" onclick={() => togglePause(user?.id)}>
                     {#if $store.state === "playing"}
                         <SolarPauseCircleBold class="size-full text-white" />
                     {:else}
@@ -90,7 +101,7 @@
                     {/if}
                 </button>
 
-                <button onclick={skip} class="size-12 opacity-80 transition-opacity hover:opacity-100">
+                <button onclick={() => skip(user?.id)} class="size-12 opacity-80 transition-opacity hover:opacity-100">
                     <SolarSkipNextBold class="size-full text-white" />
                 </button>
             </div>

@@ -135,6 +135,10 @@ export async function removeRoomMember(db: DB, roomId: string, user: UserData) {
     await db.delete(schema.roomMemberTable).where(and(eq(schema.roomMemberTable.roomId, roomId), eq(schema.roomMemberTable.userId, user.id)));
 }
 
+export async function playRoom(db: DB, roomId: string, song: EnhancedSong) {
+    await db.update(schema.roomTable).set({ nowPlaying: song }).where(eq(schema.roomTable.id, roomId));
+}
+
 export async function addSongToQueue(db: DB, roomId: string, song: EnhancedSong) {
     const room = await db.query.roomTable.findFirst({ where: eq(schema.roomTable.id, roomId) });
     const queue = (room?.queue || []).filter((s) => s.videoId !== (song as any).videoId);
@@ -149,20 +153,14 @@ export async function removeSongFromQueue(db: DB, roomId: string, songID: string
     await db.update(schema.roomTable).set({ queue }).where(eq(schema.roomTable.id, roomId));
 }
 
+export async function setQueue(db: DB, roomId: string, songs: EnhancedSong[]) {
+    await db.update(schema.roomTable).set({ queue: songs }).where(eq(schema.roomTable.id, roomId));
+}
+
 export async function toggleRoomVisibility(db: DB, roomId: string) {
     const room = await db.query.roomTable.findFirst({ where: eq(schema.roomTable.id, roomId) });
     await db.update(schema.roomTable).set({ isPublic: !room!.isPublic }).where(eq(schema.roomTable.id, roomId));
     return !room!.isPublic;
-}
-
-export async function reorderQueue(db: DB, roomId: string, videoIds: string[]) {
-    const room = await db.query.roomTable.findFirst({ where: eq(schema.roomTable.id, roomId) });
-    const existing = room?.queue || [];
-    const reordered = videoIds.map((id) => existing.find((s) => s.videoId === id)).filter(Boolean);
-    await db
-        .update(schema.roomTable)
-        .set({ queue: reordered as any })
-        .where(eq(schema.roomTable.id, roomId));
 }
 
 export async function renameRoom(db: DB, roomId: string, name: string) {

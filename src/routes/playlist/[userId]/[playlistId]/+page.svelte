@@ -8,7 +8,7 @@
     import { createPlaylistSongActions, openCtxMenu } from "$lib/ctxmenu";
     import { enhanceSong, fetchSongDetailed, playPlaylist, store } from "$lib/player";
     import { isImportingPlaylist } from "$lib/stores";
-    import { createNormalizedChannel } from "$lib/supabase/channel";
+    import { supabaseChannel } from "$lib/supabase/channel";
     import { formatTime } from "$lib/utils/time";
     import { toast } from "svelte-sonner";
     import { expoOut } from "svelte/easing";
@@ -76,7 +76,7 @@
 
     // Sync playlist data with db
     $effect(() => {
-        const channel = createNormalizedChannel("playlist-changes-playlists")
+        const channel = supabaseChannel("playlist-changes-playlists")
             .on(
                 "postgres_changes",
                 {
@@ -216,6 +216,7 @@
                                     await playPlaylist(
                                         fetchSongDetailed(song),
                                         playlistObject.map((item) => item.song),
+                                        data.loginUser?.id || null,
                                     );
                                 }}
                                 in:fly={{ duration: 500, easing: expoOut, x: -100, y: 0 }}
