@@ -11,11 +11,12 @@
     import { store as ctxStore, setupShortcuts } from "$lib/ctxmenu";
     import ContextMenu from "$lib/ctxmenu/components/ContextMenu.svelte";
     import type { InsertPlaylist, SelectRoom, SelectRoomMember } from "$lib/db/schema";
-    import { store } from "$lib/player";
-    import { fetchRoomAPI } from "$lib/room";
+    import { clearQueue, play, previous, seekTo, skip, store } from "$lib/player";
+    import type { EnhancedSong } from "$lib/player/types";
+    import { fetchRoomAPI, sendPlayerRoomEvent } from "$lib/room";
     import { playlistsCache } from "$lib/stores";
     import { userRoomStore } from "$lib/stores/userRoom";
-    import createNormalizedChannel from "$lib/supabase/channel";
+    import supabaseChannel from "$lib/supabase/channel";
     import { createMobileMediaQuery } from "$lib/utils/mobile";
     import type { RealtimeChannel } from "@supabase/supabase-js";
     import { onMount, type Snippet } from "svelte";
@@ -63,7 +64,7 @@
         let plChannel: RealtimeChannel;
 
         if (data.user) {
-            plChannel = createNormalizedChannel("playlist-changes-layout")
+            plChannel = supabaseChannel("playlist-changes-layout")
                 .on(
                     "postgres_changes",
                     {
@@ -111,17 +112,31 @@
     });
 
     // Room data
+    let isRoomHost: boolean = $derived.by(() => {
+        if ($userRoomStore && data.user) {
+            return $userRoomStore.hostUserId === data.user.id;
+        } else {
+            return true;
+        }
+    });
+    // Sync user room data initially
     userRoomStore.set(data.userRoom);
+    if (data.userRoom) {
+        $store.queue = data.userRoom.queue || [];
+    }
     $effect(() => {
         let channel: RealtimeChannel;
         if (data.user) {
-            channel = createNormalizedChannel("user-room-global-events");
+            channel = supabaseChannel("user-room-global-events");
+            // If user creates a room (becomes host)
             channel.on(
                 "postgres_changes",
                 { event: "INSERT", schema: "public", table: "room", filter: `host_user_id=eq.${data.user.id}` },
                 (payload) => {
                     const newRoom = payload.new as SelectRoom;
                     userRoomStore.set(newRoom);
+                    clearQueue();
+                    $store.queue = $userRoomStore?.queue || [];
                 },
             );
             if ($userRoomStore && $userRoomStore.id) {
@@ -135,6 +150,7 @@
                     userRoomStore.clear();
                 });
             }
+            // If user joins a room
             channel.on(
                 "postgres_changes",
                 { event: "*", schema: "public", table: "room_member", filter: `user_id=eq.${data.user.id}` },
@@ -144,6 +160,8 @@
                         const room = await fetchRoomAPI(member.roomId);
                         if (!("error" in room)) {
                             userRoomStore.set(room);
+                            clearQueue();
+                            $store.queue = $userRoomStore?.queue || [];
                         }
                     }
                 },
@@ -154,6 +172,18 @@
                     { event: "DELETE", schema: "public", table: "room_member", filter: `user_id=eq.${data.user.id}` },
                     () => {
                         userRoomStore.clear();
+                        clearQueue();
+                    },
+                );
+            }
+            // Player events (only for members)
+            if (!isRoomHost && $userRoomStore && $userRoomStore.id) {
+                channel.on(
+                    "postgres_changes",
+                    { event: "UPDATE", schema: "public", table: "room", filter: `id=eq.${$userRoomStore?.id}` },
+                    (payload) => {
+                        const updatedRoom = payload.new as SelectRoom;
+                        $store.queue = updatedRoom.queue || [];
                     },
                 );
             }
@@ -161,6 +191,61 @@
         }
         return () => {
             if (channel) channel.unsubscribe();
+        };
+    });
+
+    // Periodic sync of player state (host -> members)
+    onMount(() => {
+        let syncTimer: number | undefined;
+        const SYNC_INTERVAL = 10000; // 10 seconds
+
+        function startSyncInterval() {
+            if (syncTimer) clearInterval(syncTimer);
+
+            syncTimer = window.setInterval(() => {
+                if (data.user && $userRoomStore && $userRoomStore.id && $store.meta && $store.player && isRoomHost) {
+                    if ($store.state === "playing") {
+                        sendPlayerRoomEvent(data.user.id, "seek", { time: $store.currentTime });
+                    }
+                }
+            }, SYNC_INTERVAL);
+        }
+        startSyncInterval();
+        return () => {
+            if (syncTimer) clearInterval(syncTimer);
+        };
+    });
+
+    // Room player channel
+    $effect(() => {
+        let roomChannel: RealtimeChannel;
+        if (data.user && $userRoomStore && $userRoomStore.id && !isRoomHost) {
+            roomChannel = supabaseChannel(`room:${$userRoomStore.id}-player-events`)
+                .on("broadcast", { event: "play" }, (payload) => {
+                    const payloadData = payload.payload as { queue: EnhancedSong[]; nowPlaying: EnhancedSong };
+                    $store.queue = payloadData.queue;
+                    play(payloadData.nowPlaying, data.user?.id, true, true);
+                })
+                .on("broadcast", { event: "pause" }, () => {
+                    $store.player?.pauseVideo();
+                })
+                .on("broadcast", { event: "resume" }, () => {
+                    $store.player?.playVideo();
+                })
+                .on("broadcast", { event: "skip" }, () => {
+                    skip(data.user?.id);
+                })
+                .on("broadcast", { event: "previous" }, () => {
+                    previous(data.user?.id);
+                })
+                .on("broadcast", { event: "seek" }, (payload) => {
+                    const { time } = payload.payload as { time: number };
+                    seekTo(time, data.user?.id);
+                })
+                .subscribe();
+        }
+        return () => {
+            if (roomChannel) roomChannel.unsubscribe();
         };
     });
 

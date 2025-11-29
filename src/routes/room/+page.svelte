@@ -6,7 +6,7 @@
     import { createRoomActions, openCtxMenu } from "$lib/ctxmenu";
     import type { SelectRoom } from "$lib/db/schema";
     import { isCreatingRoom, isJoiningRoom, showJoinRoomPopup } from "$lib/stores";
-    import { createNormalizedChannel } from "$lib/supabase/channel";
+    import { supabaseChannel } from "$lib/supabase/channel";
     import { expoOut } from "svelte/easing";
     import { fade, fly } from "svelte/transition";
     import MaterialSymbolsAdd2Rounded from "~icons/material-symbols/add-2-rounded";
@@ -19,7 +19,7 @@
     let publicRooms: SelectRoom[] = $derived(rooms.filter((room) => room.isPublic));
 
     $effect(() => {
-        const channel = createNormalizedChannel("room-changes-rooms")
+        const channel = supabaseChannel("room-changes-rooms")
             .on(
                 "postgres_changes",
                 {

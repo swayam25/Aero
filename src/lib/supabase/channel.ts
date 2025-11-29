@@ -20,7 +20,7 @@ function camelizeKeys<T = any>(input: unknown): T {
 
 // Create a wrapper around a Supabase Realtime channel that normalizes incoming payload keys (snake_case -> camelCase) automatically before calling event handlers.
 // The wrapper returns a Proxy to maintain API compatibility and keep chaining behavior.
-export function createNormalizedChannel(name: string, options?: RealtimeChannelOptions): RealtimeChannel {
+export function supabaseChannel(name: string, options?: RealtimeChannelOptions): RealtimeChannel {
     const channel: any = supabase.channel(name, options);
     const proxy = new Proxy(channel, {
         get(target, prop: string | symbol, receiver) {
@@ -47,4 +47,4 @@ export function createNormalizedChannel(name: string, options?: RealtimeChannelO
     return proxy as RealtimeChannel;
 }
 
-export default createNormalizedChannel;
+export default supabaseChannel;

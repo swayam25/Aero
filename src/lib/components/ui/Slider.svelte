@@ -11,8 +11,18 @@
         class?: string;
         disabled?: boolean;
         onChange?: (value: number) => void;
+        onStop?: (value: number) => void;
     }
-    let { value = $bindable(), min = 0, max = 100, step = 1, class: className, disabled = false, onChange = () => {} }: Props = $props();
+    let {
+        value = $bindable(),
+        min = 0,
+        max = 100,
+        step = 1,
+        class: className,
+        disabled = false,
+        onChange = () => {},
+        onStop = () => {},
+    }: Props = $props();
 </script>
 
 <div class={cn("group", className)}>
@@ -28,5 +38,6 @@
         range="min"
         {disabled}
         on:change={(e) => onChange(e.detail.values[0])}
+        on:stop={(e) => onStop(e.detail.values[0])}
     />
 </div>

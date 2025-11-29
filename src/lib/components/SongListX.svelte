@@ -54,7 +54,7 @@
                 <button
                     class="group/btn flex shrink-0 cursor-pointer flex-col items-start justify-center gap-2 rounded-lg p-3 transition-colors duration-200 hover:bg-slate-800"
                     onclick={async () => {
-                        await play(song);
+                        await play(song, user?.id);
                     }}
                     oncontextmenu={async(e) => {
                         e.preventDefault();

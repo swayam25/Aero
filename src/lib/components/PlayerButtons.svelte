@@ -1,8 +1,8 @@
 <script lang="ts">
     import type { UserData } from "$lib/discord/types";
     import { setVolume, store, toggleLyrics, togglePause, toggleQueue } from "$lib/player";
+    import { userRoomStore } from "$lib/stores/userRoom";
     import { cn } from "$lib/utils/cn";
-    import { onMount } from "svelte";
     import { toast } from "svelte-sonner";
     import SolarDownloadMinimalisticLinear from "~icons/solar/download-minimalistic-linear";
     import SolarMicrophoneLargeLinear from "~icons/solar/microphone-large-linear";
@@ -47,6 +47,15 @@
         class: className = "",
     }: Props = $props();
 
+    // Room
+    let isRoomHost: boolean = $derived.by(() => {
+        if ($userRoomStore && user) {
+            return $userRoomStore.hostUserId === user.id;
+        } else {
+            return true;
+        }
+    });
+
     // Update volume
     let volume: number = $state(100);
     $effect(() => {
@@ -57,21 +66,23 @@
         if (localStorage) localStorage.setItem("volume", value.toString());
         setVolume(value);
     }
-    onMount(() => {
+    $effect(() => {
         if (localStorage) {
             volume = localStorage.getItem("volume") ? Number(localStorage.getItem("volume")) : 100;
         }
-        document.addEventListener("keydown", (e: KeyboardEvent) => {
-            if (document.activeElement && document.activeElement.tagName.toLowerCase() === "input") {
-                return;
-            }
-            if ($store.meta) {
-                if (e.key === " " || e.key === "k") {
-                    e.preventDefault();
-                    togglePause();
+        if (isRoomHost) {
+            document.addEventListener("keydown", (e: KeyboardEvent) => {
+                if (document.activeElement && document.activeElement.tagName.toLowerCase() === "input") {
+                    return;
                 }
-            }
-        });
+                if ($store.meta) {
+                    if (e.key === " " || e.key === "k") {
+                        e.preventDefault();
+                        togglePause(user?.id);
+                    }
+                }
+            });
+        }
     });
 
     // Loop
@@ -180,7 +191,12 @@
     {/if}
 
     <!-- Loop -->
-    <button onclick={handleLoop} class={cn(iconSize, "cursor-pointer opacity-80 transition-opacity hover:opacity-100")}>
+    <button
+        onclick={handleLoop}
+        class={cn(iconSize, "cursor-pointer opacity-80 transition-opacity not-disabled:hover:opacity-100")}
+        disabled={!isRoomHost}
+        class:!cursor-not-allowed={!isRoomHost}
+    >
         {#if $store.loop === "none"}
             <SolarRepeatLinear class="size-full text-white" />
         {:else if $store.loop === "single"}
@@ -215,8 +231,8 @@
         onclick={handleShuffle}
         class={cn(iconSize, "cursor-pointer transition-opacity not-disabled:hover:opacity-100")}
         class:opacity-80={!$store.shuffle}
-        class:!cursor-not-allowed={$store.queue.length < 2}
-        disabled={$store.queue.length < 2}
+        disabled={$store.queue.length < 2 || !isRoomHost}
+        class:!cursor-not-allowed={$store.queue.length < 2 || !isRoomHost}
     >
         <SolarShuffleLinear class={`size-full ${$store.shuffle ? "text-sky-500" : "text-white"}`} />
     </button>

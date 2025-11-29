@@ -4,18 +4,29 @@
     import { createSongActions, openCtxMenu } from "$lib/ctxmenu";
     import type { UserData } from "$lib/discord/types";
     import { play, store } from "$lib/player";
+    import { setQueueAPI } from "$lib/room";
+    import { userRoomStore } from "$lib/stores/userRoom";
     import { fade } from "svelte/transition";
     import HugeiconsCd from "~icons/hugeicons/cd";
 
     let { user }: { user: UserData | null } = $props();
 
-    function handleReorder(fromIndex: number, toIndex: number) {
+    async function handleReorder(fromIndex: number, toIndex: number) {
         store.update((s) => {
             const [movedItem] = s.queue.splice(fromIndex, 1);
             s.queue.splice(toIndex, 0, movedItem);
             return { ...s };
         });
     }
+
+    // Room
+    let isRoomHost: boolean = $derived.by(() => {
+        if ($userRoomStore && user) {
+            return $userRoomStore.hostUserId === user.id;
+        } else {
+            return true;
+        }
+    });
 </script>
 
 <div in:fade={{ duration: 200 }} class="w-full rounded-lg bg-slate-900 md:h-full">
@@ -25,11 +36,19 @@
 
     <div class="h-[calc(100vh-232px)] overflow-x-hidden overflow-y-auto px-2 pb-2 md:px-5 md:pb-5">
         {#each $store.queue as song, idx (song.videoId)}
-            <Draggable items={$store.queue} onReorder={handleReorder} class="w-full">
+            <Draggable
+                items={$store.queue}
+                onReorder={handleReorder}
+                onDragEnd={async () => {
+                    await setQueueAPI($store.queue);
+                }}
+                class="w-full"
+                disabled={!isRoomHost}
+            >
                 {#snippet children({ isDragging, dragIndex }: { isDragging: boolean; dragIndex: number })}
                     <button
                         onclick={async () => {
-                            await play(song, true);
+                            await play(song, user?.id, true);
                         }}
                         oncontextmenu={(e) => {
                             e.preventDefault();

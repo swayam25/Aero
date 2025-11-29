@@ -151,7 +151,7 @@
                 <!-- Play/Pause -->
                 <button
                     class="size-15 cursor-pointer transition-colors duration-200 hover:text-sky-500"
-                    onclick={async () => await play(fetchSongDetailed(data.song))}
+                    onclick={async () => await play(fetchSongDetailed(data.song), data.user?.id)}
                 >
                     {#if $store.state === "playing" && $store.meta?.videoId === data.song.videoId}
                         <SolarPauseCircleBold class="size-full" />

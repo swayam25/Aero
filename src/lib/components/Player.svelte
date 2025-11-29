@@ -2,6 +2,7 @@
     import { createSongActions, openCtxMenu } from "$lib/ctxmenu";
     import type { UserData } from "$lib/discord/types";
     import { previous, seekTo, skip, store, togglePause } from "$lib/player";
+    import { userRoomStore } from "$lib/stores/userRoom";
     import { formatTime } from "$lib/utils/time";
     import { fly } from "svelte/transition";
     import SolarPauseCircleBold from "~icons/solar/pause-circle-bold";
@@ -31,9 +32,19 @@
 
     function handleSeek(value: number) {
         isSeeking = true;
-        seekTo(value);
+        seekTo(value, user?.id);
+        $store.player?.playVideo();
         isSeeking = false;
     }
+
+    // Room
+    let isRoomHost: boolean = $derived.by(() => {
+        if ($userRoomStore && user) {
+            return $userRoomStore.hostUserId === user.id;
+        } else {
+            return true;
+        }
+    });
 </script>
 
 <div class="relative flex h-15 w-full items-center justify-end gap-2 rounded-lg px-4 sm:justify-center">
@@ -75,17 +86,17 @@
     <!-- Main Controls -->
     <div
         class="flex flex-col items-center justify-center gap-1 transition-all"
-        class:opacity-80={$store.state === "buffering" || $store.state === "unstarted"}
-        class:pointer-events-none={$store.state === "unstarted"}
+        class:opacity-80={$store.state === "buffering" || $store.state === "unstarted" || !isRoomHost}
+        class:pointer-events-none={$store.state === "unstarted" || !isRoomHost}
     >
         <div class="flex items-center justify-center gap-2 transition-all *:cursor-pointer">
             <!-- Previous -->
-            <button onclick={previous} class="size-5 cursor-pointer opacity-80 transition-opacity hover:opacity-100">
+            <button onclick={() => previous(user?.id)} class="size-5 cursor-pointer opacity-80 transition-opacity hover:opacity-100">
                 <SolarSkipPreviousBold class="size-full" />
             </button>
 
             <!-- Play/Pause -->
-            <button class="size-10 cursor-pointer transition-colors duration-200 hover:text-sky-500" onclick={togglePause}>
+            <button class="size-10 cursor-pointer transition-colors duration-200 hover:text-sky-500" onclick={() => togglePause(user?.id)}>
                 {#if $store.state === "playing"}
                     <SolarPauseCircleBold class="size-full" />
                 {:else}
@@ -95,7 +106,7 @@
 
             <!-- Next -->
             <button
-                onclick={skip}
+                onclick={() => skip(user?.id)}
                 class="size-5 cursor-pointer opacity-80 transition-opacity not-disabled:hover:opacity-100"
                 class:!cursor-not-allowed={$store.queue.length < 2}
                 disabled={$store.queue.length < 2}
@@ -106,7 +117,13 @@
         <!-- Player Slider -->
         <div class="hidden items-center justify-center gap-2 md:flex">
             <p class="text-xs text-slate-400">{formatTime(currentTime)}</p>
-            <Slider max={$store.totalDuration} value={currentTime} class="w-20 md:w-40 lg:w-80" onChange={handleSeek} />
+            <Slider
+                max={$store.totalDuration}
+                value={currentTime}
+                class="w-20 md:w-40 lg:w-80"
+                onChange={$store.player?.pauseVideo}
+                onStop={handleSeek}
+            />
             <p class="text-xs text-slate-400">{formatTime($store.totalDuration)}</p>
         </div>
     </div>

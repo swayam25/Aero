@@ -41,7 +41,7 @@ const handleYTMusicAPI: Handle = async ({ event, resolve }) => {
 
 export const init: ServerInit = async () => {
     onMount(async () => {
-        await initPlayer();
+        initPlayer();
     });
 };
 

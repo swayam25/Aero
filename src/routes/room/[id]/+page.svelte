@@ -10,7 +10,7 @@
     import { joinRoomAPI, leaveRoomAPI, toggleRoomVisibilityAPI } from "$lib/room";
     import { isJoiningRoom, showJoinRoomPopup, showRoomDeletePopup, showRoomRenamePopup } from "$lib/stores";
     import { userRoomStore } from "$lib/stores/userRoom";
-    import { createNormalizedChannel } from "$lib/supabase/channel";
+    import { supabaseChannel } from "$lib/supabase/channel";
     import { toast } from "svelte-sonner";
     import { fade, fly } from "svelte/transition";
     import SolarConfoundedCircleLinear from "~icons/solar/confounded-circle-linear";
@@ -92,7 +92,7 @@
     }
 
     $effect(() => {
-        const channel = createNormalizedChannel(`room-${data.room.id}-updates`);
+        const channel = supabaseChannel(`room-${data.room.id}-updates`);
         channel.on("postgres_changes", { event: "UPDATE", schema: "public", table: "room", filter: `id=eq.${data.room.id}` }, () => {
             invalidateAll();
         });

@@ -1,6 +1,5 @@
-import { addRoomMember, addSongToQueue, getRoom, removeRoomMember, removeSongFromQueue, reorderQueue, toggleRoomVisibility } from "$lib/db";
+import { addRoomMember, addSongToQueue, getRoom, playRoom, removeRoomMember, removeSongFromQueue, setQueue, toggleRoomVisibility } from "$lib/db";
 import type { SelectRoom } from "$lib/db/schema";
-import { enhanceSong } from "$lib/player";
 import { json, type RequestHandler } from "@sveltejs/kit";
 
 export const POST: RequestHandler = async ({ locals, request, params }) => {
@@ -42,24 +41,26 @@ export const POST: RequestHandler = async ({ locals, request, params }) => {
     }
 
     // Queue
-    else if (key === "add_to_queue") {
+    else if (key === "play") {
         if (!roomExists.members.some((member) => member.id === user?.id) && roomExists.hostUserId !== user?.id) {
             return json({ error: "Unauthorized" }, { status: 401 });
         }
-        const song = await locals.ytmusic.getSong(value.songID);
-        if (!song) return json({ error: "Song not found" }, { status: 404 });
-        const enhanced = enhanceSong(song);
-        await addSongToQueue(locals.db, params.id, enhanced);
+        await playRoom(locals.db, params.id, value.song);
+    } else if (key === "add_to_queue") {
+        if (!roomExists.members.some((member) => member.id === user?.id) && roomExists.hostUserId !== user?.id) {
+            return json({ error: "Unauthorized" }, { status: 401 });
+        }
+        await addSongToQueue(locals.db, params.id, value.song);
     } else if (key === "remove_from_queue") {
         if (!roomExists.members.some((member) => member.id === user?.id) && roomExists.hostUserId !== user?.id) {
             return json({ error: "Unauthorized" }, { status: 401 });
         }
-        await removeSongFromQueue(locals.db, params.id, value.songID);
-    } else if (key === "reorder_queue") {
+        await removeSongFromQueue(locals.db, params.id, value.songId);
+    } else if (key === "set_queue") {
         if (roomExists.hostUserId !== user?.id) {
             return json({ error: "Unauthorized" }, { status: 401 });
         }
-        await reorderQueue(locals.db, params.id, value.videoIds);
+        await setQueue(locals.db, params.id, value.songs);
     }
 
     // Others

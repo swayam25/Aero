@@ -1,7 +1,7 @@
 import { goto, invalidateAll } from "$app/navigation";
 import type { InsertPlaylist, SelectRoom } from "$lib/db/schema";
 import { addToQueue, enhanceSong, play, store as playerStore, removeFromQueue, togglePause } from "$lib/player";
-import { joinRoomAPI } from "$lib/room";
+import { isRoomHost, joinRoomAPI } from "$lib/room";
 import { isJoiningRoom, playlistsCache, showJoinRoomPopup, showPlDeletePopup, showPlRenamePopup } from "$lib/stores";
 import { toast } from "svelte-sonner";
 import { get } from "svelte/store";
@@ -33,66 +33,69 @@ export function createSongActions(song: SongDetailed, loginUserId: string | null
     const playerState = get(playerStore);
     const isCurrentlyPlaying = song.videoId === playerState.meta?.videoId;
     const isFromQueue = playerState.queue.some((s) => s.videoId === song.videoId);
+    const isRmHost = isRoomHost(loginUserId);
 
     // Play/Pause/Resume action
-    if (isCurrentlyPlaying) {
-        const isPaused = playerState.state === "paused";
-        actions.push(
-            createCtxAction({
-                label: isPaused ? "Resume" : "Pause",
-                icon: isPaused ? SolarPlayLinear : SolarPauseLinear,
-                shortcut: shortcuts.space,
-                onclick: async (ctx) => {
-                    ctx.closeMenu();
-                    await togglePause();
-                },
-            }),
-        );
-    } else {
-        actions.push(
-            createCtxAction({
-                label: "Play",
-                icon: SolarPlayLinear,
-                shortcut: shortcuts.space,
-                onclick: async (ctx) => {
-                    ctx.closeMenu();
-                    await play(song, isFromQueue);
-                },
-            }),
-        );
-    }
+    if (isRmHost) {
+        if (isCurrentlyPlaying) {
+            const isPaused = playerState.state === "paused";
+            actions.push(
+                createCtxAction({
+                    label: isPaused ? "Resume" : "Pause",
+                    icon: isPaused ? SolarPlayLinear : SolarPauseLinear,
+                    shortcut: shortcuts.space,
+                    onclick: async (ctx) => {
+                        ctx.closeMenu();
+                        await togglePause(loginUserId);
+                    },
+                }),
+            );
+        } else {
+            actions.push(
+                createCtxAction({
+                    label: "Play",
+                    icon: SolarPlayLinear,
+                    shortcut: shortcuts.space,
+                    onclick: async (ctx) => {
+                        ctx.closeMenu();
+                        await play(song, loginUserId, isFromQueue);
+                    },
+                }),
+            );
+        }
 
-    // Add to Queue (only if queue exists and song is not currently playing)
-    if (playerState.queue.length > 0 && !isCurrentlyPlaying && !isFromQueue) {
-        actions.push(
-            createCtxAction({
-                label: "Add to Queue",
-                icon: SolarPlaylist2Linear,
-                shortcut: shortcuts.q,
-                onclick: async (ctx) => {
-                    ctx.closeMenu();
-                    await addToQueue(song);
-                    toast.success("Added to queue");
-                },
-            }),
-        );
-    }
+        // Add to Queue (only if queue exists and song is not currently playing)
+        if (playerState.queue.length > 0 && !isCurrentlyPlaying && !isFromQueue) {
+            actions.push(
+                createCtxAction({
+                    label: "Add to Queue",
+                    icon: SolarPlaylist2Linear,
+                    shortcut: shortcuts.q,
+                    onclick: async (ctx) => {
+                        ctx.closeMenu();
+                        await addToQueue(song, loginUserId);
+                        toast.success("Added to queue");
+                    },
+                }),
+            );
+        }
 
-    // Remove from Queue (only if from queue and not currently playing)
-    if (isFromQueue && !isCurrentlyPlaying) {
-        actions.push(
-            createCtxAction({
-                label: "Remove from Queue",
-                icon: SolarNotificationLinesRemoveLinear,
-                type: "error",
-                shortcut: shortcuts.delete,
-                onclick: async (ctx) => {
-                    ctx.closeMenu();
-                    await removeFromQueue(song);
-                    toast.success("Removed from queue");
-                },
-            }),
-        );
+        // Remove from Queue (only if from queue and not currently playing)
+        if (isFromQueue && !isCurrentlyPlaying) {
+            actions.push(
+                createCtxAction({
+                    label: "Remove from Queue",
+                    icon: SolarNotificationLinesRemoveLinear,
+                    type: "error",
+                    shortcut: shortcuts.delete,
+                    onclick: async (ctx) => {
+                        ctx.closeMenu();
+                        await removeFromQueue(song, loginUserId);
+                        toast.success("Removed from queue");
+                    },
+                }),
+            );
+        }
     }
 
     // Add to Playlist (only if logged in)
@@ -223,35 +226,38 @@ export function createPlaylistSongActions(
     accessedUserId: string | null,
 ): CtxAction[] {
     const actions: CtxAction[] = [];
+    const isRmHost = isRoomHost(loginUserId);
 
-    // Play
-    actions.push(
-        createCtxAction({
-            label: "Play",
-            icon: SolarPlayLinear,
-            shortcut: shortcuts.space,
-            onclick: async (ctx) => {
-                ctx.closeMenu();
-                await play(song);
-            },
-        }),
-    );
-
-    // Add to Queue
-    const playerState = get(playerStore);
-    if (playerState.queue.length > 0) {
+    if (isRmHost) {
+        // Play
         actions.push(
             createCtxAction({
-                label: "Add to Queue",
-                icon: SolarPlaylist2Linear,
-                shortcut: shortcuts.q,
+                label: "Play",
+                icon: SolarPlayLinear,
+                shortcut: shortcuts.space,
                 onclick: async (ctx) => {
                     ctx.closeMenu();
-                    await addToQueue(song);
-                    toast.success("Added to queue");
+                    await play(song, loginUserId);
                 },
             }),
         );
+
+        // Add to Queue
+        const playerState = get(playerStore);
+        if (playerState.queue.length > 0) {
+            actions.push(
+                createCtxAction({
+                    label: "Add to Queue",
+                    icon: SolarPlaylist2Linear,
+                    shortcut: shortcuts.q,
+                    onclick: async (ctx) => {
+                        ctx.closeMenu();
+                        await addToQueue(song, loginUserId);
+                        toast.success("Added to queue");
+                    },
+                }),
+            );
+        }
     }
 
     // Copy Link
