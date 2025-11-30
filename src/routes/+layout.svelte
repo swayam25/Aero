@@ -11,7 +11,7 @@
     import { store as ctxStore, setupShortcuts } from "$lib/ctxmenu";
     import ContextMenu from "$lib/ctxmenu/components/ContextMenu.svelte";
     import type { InsertPlaylist, SelectRoom, SelectRoomMember } from "$lib/db/schema";
-    import { clearQueue, play, previous, seekTo, setLoop, skip, store } from "$lib/player";
+    import { clearQueue, play, previous, seekTo, setLoop, setShuffle, skip, stop, store } from "$lib/player";
     import type { EnhancedSong, PlayerStore } from "$lib/player/types";
     import { fetchRoomAPI, sendPlayerRoomEvent } from "$lib/room";
     import { playlistsCache } from "$lib/stores";
@@ -135,8 +135,7 @@
                 (payload) => {
                     const newRoom = payload.new as SelectRoom;
                     userRoomStore.set(newRoom);
-                    clearQueue();
-                    $store.queue = $userRoomStore?.queue || [];
+                    stop();
                 },
             );
             if ($userRoomStore && $userRoomStore.id) {
@@ -160,8 +159,9 @@
                         const room = await fetchRoomAPI(member.roomId);
                         if (!("error" in room)) {
                             userRoomStore.set(room);
-                            clearQueue();
+                            stop();
                             $store.queue = $userRoomStore?.queue || [];
+                            supabaseChannel(`room:${member.roomId}-player-events`).httpSend("request_init", {});
                         }
                     }
                 },
@@ -187,9 +187,6 @@
                         const updated = payload.new as Partial<SelectRoom>;
                         if (updated) {
                             userRoomStore.update(updated);
-                            if (updated.queue !== undefined) {
-                                $store.queue = (updated.queue as any) || [];
-                            }
                         }
                     },
                 );
@@ -237,44 +234,93 @@
     });
 
     // Room player channel
-    $inspect($userRoomStore);
     $effect(() => {
         let roomChannel: RealtimeChannel;
-        if (data.user && $userRoomStore && $userRoomStore.id && !isRoomHost) {
-            roomChannel = supabaseChannel(`room:${$userRoomStore.id}-player-events`)
-                .on("broadcast", { event: "play" }, (payload) => {
-                    const payloadData = payload.payload as { queue: EnhancedSong[]; nowPlaying: EnhancedSong };
-                    $store.queue = payloadData.queue;
-                    play(payloadData.nowPlaying, data.user?.id, true, true);
-                })
-                .on("broadcast", { event: "pause" }, () => {
-                    $store.player?.pauseVideo();
-                })
-                .on("broadcast", { event: "resume" }, () => {
-                    $store.player?.playVideo();
-                })
-                .on("broadcast", { event: "skip" }, (payload) => {
-                    const { song } = payload.payload as { song: EnhancedSong | null };
-                    skip(data.user?.id, song);
-                })
-                .on("broadcast", { event: "previous" }, () => {
-                    previous(data.user?.id);
-                })
-                .on("broadcast", { event: "seek" }, (payload) => {
-                    const { time } = payload.payload as { time: number };
-                    seekTo(time, data.user?.id);
-                })
-                .on("broadcast", { event: "loop" }, (payload) => {
-                    const { loop } = payload.payload as { loop: PlayerStore["loop"] };
-                    setLoop(loop, data.user?.id);
-                })
-                .on("broadcast", { event: "shuffle" }, (payload) => {
-                    const { shuffle } = payload.payload as { shuffle: string };
-                    $store.shuffle = shuffle === "true";
-                })
-                .subscribe();
+        let pendingSyncUnsub: (() => void) | undefined;
+        if (data.user && $userRoomStore && $userRoomStore.id) {
+            roomChannel = supabaseChannel(`room:${$userRoomStore.id}-player-events`);
+            if (!isRoomHost) {
+                roomChannel
+                    .on("broadcast", { event: "init" }, (payload) => {
+                        const payloadData = payload.payload as {
+                            queue: EnhancedSong[];
+                            nowPlaying: EnhancedSong | null;
+                            currentTime: number;
+                            loop: PlayerStore["loop"];
+                            shuffle: boolean;
+                        };
+                        $store.queue = payloadData.queue;
+                        if (payloadData.nowPlaying) {
+                            play(payloadData.nowPlaying, data.user?.id, true, true);
+                            seekTo(payloadData.currentTime, data.user?.id);
+                            setLoop(payloadData.loop, data.user?.id);
+                            setShuffle(payloadData.shuffle, data.user?.id);
+                            if ($store.state === "playing") {
+                                roomChannel.httpSend("sync_time", {});
+                            } else {
+                                // If we're not yet in playing state, wait until it becomes playing, then sync
+                                pendingSyncUnsub?.();
+                                pendingSyncUnsub = store.subscribe((s) => {
+                                    if (s.state === "playing") {
+                                        roomChannel.httpSend("sync_time", {});
+                                        pendingSyncUnsub?.();
+                                        pendingSyncUnsub = undefined;
+                                    }
+                                });
+                            }
+                        } else {
+                            clearQueue();
+                        }
+                    })
+                    .on("broadcast", { event: "play" }, (payload) => {
+                        const payloadData = payload.payload as { queue: EnhancedSong[]; nowPlaying: EnhancedSong };
+                        $store.queue = payloadData.queue;
+                        play(payloadData.nowPlaying, data.user?.id, true, true);
+                    })
+                    .on("broadcast", { event: "pause" }, () => {
+                        $store.player?.pauseVideo();
+                    })
+                    .on("broadcast", { event: "resume" }, () => {
+                        $store.player?.playVideo();
+                    })
+                    .on("broadcast", { event: "skip" }, (payload) => {
+                        const { song } = payload.payload as { song: EnhancedSong | null };
+                        skip(data.user?.id, song);
+                    })
+                    .on("broadcast", { event: "previous" }, () => {
+                        previous(data.user?.id);
+                    })
+                    .on("broadcast", { event: "seek" }, (payload) => {
+                        const { time } = payload.payload as { time: number };
+                        seekTo(time, data.user?.id);
+                    })
+                    .on("broadcast", { event: "loop" }, (payload) => {
+                        const { loop } = payload.payload as { loop: PlayerStore["loop"] };
+                        setLoop(loop, data.user?.id);
+                    })
+                    .on("broadcast", { event: "shuffle" }, (payload) => {
+                        const { shuffle } = payload.payload as { shuffle: string };
+                        setShuffle(shuffle === "true", data.user?.id);
+                    });
+            } else {
+                roomChannel
+                    .on("broadcast", { event: "request_init" }, () => {
+                        sendPlayerRoomEvent(data.user!.id, "init", {
+                            queue: $store.queue,
+                            nowPlaying: $store.meta,
+                            currentTime: $store.currentTime,
+                            loop: $store.loop,
+                            shuffle: $store.shuffle,
+                        });
+                    })
+                    .on("broadcast", { event: "sync_time" }, () => {
+                        sendPlayerRoomEvent(data.user!.id, "seek", { time: $store.currentTime });
+                    });
+            }
+            roomChannel.subscribe();
         }
         return () => {
+            pendingSyncUnsub?.();
             if (roomChannel) roomChannel.unsubscribe();
         };
     });

@@ -29,6 +29,20 @@
     let isPublic: boolean = $derived(data.room.isPublic);
     let members: UserData[] = $derived(data.room.members);
 
+    // Thumbnail helpers for the room queue (limit to 4 thumbnails)
+    const thumbnails = $derived(data.room.queue?.reverse().slice(0, 4) ?? []);
+
+    // Short mappings for grid, spans and corner radii by thumbnail count
+    const gridClass = $derived(
+        thumbnails.length === 1 ? "grid-cols-1 grid-rows-1" : thumbnails.length === 2 ? "grid-cols-2 grid-rows-1" : "grid-cols-2 grid-rows-2",
+    );
+    const radiiByCount: Record<number, string[]> = {
+        1: ["var(--radius-lg)"],
+        2: ["var(--radius-lg) 0 0 var(--radius-lg)", "0 var(--radius-lg) var(--radius-lg) 0"],
+        3: ["var(--radius-lg) var(--radius-lg) 0 0", "0 0 0 var(--radius-lg)", "0 0 var(--radius-lg) 0"],
+        4: ["var(--radius-lg) 0 0 0", "0 var(--radius-lg) 0 0", "0 0 0 var(--radius-lg)", "0 0 var(--radius-lg) 0"],
+    };
+
     async function toggleRoomVisibility() {
         toast.promise(
             (async () => {
@@ -130,7 +144,16 @@
 {/if}
 
 <div class="flex w-full flex-col items-center justify-center gap-4 md:flex-row md:items-stretch md:justify-start">
-    <div class="size-40 shrink-0 rounded-lg bg-slate-800 bg-cover md:size-50"></div>
+    <div class="grid size-40 shrink-0 rounded-lg bg-slate-800 md:size-50 {gridClass}">
+        {#each thumbnails as song, idx}
+            {@const span = thumbnails.length === 3 && idx === 0 ? "col-span-2" : ""}
+            {@const borderRadius = radiiByCount[thumbnails.length]?.[idx] || radiiByCount[4][idx]}
+            <div
+                class="flex size-full items-center justify-center bg-slate-800 bg-cover bg-center {span}"
+                style="background-image: url('{song?.thumbnail.LARGE}'); border-radius: {borderRadius};"
+            ></div>
+        {/each}
+    </div>
     <div class="flex flex-col items-center justify-between gap-2 md:items-start md:self-stretch">
         <div class="flex h-full flex-col items-center justify-center gap-1 md:items-start">
             <div class="flex items-center justify-center gap-2 md:items-end">

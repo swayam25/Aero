@@ -213,6 +213,26 @@ export async function togglePause(userId: string | null | undefined) {
     }
 }
 
+export function stop() {
+    const player = get(store).player;
+    if (!player) return { error: "No player instance" };
+
+    player.stopVideo();
+    store.update((state) => ({
+        ...state,
+        queue: [],
+        shuffle: false,
+        state: "unstarted",
+        loop: "none",
+        meta: null,
+        totalDuration: 0,
+        currentTime: 0,
+        showQueue: false,
+        lyrics: { data: null, error: null },
+        showLyrics: false,
+    }));
+}
+
 export function setVolume(vol: number) {
     const player = get(store).player;
     if (!player) return { error: "No player instance" };
