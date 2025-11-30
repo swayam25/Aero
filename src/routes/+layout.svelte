@@ -248,6 +248,7 @@
                             currentTime: number;
                             loop: PlayerStore["loop"];
                             shuffle: boolean;
+                            state: PlayerStore["state"];
                         };
                         $store.queue = payloadData.queue;
                         if (payloadData.nowPlaying) {
@@ -256,13 +257,13 @@
                             setLoop(payloadData.loop, data.user?.id);
                             setShuffle(payloadData.shuffle, data.user?.id);
                             if ($store.state === "playing") {
-                                roomChannel.httpSend("sync_time", {});
+                                roomChannel.httpSend("sync", {});
                             } else {
                                 // If we're not yet in playing state, wait until it becomes playing, then sync
                                 pendingSyncUnsub?.();
                                 pendingSyncUnsub = store.subscribe((s) => {
                                     if (s.state === "playing") {
-                                        roomChannel.httpSend("sync_time", {});
+                                        roomChannel.httpSend("sync", {});
                                         pendingSyncUnsub?.();
                                         pendingSyncUnsub = undefined;
                                     }
@@ -311,10 +312,16 @@
                             currentTime: $store.currentTime,
                             loop: $store.loop,
                             shuffle: $store.shuffle,
+                            state: $store.state,
                         });
                     })
-                    .on("broadcast", { event: "sync_time" }, () => {
+                    .on("broadcast", { event: "sync" }, () => {
                         sendPlayerRoomEvent(data.user!.id, "seek", { time: $store.currentTime });
+                        if ($store.state === "paused") {
+                            sendPlayerRoomEvent(data.user!.id, "pause", {});
+                        } else if ($store.state === "playing") {
+                            sendPlayerRoomEvent(data.user!.id, "resume", {});
+                        }
                     });
             }
             roomChannel.subscribe();

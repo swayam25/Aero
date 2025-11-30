@@ -31,7 +31,7 @@
     function handleSeek(value: number) {
         isSeeking = true;
         seekTo(value, user?.id);
-        $store.player?.playVideo();
+        togglePause(user?.id);
         isSeeking = false;
     }
 
