@@ -66,6 +66,13 @@
             if (channel) channel.unsubscribe();
         };
     });
+
+    const radiiByCount: Record<number, string[]> = {
+        1: ["var(--radius-lg)"],
+        2: ["var(--radius-lg) 0 0 var(--radius-lg)", "0 var(--radius-lg) var(--radius-lg) 0"],
+        3: ["var(--radius-lg) var(--radius-lg) 0 0", "0 0 0 var(--radius-lg)", "0 0 var(--radius-lg) 0"],
+        4: ["var(--radius-lg) 0 0 0", "0 var(--radius-lg) 0 0", "0 0 0 var(--radius-lg)", "0 0 var(--radius-lg) 0"],
+    };
 </script>
 
 <Seo title="Rooms" />
@@ -108,6 +115,9 @@
 {:else}
     <div in:fade={{ duration: 100 }} class="flex flex-wrap items-center justify-start gap-2">
         {#each publicRooms as room}
+            {@const thumbnails = room.queue?.reverse().slice(0, 4) ?? []}
+            {@const gridClass =
+                thumbnails.length === 1 ? "grid-cols-1 grid-rows-1" : thumbnails.length === 2 ? "grid-cols-2 grid-rows-1" : "grid-cols-2 grid-rows-2"}
             <a
                 in:fly={{ duration: 500, easing: expoOut, x: -100, y: 0 }}
                 out:fly={{ duration: 500, easing: expoOut, x: 100, y: 0 }}
@@ -119,9 +129,16 @@
                 }}
                 class="group flex size-fit cursor-pointer flex-col items-start justify-center gap-2 rounded-lg p-3 transition-colors duration-200 hover:bg-slate-800"
             >
-                <div
-                    class="size-40 shrink-0 rounded-lg bg-slate-800 bg-cover transition-colors duration-200 group-hover:bg-slate-900 md:size-50"
-                ></div>
+                <div class="grid size-40 shrink-0 rounded-lg bg-slate-800 md:size-50 {gridClass}">
+                    {#each thumbnails as song, idx}
+                        {@const span = thumbnails.length === 3 && idx === 0 ? "col-span-2" : ""}
+                        {@const borderRadius = radiiByCount[thumbnails.length]?.[idx] || radiiByCount[4][idx]}
+                        <div
+                            class="flex size-full items-center justify-center bg-slate-800 bg-cover bg-center {span}"
+                            style="background-image: url('{song?.thumbnail.LARGE}'); border-radius: {borderRadius};"
+                        ></div>
+                    {/each}
+                </div>
                 <div class="text-left">
                     <p class="text-sm">{room.name}</p>
                 </div>
