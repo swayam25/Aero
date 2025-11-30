@@ -55,7 +55,7 @@ export function init() {
             return { ...state, state: stateMap[event.data as keyof typeof stateMap] as PlayerStore["state"] };
         });
         if (event.data === 0) {
-            await skip(null, true); // Auto-skip when a song ends
+            await skip(null);
         }
     });
     newPlayer.on("volumeChange", (event) => {
@@ -244,15 +244,19 @@ export async function previous(userId: string | null | undefined) {
                 state.meta = state.queue.find((item) => item.videoId === prev.videoId) || null;
                 return state;
             });
+            sendPlayerRoomEvent(userId, "previous");
             player.loadVideoById(prev.videoId);
             player.playVideo();
+            const isRmHost = isRoomHost(userId);
+            if (isRmHost) {
+                await playInRoomAPI(prev);
+            }
         }
     }
-    sendPlayerRoomEvent(userId, "previous");
     await fetchLyrics();
 }
 
-export async function skip(userId: string | null | undefined, auto: boolean = false) {
+export async function skip(userId: string | null | undefined, song: EnhancedSong | null = null) {
     const player = get(store).player;
     if (!player) return { error: "No player instance" };
 
@@ -264,15 +268,19 @@ export async function skip(userId: string | null | undefined, auto: boolean = fa
         const currentID = get(store).meta?.videoId; // Current video ID
         if (currentID) {
             const currentIndex = queue.findIndex((item) => item.videoId === currentID); // Current video index
-            let next; // Next video ID
-            if (get(store).shuffle) {
-                // Shuffle queue if enabled
-                do {
-                    next = queue[Math.floor(Math.random() * queue.length)];
-                } while (next.videoId === currentID);
+            let next: EnhancedSong; // Next video ID
+            if (song) {
+                next = song;
             } else {
-                // Otherwise, play next video in queue
-                next = queue[currentIndex + 1] || queue[0];
+                if (get(store).shuffle) {
+                    // Shuffle queue if enabled
+                    do {
+                        next = queue[Math.floor(Math.random() * queue.length)];
+                    } while (next.videoId === currentID);
+                } else {
+                    // Otherwise, play next video in queue
+                    next = queue[currentIndex + 1] || queue[0];
+                }
             }
             store.update((state) => {
                 state.meta = state.queue.find((item) => item.videoId === next.videoId) || null;
@@ -284,22 +292,39 @@ export async function skip(userId: string | null | undefined, auto: boolean = fa
                     return state;
                 });
             }
+            sendPlayerRoomEvent(userId, "skip", { song: next });
             player.loadVideoById(next.videoId);
             player.playVideo();
+            const isRmHost = isRoomHost(userId);
+            if (isRmHost) {
+                await playInRoomAPI(next);
+            }
         }
     }
     if (get(store).queue.length < 2) store.update((state) => ({ ...state, shuffle: false, showQueue: false }));
 
-    if (!auto) sendPlayerRoomEvent(userId, "skip");
     await fetchLyrics();
 }
 
-export function setLoop(loop: PlayerStore["loop"]) {
+export function setLoop(loop: PlayerStore["loop"], userId: string | null | undefined) {
     const player = get(store).player;
     if (!player) return { error: "No player instance" };
 
     player.setLoop(loop === "queue");
     store.update((state) => ({ ...state, loop }));
+
+    // Rooms
+    sendPlayerRoomEvent(userId, "loop", { loop: String(loop) });
+}
+
+export function setShuffle(shuffle: boolean, userId: string | null | undefined) {
+    const player = get(store).player;
+    if (!player) return { error: "No player instance" };
+
+    store.update((state) => ({ ...state, shuffle }));
+
+    // Rooms
+    sendPlayerRoomEvent(userId, "shuffle", { shuffle: String(shuffle) });
 }
 
 export function seekTo(time: number, userId: string | null | undefined) {

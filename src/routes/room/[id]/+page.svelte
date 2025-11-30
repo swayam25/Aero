@@ -99,11 +99,10 @@
         if ($userRoomStore) {
             channel.on(
                 "postgres_changes",
-                { event: "*", schema: "public", table: "room_member", filter: `room_id=eq.${data.room.id}` },
+                { event: "INSERT", schema: "public", table: "room_member", filter: `room_id=eq.${data.room.id}` },
                 (payload) => {
-                    members = payload.new
-                        ? [...members, (payload.new as SelectRoomMember).userData]
-                        : members.filter((m) => m.id !== (payload.old as SelectRoomMember).userData.id);
+                    const newMember = payload.new as SelectRoomMember;
+                    members = [...members, newMember.userData as UserData];
                 },
             );
         }

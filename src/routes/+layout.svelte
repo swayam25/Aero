@@ -11,8 +11,8 @@
     import { store as ctxStore, setupShortcuts } from "$lib/ctxmenu";
     import ContextMenu from "$lib/ctxmenu/components/ContextMenu.svelte";
     import type { InsertPlaylist, SelectRoom, SelectRoomMember } from "$lib/db/schema";
-    import { clearQueue, play, previous, seekTo, skip, store } from "$lib/player";
-    import type { EnhancedSong } from "$lib/player/types";
+    import { clearQueue, play, previous, seekTo, setLoop, skip, store } from "$lib/player";
+    import type { EnhancedSong, PlayerStore } from "$lib/player/types";
     import { fetchRoomAPI, sendPlayerRoomEvent } from "$lib/room";
     import { playlistsCache } from "$lib/stores";
     import { userRoomStore } from "$lib/stores/userRoom";
@@ -153,7 +153,7 @@
             // If user joins a room
             channel.on(
                 "postgres_changes",
-                { event: "*", schema: "public", table: "room_member", filter: `user_id=eq.${data.user.id}` },
+                { event: "INSERT", schema: "public", table: "room_member", filter: `user_id=eq.${data.user.id}` },
                 async (payload) => {
                     const member = payload.new as SelectRoomMember;
                     if (member.roomId) {
@@ -176,14 +176,34 @@
                     },
                 );
             }
+            // If user is in the room (host/member)
+            if ($userRoomStore && $userRoomStore.id) {
+                channel.on(
+                    "postgres_changes",
+                    { event: "UPDATE", schema: "public", table: "room", filter: `id=eq.${$userRoomStore.id}` },
+                    (payload) => {
+                        // Supabase Realtime returns only the updated columns for UPDATE events.
+                        // Merge the partial payload into the existing store instead of fully replacing it, to avoid losing large jsonb fields.
+                        const updated = payload.new as Partial<SelectRoom>;
+                        if (updated) {
+                            userRoomStore.update(updated);
+                            if (updated.queue !== undefined) {
+                                $store.queue = (updated.queue as any) || [];
+                            }
+                        }
+                    },
+                );
+            }
             // Player events (only for members)
             if (!isRoomHost && $userRoomStore && $userRoomStore.id) {
                 channel.on(
                     "postgres_changes",
                     { event: "UPDATE", schema: "public", table: "room", filter: `id=eq.${$userRoomStore?.id}` },
                     (payload) => {
-                        const updatedRoom = payload.new as SelectRoom;
-                        $store.queue = updatedRoom.queue || [];
+                        const updatedRoom = payload.new as Partial<SelectRoom>;
+                        if (updatedRoom.queue !== undefined) {
+                            $store.queue = (updatedRoom.queue as any) || [];
+                        }
                     },
                 );
             }
@@ -217,6 +237,7 @@
     });
 
     // Room player channel
+    $inspect($userRoomStore);
     $effect(() => {
         let roomChannel: RealtimeChannel;
         if (data.user && $userRoomStore && $userRoomStore.id && !isRoomHost) {
@@ -232,8 +253,9 @@
                 .on("broadcast", { event: "resume" }, () => {
                     $store.player?.playVideo();
                 })
-                .on("broadcast", { event: "skip" }, () => {
-                    skip(data.user?.id);
+                .on("broadcast", { event: "skip" }, (payload) => {
+                    const { song } = payload.payload as { song: EnhancedSong | null };
+                    skip(data.user?.id, song);
                 })
                 .on("broadcast", { event: "previous" }, () => {
                     previous(data.user?.id);
@@ -241,6 +263,14 @@
                 .on("broadcast", { event: "seek" }, (payload) => {
                     const { time } = payload.payload as { time: number };
                     seekTo(time, data.user?.id);
+                })
+                .on("broadcast", { event: "loop" }, (payload) => {
+                    const { loop } = payload.payload as { loop: PlayerStore["loop"] };
+                    setLoop(loop, data.user?.id);
+                })
+                .on("broadcast", { event: "shuffle" }, (payload) => {
+                    const { shuffle } = payload.payload as { shuffle: string };
+                    $store.shuffle = shuffle === "true";
                 })
                 .subscribe();
         }

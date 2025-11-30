@@ -1,6 +1,6 @@
 <script lang="ts">
     import type { UserData } from "$lib/discord/types";
-    import { setVolume, store, toggleLyrics, togglePause, toggleQueue } from "$lib/player";
+    import { setLoop, setShuffle, setVolume, store, toggleLyrics, togglePause, toggleQueue } from "$lib/player";
     import { userRoomStore } from "$lib/stores/userRoom";
     import { cn } from "$lib/utils/cn";
     import { toast } from "svelte-sonner";
@@ -90,13 +90,13 @@
         if (onLoopClick) return onLoopClick();
         switch ($store.loop) {
             case "none":
-                $store.loop = "single";
+                setLoop("single", user?.id);
                 break;
             case "single":
-                $store.loop = $store.queue.length >= 2 ? "queue" : "none";
+                setLoop($store.queue.length >= 2 ? "queue" : "none", user?.id);
                 break;
             case "queue":
-                $store.loop = "none";
+                setLoop("none", user?.id);
                 break;
         }
     }
@@ -116,7 +116,7 @@
     // Shuffle
     function handleShuffle() {
         if (onShuffleClick) onShuffleClick();
-        $store.shuffle = !$store.shuffle;
+        setShuffle(!$store.shuffle, user?.id);
     }
 
     // Download
@@ -234,7 +234,7 @@
         disabled={$store.queue.length < 2 || !isRoomHost}
         class:!cursor-not-allowed={$store.queue.length < 2 || !isRoomHost}
     >
-        <SolarShuffleLinear class={`size-full ${$store.shuffle ? "text-sky-500" : "text-white"}`} />
+        <SolarShuffleLinear class="size-full {$store.shuffle ? 'text-sky-500' : 'text-white'}" />
     </button>
 
     <!-- Download -->

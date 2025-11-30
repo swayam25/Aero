@@ -28,7 +28,7 @@
                     table: "room",
                 },
                 (payload) => {
-                    const { new: newRoom } = payload;
+                    const newRoom = payload.new as Partial<SelectRoom>;
                     rooms = rooms.map((room: SelectRoom) => {
                         if (room.id === newRoom.id) {
                             return { ...room, ...newRoom } as SelectRoom;
