@@ -68,10 +68,10 @@
                         class="size-40 shrink-0 rounded-lg bg-slate-800 bg-cover transition-colors duration-200 group-hover/btn:bg-slate-900 md:size-50"
                         style="background-image: url({enhanced.thumbnail.LARGE});"
                     ></div>
-                    <div class="text-left">
-                        <p class="text-sm">{song.name.length > 20 ? song.name.slice(0, 20) + "..." : song.name}</p>
-                        <p class="text-sm text-slate-400">
-                            {song.artist.name.length > 20 ? song.artist.name.slice(0, 20) + "..." : song.artist.name}
+                    <div class="w-40 text-left text-sm md:w-50">
+                        <p class="min-w-0 truncate" title={song.name}>{song.name}</p>
+                        <p class="min-w-0 truncate text-slate-400" title={song.artist.name}>
+                            {song.artist.name}
                         </p>
                     </div>
                 </button>
