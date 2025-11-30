@@ -6,6 +6,7 @@
     import Tooltip from "$lib/components/ui/Tooltip.svelte";
     import { createPlaylistActions, openCtxMenu } from "$lib/ctxmenu";
     import { isCreatingPlaylist, isImportingPlaylist, playlistsCache } from "$lib/stores";
+    import { formatCount } from "$lib/utils/format";
     import { onMount } from "svelte";
     import { expoOut } from "svelte/easing";
     import { fade, fly } from "svelte/transition";
@@ -82,8 +83,11 @@
                     class="size-40 shrink-0 rounded-lg bg-slate-800 bg-cover transition-colors duration-200 group-hover:bg-slate-900 md:size-50"
                     style="background-image: url({playlist.cover});"
                 ></div>
-                <div class="text-left">
-                    <p class="text-sm">{playlist.name}</p>
+                <div class="flex w-40 items-center justify-between gap-2 text-sm md:w-50">
+                    <p class="min-w-0 flex-1 truncate" title={playlist.name}>{playlist.name}</p>
+                    {#if playlist.songs.length >= 1}
+                        <p class="shrink-0 text-slate-400">{formatCount(playlist.songs.length)} songs</p>
+                    {/if}
                 </div>
             </a>
         {/each}

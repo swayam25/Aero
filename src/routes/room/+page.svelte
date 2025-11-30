@@ -7,6 +7,7 @@
     import type { SelectRoom } from "$lib/db/schema";
     import { isCreatingRoom, isJoiningRoom, showJoinRoomPopup } from "$lib/stores";
     import { supabaseChannel } from "$lib/supabase/channel";
+    import { formatCount } from "$lib/utils/format";
     import { expoOut } from "svelte/easing";
     import { fade, fly } from "svelte/transition";
     import MaterialSymbolsAdd2Rounded from "~icons/material-symbols/add-2-rounded";
@@ -127,20 +128,25 @@
                     const actions = createRoomActions(room, room.hostUserId === data.user?.id);
                     openCtxMenu(e, actions);
                 }}
-                class="group flex size-fit cursor-pointer flex-col items-start justify-center gap-2 rounded-lg p-3 transition-colors duration-200 hover:bg-slate-800"
+                class="group flex size-fit cursor-pointer flex-col items-center justify-center gap-2 rounded-lg p-3 transition-colors duration-200 hover:bg-slate-800"
             >
-                <div class="grid size-40 shrink-0 rounded-lg bg-slate-800 md:size-50 {gridClass}">
+                <div
+                    class="grid size-40 shrink-0 rounded-lg bg-slate-800 transition-colors duration-200 group-hover:bg-slate-900 md:size-50 {gridClass}"
+                >
                     {#each thumbnails as song, idx}
                         {@const span = thumbnails.length === 3 && idx === 0 ? "col-span-2" : ""}
                         {@const borderRadius = radiiByCount[thumbnails.length]?.[idx] || radiiByCount[4][idx]}
                         <div
-                            class="flex size-full items-center justify-center bg-slate-800 bg-cover bg-center {span}"
+                            class="flex size-full items-center justify-center bg-slate-800 bg-cover bg-center transition-colors duration-200 group-hover:bg-slate-900 {span}"
                             style="background-image: url('{song?.thumbnail.LARGE}'); border-radius: {borderRadius};"
                         ></div>
                     {/each}
                 </div>
-                <div class="text-left">
-                    <p class="text-sm">{room.name}</p>
+                <div class="flex w-40 items-center justify-between gap-2 text-sm md:w-50">
+                    <p class="min-w-0 flex-1 truncate" title={room.name}>{room.name}</p>
+                    {#if room.queue.length >= 1}
+                        <p class="shrink-0 text-slate-400">{formatCount(room.queue.length)} songs</p>
+                    {/if}
                 </div>
             </a>
         {/each}
