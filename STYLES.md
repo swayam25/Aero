@@ -11,6 +11,7 @@
 - For other colors use `<color>-500` as text color and `<color>-500/10` as background color on hover (*make sure to have bg color as `slate-800`/`slate-900`/`slate-950` before hover*).
 - Border radius: `rounded-lg` (*For every possible card/container*)
 - For buttons and links, we strictly use the [`<Button />`](./src/lib/components/ui/Button.svelte) component.
+- Transition duration: `duration-200` (*For hover effects and other transitions*) and `duration-400` for rare case (*like `SongListX` component's scroll arrow fade in/out*).
 
 - Z Index Layer System
     - **Base Layer (`z-0`)**: Layout components and default content.
