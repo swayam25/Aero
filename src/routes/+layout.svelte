@@ -339,6 +339,24 @@
             showMobilePlayer = true;
         }
     }
+
+    onMount(() => {
+        async function handleDisconnect() {
+            // Only leave if user is a member (not host)
+            if (data.user && $userRoomStore && $userRoomStore.id && !isRoomHost) {
+                try {
+                    const blob = new Blob([JSON.stringify({ key: "leave" })], { type: "application/json" });
+                    navigator.sendBeacon(`/api/room/${$userRoomStore.id}`, blob);
+                } catch (error) {
+                    console.error("Failed to leave room:", error);
+                }
+            }
+        }
+        window.addEventListener("beforeunload", handleDisconnect);
+        return () => {
+            window.removeEventListener("beforeunload", handleDisconnect);
+        };
+    });
 </script>
 
 <ContextMenu />
