@@ -1,7 +1,6 @@
 <script lang="ts">
     import { invalidateAll } from "$app/navigation";
     import Draggable from "$lib/components/ui/Draggable.svelte";
-    import MarqueeText from "$lib/components/ui/MarqueeText.svelte";
     import Seo from "$lib/components/ui/Seo.svelte";
     import Switch from "$lib/components/ui/Switch.svelte";
     import Tooltip from "$lib/components/ui/Tooltip.svelte";
@@ -231,7 +230,7 @@
                                     );
                                     openCtxMenu(e, actions);
                                 }}
-                                class="group pl-song-handle flex w-full cursor-pointer items-center justify-center gap-2 rounded-lg p-2 transition-colors duration-200 hover:bg-slate-800"
+                                class="group pl-song-handle flex w-full min-w-0 cursor-pointer items-center justify-start gap-2 rounded-lg p-2 transition-colors duration-200 hover:bg-slate-800"
                             >
                                 <div class="flex size-10 items-center justify-center p-1 text-lg">
                                     {#if song.videoId === $store.meta?.videoId}
@@ -246,11 +245,11 @@
                                     class="size-15 shrink-0 rounded-lg bg-slate-800 bg-cover transition-colors duration-200 group-hover:bg-slate-900"
                                     style="background-image: url({enhanced.thumbnail.SMALL});"
                                 ></div>
-                                <div class="flex w-full flex-col items-center justify-center text-left">
-                                    <MarqueeText class="w-10 font-bold" text={song.name} />
-                                    <MarqueeText class="w-10 text-sm text-slate-400" text={song.artist.name} />
+                                <div class="flex-truncate flex flex-col items-start justify-center text-left">
+                                    <p class="w-full truncate font-bold" title={song.name}>{song.name}</p>
+                                    <p class="w-full truncate text-sm text-slate-400" title={song.artist.name}>{song.artist.name}</p>
                                 </div>
-                                <p class="text-sm text-slate-400">{formatTime(song.duration ?? 0)}</p>
+                                <p class="shrink-0 text-sm text-slate-400">{formatTime(song.duration ?? 0)}</p>
                             </button>
                         </li>
                     {/snippet}
