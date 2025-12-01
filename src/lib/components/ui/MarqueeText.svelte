@@ -1,77 +1,134 @@
 <script lang="ts">
     import { cn } from "$lib/utils/cn";
-    import { onDestroy } from "svelte";
+    import type { Snippet } from "svelte";
 
     interface Props {
-        text: string;
+        text?: string;
         class?: string;
-        marqueeDirection?: "forward" | "backward";
+        pauseOnHover?: boolean;
+        direction?: "left" | "right";
+        speed?: number; // pixels per second
+        pause?: boolean;
+        fadeSides?: boolean;
+        children?: Snippet;
     }
-    let { text, class: className = "", marqueeDirection = "forward" }: Props = $props();
 
-    let marqueeOffset: number = $state(0);
-    let marqueeInterval: number;
-    let speed: number = 50; // 50ms interval
-    let delay: number = 5000; // 5s delay
-    let textElement: HTMLElement;
+    let {
+        text = "",
+        class: className = "",
+        pauseOnHover = true,
+        direction = "left",
+        speed = 5,
+        pause = false,
+        fadeSides = true,
+        children,
+    }: Props = $props();
 
-    function startMarquee() {
-        if (!textElement) return;
+    let containerWidth: number = $state(0);
+    let marqueeWidth: number = $state(0);
+    let prefersReducedMotion = $state(false);
 
-        const textWidth = textElement.scrollWidth;
-        const containerWidth = textElement.parentElement?.offsetWidth || 0;
+    let duration = $derived.by(() =>
+        marqueeWidth && containerWidth ? (marqueeWidth < containerWidth ? containerWidth / speed : marqueeWidth / speed) : 0,
+    );
 
-        // Only animate if the text overflows the container
-        if (textWidth > containerWidth) {
-            const step = 1; // Consistent step size for smooth animation
-            if (marqueeDirection === "forward") {
-                marqueeOffset = Math.min(marqueeOffset + step, textWidth - containerWidth); // Clamp forward offset
-                if (marqueeOffset >= textWidth - containerWidth) {
-                    marqueeDirection = "backward";
-                    clearInterval(marqueeInterval); // Pause before reversing
-                    setTimeout(() => {
-                        marqueeInterval = window.setInterval(startMarquee, speed);
-                    }, delay);
-                }
-            } else {
-                marqueeOffset = Math.max(marqueeOffset - step, 0); // Clamp backward offset
-                if (marqueeOffset <= 0) {
-                    marqueeDirection = "forward";
-                    clearInterval(marqueeInterval); // Pause before reversing
-                    setTimeout(() => {
-                        marqueeInterval = window.setInterval(startMarquee, speed);
-                    }, delay);
-                }
-            }
-
-            textElement.style.transform = `translateX(-${marqueeOffset}px)`;
-        } else {
-            marqueeOffset = 0; // Reset offset if no overflow
-            textElement.style.transform = `translateX(0)`; // Reset position
-        }
-    }
+    let shouldAnimate = $derived.by(() => !!(marqueeWidth && containerWidth && marqueeWidth > containerWidth && !prefersReducedMotion && !pause));
 
     $effect(() => {
-        if (text) {
-            clearInterval(marqueeInterval); // Clear any existing interval
-            marqueeOffset = 0; // Reset offset
-            marqueeDirection = "forward"; // Reset direction
-            if (textElement) {
-                textElement.style.transform = `translateX(0)`; // Reset transform to avoid jitter
-            }
-            setTimeout(() => {
-                marqueeInterval = window.setInterval(startMarquee, speed); // Restart animation after delay
-            }, delay);
+        if (typeof window !== "undefined") {
+            const mq = window.matchMedia("(prefers-reduced-motion: reduce)");
+            prefersReducedMotion = mq.matches;
+            const onChange = () => (prefersReducedMotion = mq.matches);
+            mq.addEventListener("change", onChange);
+
+            return () => {
+                mq.removeEventListener("change", onChange);
+            };
         }
     });
 
-    onDestroy(() => {
-        clearInterval(marqueeInterval);
-    });
+    let animationDirection = $derived.by(() => (direction === "left" ? "normal" : "reverse"));
+    let pauseOnHoverState = $derived.by(() => (pauseOnHover ? "paused" : "running"));
 </script>
 
-<div class="relative h-fit w-full overflow-hidden">
-    <span bind:this={textElement} class={cn("h-fit whitespace-nowrap transition-transform ease-in-out", className)} style="display: inline-block;">
-        {text}
-    </span>
+<div
+    class={cn("marquee-container relative flex h-fit w-full overflow-hidden", className)}
+    bind:clientWidth={containerWidth}
+    data-fade={fadeSides && shouldAnimate}
+    style="--direction: {animationDirection}; --duration: {shouldAnimate
+        ? duration + 's'
+        : '0s'};  --pause-on-hover: {pauseOnHoverState}; --marquee-distance: {marqueeWidth}px;"
+>
+    <div class="marquee-wrapper" class:animate={shouldAnimate}>
+        <div class="marquee" bind:clientWidth={marqueeWidth} data-testid="marquee-slot">
+            {#if children}
+                {@render children?.()}
+            {:else}
+                {text}
+            {/if}
+        </div>
+
+        {#if shouldAnimate}
+            <div class="marquee" aria-hidden="true">
+                {#if children}
+                    {@render children?.()}
+                {:else}
+                    {text}
+                {/if}
+            </div>
+        {/if}
+    </div>
 </div>
+
+<style>
+    :root {
+        --gap: 2rem;
+    }
+
+    .marquee-container {
+        display: flex;
+        width: 100%;
+        overflow-x: hidden;
+        flex-direction: row;
+        position: relative;
+    }
+
+    .marquee-wrapper {
+        display: flex;
+        gap: var(--gap);
+        flex-shrink: 0;
+        animation-play-state: running;
+        animation-direction: var(--direction, normal);
+    }
+
+    .marquee-container:hover .marquee-wrapper {
+        animation-play-state: var(--pause-on-hover);
+    }
+
+    .marquee-wrapper.animate {
+        animation: scroll var(--duration, 0s) linear infinite;
+    }
+
+    .marquee {
+        flex: 0 0 auto;
+        min-width: 0;
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+    }
+
+    @keyframes scroll {
+        0% {
+            transform: translateX(0);
+        }
+        100% {
+            transform: translateX(calc(-100% - var(--gap)));
+        }
+    }
+
+    .marquee-container[data-fade="true"] {
+        mask-image: linear-gradient(to right, rgba(0, 0, 0, 0) 0%, rgba(0, 0, 0, 1) 10%, rgba(0, 0, 0, 1) 90%, rgba(0, 0, 0, 0) 100%);
+        mask-size: 100% 100%;
+        mask-repeat: no-repeat;
+    }
+</style>

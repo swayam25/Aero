@@ -1,7 +1,6 @@
 <script lang="ts">
     import { page } from "$app/state";
     import SongListX from "$lib/components/SongListX.svelte";
-    import MarqueeText from "$lib/components/ui/MarqueeText.svelte";
     import Seo from "$lib/components/ui/Seo.svelte";
     import { createSongActions, openCtxMenu } from "$lib/ctxmenu";
     import { enhanceSong, play } from "$lib/player";
@@ -43,7 +42,7 @@
     </div>
     <SongListX skeleton />
 {:then songs}
-    <div in:fade={{ duration: 100 }} class="flex h-min flex-col items-stretch justify-between gap-5 md:flex-row">
+    <div in:fade={{ duration: 100 }} class="flex h-min min-w-0 flex-col items-stretch justify-between gap-5 overflow-x-hidden md:flex-row">
         <div class="flex w-full min-w-2/5 flex-auto flex-col items-start justify-center gap-2">
             <p class="block text-4xl font-bold">Top Result</p>
             {#if songs[0]}
@@ -70,7 +69,7 @@
                 </button>
             {/if}
         </div>
-        <div class="justify flex w-full flex-initial flex-col items-start gap-2">
+        <div class="justify flex w-full min-w-0 flex-auto flex-col items-start gap-2 overflow-hidden">
             <p class="block text-4xl font-bold">Songs</p>
             <div class="flex w-full flex-col items-center justify-between rounded-lg transition-colors duration-200 *:cursor-pointer">
                 {#each songs.slice(1, 6) as song}
@@ -84,17 +83,17 @@
                             const actions = createSongActions(song, data.user?.id);
                             openCtxMenu(e, actions);
                         }}
-                        class="group flex h-auto w-full items-center justify-between gap-2 rounded-lg p-2 transition-colors duration-200 hover:bg-slate-800"
+                        class="group flex h-auto w-full min-w-0 items-center justify-between gap-2 rounded-lg p-2 transition-colors duration-200 hover:bg-slate-800"
                     >
                         <div
                             class="size-15 shrink-0 rounded-lg bg-slate-800 bg-cover transition-colors duration-200 group-hover:bg-slate-900"
                             style="background-image: url({enhanced.thumbnail.SMALL});"
                         ></div>
-                        <div class="flex w-full flex-col items-center justify-center text-left">
-                            <MarqueeText class="w-10" text={song.name} />
-                            <MarqueeText class="w-10 text-sm text-slate-400" text={song.artist.name} />
+                        <div class="flex-truncate text-left">
+                            <p class="w-full max-w-full truncate" title={song.name}>{song.name}</p>
+                            <p class="w-full max-w-full truncate text-sm text-slate-400" title={song.artist.name}>{song.artist.name}</p>
                         </div>
-                        <p class="text-sm text-slate-400">{formatTime(song.duration ?? 0)}</p>
+                        <p class="shrink-0 text-sm text-slate-400">{formatTime(song.duration ?? 0)}</p>
                     </button>
                 {/each}
             </div>

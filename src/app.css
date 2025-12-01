@@ -60,3 +60,10 @@ body {
     height: 12px !important;
     @apply opacity-0 transition-opacity duration-200 group-hover:opacity-100;
 }
+
+@layer components {
+    /* Helper to make truncation reliable inside flexible layouts */
+    .flex-truncate {
+        @apply block w-full min-w-0 flex-1 truncate overflow-hidden;
+    }
+}

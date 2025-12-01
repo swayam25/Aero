@@ -63,12 +63,7 @@
                     style="background-image: url({$store.meta?.thumbnail.XLARGE})"
                 ></div>
             </div>
-            <div
-                class="flex w-full max-w-sm cursor-pointer flex-col items-center text-center"
-                oncontextmenu={handleContextMenu}
-                role="button"
-                tabindex="0"
-            >
+            <div class="w-full max-w-sm cursor-pointer text-left" oncontextmenu={handleContextMenu} role="button" tabindex="0">
                 <MarqueeText text={$store.meta?.name || ""} class="mb-1 text-xl font-bold text-white" />
                 <span class="text-base text-slate-300">{$store.meta?.artist.name}</span>
             </div>
