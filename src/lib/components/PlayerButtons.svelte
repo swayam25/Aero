@@ -72,7 +72,6 @@
         }
         document.addEventListener("keydown", (e: KeyboardEvent) => {
             if (isRoomHost) {
-                console.log(e.key);
                 if (document.activeElement && document.activeElement.tagName.toLowerCase() === "input") {
                     return;
                 }
