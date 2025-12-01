@@ -70,8 +70,9 @@
         if (localStorage) {
             volume = localStorage.getItem("volume") ? Number(localStorage.getItem("volume")) : 100;
         }
-        if (isRoomHost) {
-            document.addEventListener("keydown", (e: KeyboardEvent) => {
+        document.addEventListener("keydown", (e: KeyboardEvent) => {
+            if (isRoomHost) {
+                console.log(e.key);
                 if (document.activeElement && document.activeElement.tagName.toLowerCase() === "input") {
                     return;
                 }
@@ -81,8 +82,8 @@
                         togglePause(user?.id);
                     }
                 }
-            });
-        }
+            }
+        });
     });
 
     // Loop
