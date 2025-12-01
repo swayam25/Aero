@@ -1,5 +1,5 @@
 <script lang="ts">
-    import Button from "$lib/components/ui/Button.svelte";
+    import { createSongActions, openCtxMenu } from "$lib/ctxmenu";
     import type { UserData } from "$lib/discord/types";
     import { enhanceSong, play } from "$lib/player";
     import { cn } from "$lib/utils/cn";
@@ -18,13 +18,117 @@
     let { skeleton = false, skeletonCount = 10, user, songs, class: className }: Props = $props();
 
     let songList: HTMLDivElement | null = $state(null);
+    let isDragging: boolean = $state(false);
+    let isPointerDown: boolean = $state(false);
+    let startX: number = $state(0);
+    let initialScrollLeft: number = $state(0);
+    let lastMoveX: number = $state(0);
+    let lastMoveTime: number = $state(0);
+    let lastVelocity: number = $state(0); // px/ms
+    let momentumId: number | null = $state(null);
+    const threshold = 5; // px before starting drag
+
+    function onPointerDown(e: PointerEvent) {
+        if (!songList) return;
+        if ((e as PointerEvent & { button?: number }).button !== undefined && (e as PointerEvent & { button?: number }).button !== 0) return;
+        stopMomentum();
+        isPointerDown = true;
+        startX = e.clientX;
+        lastMoveX = e.clientX;
+        lastMoveTime = performance.now();
+        initialScrollLeft = songList.scrollLeft;
+    }
+
+    function onPointerMove(e: PointerEvent) {
+        if (!isPointerDown || !songList) return;
+        const x = e.clientX;
+        const walk = x - startX;
+        if (!isDragging && Math.abs(walk) > threshold) {
+            isDragging = true;
+            try {
+                songList.setPointerCapture(e.pointerId);
+            } catch (err) {}
+        }
+        if (!isDragging) return;
+        const now = performance.now();
+        const dt = Math.max(now - lastMoveTime, 1);
+        const dx = x - lastMoveX;
+        lastVelocity = dx / dt; // px per ms
+        songList.scrollLeft = initialScrollLeft - walk;
+        lastMoveX = x;
+        lastMoveTime = now;
+        e.preventDefault();
+    }
+
+    function onPointerUp(e: PointerEvent) {
+        if (!songList) return;
+        if (isDragging) {
+            startMomentum(lastVelocity);
+        }
+        isDragging = false;
+        isPointerDown = false;
+        try {
+            songList.releasePointerCapture(e.pointerId);
+        } catch (err) {}
+    }
+
+    function startMomentum(initialVelocityPxPerMs: number) {
+        stopMomentum();
+        if (!songList || Math.abs(initialVelocityPxPerMs) < 0.02) return;
+        let v = initialVelocityPxPerMs; // px/ms
+        let last = performance.now();
+        function step(ts: number) {
+            if (!songList) return;
+            const dt = ts - last;
+            last = ts;
+            // Secolling v is px/ms, so multiply by dt to get px
+            // Apply motion in negative because pointer movement is opposite of content movement
+            const movePx = -v * dt;
+            if (movePx !== 0) {
+                songList.scrollLeft += movePx;
+            }
+            const frictionPerFrame = 0.92; // Base decay per 16ms frame
+            const frames = Math.max(dt / 16, 1);
+            v *= Math.pow(frictionPerFrame, frames);
+            if (songList.scrollLeft <= 0 || songList.scrollLeft >= songList.scrollWidth - songList.clientWidth) {
+                momentumId = null;
+                return;
+            }
+            if (Math.abs(v) < 0.02) {
+                momentumId = null;
+                return;
+            }
+            momentumId = requestAnimationFrame(step);
+        }
+        momentumId = requestAnimationFrame(step);
+    }
+
+    function stopMomentum() {
+        if (momentumId != null) {
+            cancelAnimationFrame(momentumId);
+            momentumId = null;
+        }
+    }
 
     function scrollSection(direction: "left" | "right") {
         if (songList) {
-            songList.scrollTo({
-                left: direction === "left" ? songList.scrollLeft - 1000 : songList.scrollLeft + 1000,
-                behavior: "smooth",
-            });
+            // Cancel momentum so user can re-assert control
+            stopMomentum();
+            const left = direction === "left" ? songList.scrollLeft - 1000 : songList.scrollLeft + 1000;
+            songList.scrollTo({ left, behavior: "smooth" });
+        }
+    }
+
+    let scrollSide: "left" | "right" | null = $state("left");
+    function handleScroll(e: Event) {
+        if (!songList) return;
+        const target = e.target as HTMLElement;
+        if (target.scrollLeft === 0) {
+            scrollSide = "left";
+        } else if (target.scrollLeft + target.clientWidth >= target.scrollWidth) {
+            scrollSide = "right";
+        } else {
+            scrollSide = null;
         }
     }
 </script>
@@ -46,20 +150,30 @@
         <div
             in:fade={{ duration: 100 }}
             bind:this={songList}
-            class="flex gap-2 overflow-x-auto overflow-y-hidden py-2 md:py-5"
-            style="scrollbar-width: none;"
+            onpointerdown={onPointerDown}
+            onpointermove={onPointerMove}
+            onpointerup={onPointerUp}
+            onpointercancel={onPointerUp}
+            onpointerleave={onPointerUp}
+            onscroll={handleScroll}
+            class={cn(
+                "flex gap-2 overflow-x-auto overflow-y-hidden py-2 md:py-5",
+                isDragging ? "cursor-grabbing select-none" : "cursor-grab",
+                className,
+            )}
+            style="scrollbar-width: none; touch-action: pan-y;"
         >
             {#each songs as song}
                 {@const enhanced = enhanceSong(song)}
                 <button
                     class="group/btn flex shrink-0 cursor-pointer flex-col items-start justify-center gap-2 rounded-lg p-3 transition-colors duration-200 hover:bg-slate-800"
                     onclick={async () => {
+                        if (isDragging) return;
                         await play(song, user?.id);
                     }}
-                    oncontextmenu={async(e) => {
+                    oncontextmenu={async (e) => {
+                        if (isDragging) return;
                         e.preventDefault();
-                        const { createSongActions } = await import("$lib/ctxmenu/actions");
-                        const { openCtxMenu, closeCtxMenu } = await import("$lib/ctxmenu");
                         const actions = createSongActions(song, user?.id);
                         openCtxMenu(e, actions);
                     }}
@@ -78,14 +192,30 @@
             {/each}
 
             <div
-                class="pointer-events-none absolute inset-0 mb-10 flex items-center justify-between px-5 opacity-0 transition-opacity duration-200 group-hover:opacity-100"
+                class="pointer-events-none absolute inset-0 flex items-center justify-between opacity-0 transition-opacity duration-400 group-hover:opacity-100"
             >
-                <Button onclick={() => scrollSection("left")} size="" class="pointer-events-auto left-0 flex items-center justify-center p-2">
-                    <SolarAltArrowLeftLinear class="size-6" />
-                </Button>
-                <Button onclick={() => scrollSection("right")} size="" class="pointer-events-auto right-0 flex items-center justify-center p-2">
-                    <SolarAltArrowRightLinear class="size-6" />
-                </Button>
+                <button
+                    onclick={() => {
+                        if (isDragging) return;
+                        scrollSection("left");
+                    }}
+                    class="pointer-events-auto left-0 flex h-full w-20 cursor-pointer items-center justify-center bg-linear-270 from-transparent to-slate-900/80 pr-10 transition-all duration-400"
+                    class:pointer-events-none={scrollSide === "left"}
+                    class:opacity-0={scrollSide === "left"}
+                >
+                    <SolarAltArrowLeftLinear class="size-7" />
+                </button>
+                <button
+                    onclick={() => {
+                        if (isDragging) return;
+                        scrollSection("right");
+                    }}
+                    class="pointer-events-auto right-0 flex h-full w-20 cursor-pointer items-center justify-center -bg-linear-270 from-transparent to-slate-900/80 pl-10 transition-all duration-400"
+                    class:pointer-events-none={scrollSide === "right"}
+                    class:opacity-0={scrollSide === "right"}
+                >
+                    <SolarAltArrowRightLinear class="size-7" />
+                </button>
             </div>
         </div>
     </div>
