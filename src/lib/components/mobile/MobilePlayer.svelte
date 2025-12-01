@@ -64,7 +64,7 @@
                 ></div>
             </div>
             <div class="w-full max-w-sm cursor-pointer text-left" oncontextmenu={handleContextMenu} role="button" tabindex="0">
-                <MarqueeText text={$store.meta?.name || ""} class="mb-1 text-xl font-bold text-white" />
+                <MarqueeText pause={$store.state !== "playing"} text={$store.meta?.name || ""} class="mb-1 text-xl font-bold text-white" />
                 <span class="text-base text-slate-300">{$store.meta?.artist.name}</span>
             </div>
         </div>
