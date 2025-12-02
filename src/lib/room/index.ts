@@ -128,7 +128,7 @@ export function sendPlayerRoomEvent(userId: string | null | undefined, event: st
     const room = get(userRoomStore);
     const isRmHost = isRoomHost(userId);
     if (room && isRmHost) {
-        const roomChannel = supabaseChannel(`room:${room.id}-player-events`);
+        const roomChannel = supabaseChannel(`room:${room.id}-events`);
         roomChannel.httpSend(event, payload);
     }
 }
