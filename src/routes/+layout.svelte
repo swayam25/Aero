@@ -161,7 +161,7 @@
                             userRoomStore.set(room);
                             stop();
                             $store.queue = $userRoomStore?.queue || [];
-                            supabaseChannel(`room:${member.roomId}-player-events`).httpSend("request_init", {});
+                            supabaseChannel(`room:${member.roomId}-events`).httpSend("request_init", {});
                         }
                     }
                 },
@@ -238,7 +238,7 @@
         let roomChannel: RealtimeChannel;
         let pendingSyncUnsub: (() => void) | undefined;
         if (data.user && $userRoomStore && $userRoomStore.id) {
-            roomChannel = supabaseChannel(`room:${$userRoomStore.id}-player-events`);
+            roomChannel = supabaseChannel(`room:${$userRoomStore.id}-events`);
             if (!isRoomHost) {
                 roomChannel
                     .on("broadcast", { event: "init" }, (payload) => {
@@ -302,6 +302,9 @@
                     .on("broadcast", { event: "shuffle" }, (payload) => {
                         const { shuffle } = payload.payload as { shuffle: string };
                         setShuffle(shuffle === "true", data.user?.id);
+                    })
+                    .on("broadcast", { event: "host_disconnect" }, () => {
+                        toast.error("Room host has disconnected.");
                     });
             } else {
                 roomChannel
@@ -342,13 +345,19 @@
 
     onMount(() => {
         async function handleDisconnect() {
-            // Only leave if user is a member (not host)
-            if (data.user && $userRoomStore && $userRoomStore.id && !isRoomHost) {
-                try {
-                    const blob = new Blob([JSON.stringify({ key: "leave" })], { type: "application/json" });
-                    navigator.sendBeacon(`/api/room/${$userRoomStore.id}`, blob);
-                } catch (error) {
-                    console.error("Failed to leave room:", error);
+            if (data.user && $userRoomStore && $userRoomStore.id) {
+                if (!isRoomHost) {
+                    try {
+                        const blob = new Blob([JSON.stringify({ key: "leave" })], { type: "application/json" });
+                        navigator.sendBeacon(`/api/room/${$userRoomStore.id}`, blob);
+                    } catch (error) {
+                        console.error("Failed to leave room:", error);
+                    }
+                } else {
+                    const blob = new Blob([JSON.stringify({ key: "host_disconnect", value: { roomID: $userRoomStore.id } })], {
+                        type: "application/json",
+                    });
+                    navigator.sendBeacon(`/api/room`, blob);
                 }
             }
         }

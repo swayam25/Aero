@@ -1,4 +1,5 @@
 import { createRoom, deleteRoom, renameRoom } from "$lib/db";
+import supabaseChannel from "$lib/supabase/channel";
 import { json, type RequestHandler } from "@sveltejs/kit";
 
 export const POST: RequestHandler = async ({ locals, request }) => {
@@ -13,6 +14,9 @@ export const POST: RequestHandler = async ({ locals, request }) => {
         return json({ success: true, room });
     } else if (key === "rename_room") {
         await renameRoom(locals.db, value.roomID, value.name.substring(0, 20).trim());
+    } else if (key === "host_disconnect") {
+        await supabaseChannel(`room:${value.roomID}-events`).httpSend(key, {});
+        await deleteRoom(locals.db, value.roomID);
     }
 
     return json({ success: true });
