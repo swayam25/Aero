@@ -111,7 +111,6 @@
             }
             return;
         }
-        e.preventDefault(); // Prevent scrolling while dragging
         const touch = e.touches[0];
         touchCurrentY = touch.clientY;
         const elements = Array.from(containerElement.children);
