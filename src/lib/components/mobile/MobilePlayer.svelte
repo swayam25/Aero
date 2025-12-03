@@ -64,7 +64,7 @@
                 ></div>
             </div>
             <div class="w-full max-w-sm cursor-pointer text-left" oncontextmenu={handleContextMenu} role="button" tabindex="0">
-                <MarqueeText pause={$store.state !== "playing"} text={$store.meta?.name || ""} class="mb-1 text-xl font-bold text-white" />
+                <MarqueeText pause={$store.state !== "playing"} class="mb-1 text-xl font-bold text-slate-50">{$store.meta?.name || ""}</MarqueeText>
                 <span class="text-base text-slate-300">{$store.meta?.artist.name}</span>
             </div>
         </div>
@@ -85,19 +85,19 @@
             <!-- Main Playback Controls -->
             <div class="flex items-center justify-center gap-6">
                 <button onclick={() => previous(user?.id)} class="size-12 opacity-80 transition-opacity hover:opacity-100">
-                    <SolarSkipPreviousBold class="size-full text-white" />
+                    <SolarSkipPreviousBold class="size-full text-slate-50" />
                 </button>
 
                 <button class="size-20 transition-colors duration-200 hover:text-sky-400" onclick={() => togglePause(user?.id)}>
                     {#if $store.state === "playing"}
-                        <SolarPauseCircleBold class="size-full text-white" />
+                        <SolarPauseCircleBold class="size-full text-slate-50" />
                     {:else}
-                        <SolarPlayCircleBold class="size-full text-white" />
+                        <SolarPlayCircleBold class="size-full text-slate-50" />
                     {/if}
                 </button>
 
                 <button onclick={() => skip(user?.id)} class="size-12 opacity-80 transition-opacity hover:opacity-100">
-                    <SolarSkipNextBold class="size-full text-white" />
+                    <SolarSkipNextBold class="size-full text-slate-50" />
                 </button>
             </div>
         </div>

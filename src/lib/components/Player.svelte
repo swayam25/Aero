@@ -77,7 +77,7 @@
             </div>
         {:else}
             <div in:fly={{ duration: 100 }} class="flex max-w-40 flex-col items-start justify-center text-left">
-                <MarqueeText pause={$store.state !== "playing"} text={$store.meta?.name || ""} class="text-sm font-semibold" />
+                <MarqueeText pause={$store.state !== "playing"} class="text-sm font-semibold">{$store.meta?.name || ""}</MarqueeText>
                 <span class="w-20 truncate text-xs text-slate-400 md:w-40">{$store.meta?.artist.name}</span>
             </div>
         {/if}

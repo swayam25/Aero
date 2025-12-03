@@ -198,7 +198,7 @@
         class:!cursor-not-allowed={!isRoomHost}
     >
         {#if $store.loop === "none"}
-            <SolarRepeatLinear class="size-full text-white" />
+            <SolarRepeatLinear class="size-full text-slate-50" />
         {:else if $store.loop === "single"}
             <SolarRepeatOneLinear class="size-full text-sky-500" />
         {:else}
@@ -213,7 +213,7 @@
         class:!cursor-not-allowed={$store.queue.length < 2}
         disabled={$store.queue.length < 2}
     >
-        <SolarPlaylist2Linear class="size-full text-white" />
+        <SolarPlaylist2Linear class="size-full text-slate-50" />
     </button>
 
     <!-- Lyrics -->
@@ -223,7 +223,7 @@
         class:!cursor-not-allowed={!$store.meta}
         disabled={!$store.meta}
     >
-        <SolarMicrophoneLargeLinear class="size-full text-white" />
+        <SolarMicrophoneLargeLinear class="size-full text-slate-50" />
     </button>
 
     <!-- Shuffle -->
@@ -234,7 +234,7 @@
         disabled={$store.queue.length < 2 || !isRoomHost}
         class:!cursor-not-allowed={$store.queue.length < 2 || !isRoomHost}
     >
-        <SolarShuffleLinear class="size-full {$store.shuffle ? 'text-sky-500' : 'text-white'}" />
+        <SolarShuffleLinear class="size-full {$store.shuffle ? 'text-sky-500' : 'text-slate-50'}" />
     </button>
 
     <!-- Download -->
