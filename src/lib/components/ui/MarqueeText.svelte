@@ -3,7 +3,6 @@
     import type { Snippet } from "svelte";
 
     interface Props {
-        text?: string;
         class?: string;
         pauseOnHover?: boolean;
         direction?: "left" | "right";
@@ -13,16 +12,7 @@
         children?: Snippet;
     }
 
-    let {
-        text = "",
-        class: className = "",
-        pauseOnHover = true,
-        direction = "left",
-        speed = 5,
-        pause = false,
-        fadeSides = true,
-        children,
-    }: Props = $props();
+    let { class: className = "", pauseOnHover = true, direction = "left", speed = 40, pause = false, fadeSides = true, children }: Props = $props();
 
     let containerWidth: number = $state(0);
     let marqueeWidth: number = $state(0);
@@ -59,25 +49,15 @@
         ? duration + 's'
         : '0s'};  --pause-on-hover: {pauseOnHoverState}; --marquee-distance: {marqueeWidth}px;"
 >
-    <div class="marquee-wrapper" class:animate={shouldAnimate}>
-        <div class="marquee" bind:clientWidth={marqueeWidth} data-testid="marquee-slot">
-            {#if children}
-                {@render children?.()}
-            {:else}
-                {text}
-            {/if}
-        </div>
-
-        {#if shouldAnimate}
-            <div class="marquee" aria-hidden="true">
-                {#if children}
-                    {@render children?.()}
-                {:else}
-                    {text}
-                {/if}
-            </div>
-        {/if}
+    <div class="marquee" bind:clientWidth={marqueeWidth} data-testid="marquee-slot">
+        {@render children?.()}
     </div>
+
+    {#if shouldAnimate}
+        <div class="marquee" aria-hidden="true">
+            {@render children?.()}
+        </div>
+    {/if}
 </div>
 
 <style>
@@ -93,20 +73,8 @@
         position: relative;
     }
 
-    .marquee-wrapper {
-        display: flex;
-        gap: var(--gap);
-        flex-shrink: 0;
-        animation-play-state: running;
-        animation-direction: var(--direction, normal);
-    }
-
-    .marquee-container:hover .marquee-wrapper {
+    .marquee-container:hover .marquee {
         animation-play-state: var(--pause-on-hover);
-    }
-
-    .marquee-wrapper.animate {
-        animation: scroll var(--duration, 0s) linear infinite;
     }
 
     .marquee {
@@ -115,6 +83,12 @@
         display: flex;
         flex-direction: row;
         align-items: center;
+        display: flex;
+        gap: var(--gap);
+        flex-shrink: 0;
+        animation: scroll var(--duration, 0s) linear infinite;
+        animation-play-state: running;
+        animation-direction: var(--direction, normal);
     }
 
     @keyframes scroll {
