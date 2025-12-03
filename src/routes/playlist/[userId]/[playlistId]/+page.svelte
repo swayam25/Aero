@@ -176,32 +176,56 @@
             </div>
         </div>
     {:else}
-        {#each playlistObject as { id, song }, idx (id)}
-            {#await song}
-                <div
-                    in:fade={{ duration: 100 }}
-                    class="flex w-full items-center justify-center gap-2 rounded-lg bg-slate-800 p-2 transition-colors duration-200"
-                >
-                    <div class="flex size-10 items-center justify-center p-1 text-lg">
-                        <span class="text-slate-200">{idx + 1}</span>
-                    </div>
-                    <div class="size-15 shrink-0 animate-pulse rounded-lg bg-slate-900"></div>
-                    <div class="flex w-full flex-col items-start justify-center gap-2 text-left">
-                        <div class="h-5 w-[80%] animate-pulse rounded-lg bg-slate-900 font-bold"></div>
-                        <div class="h-5 w-[50%] animate-pulse truncate rounded-lg bg-slate-900"></div>
-                    </div>
-                </div>
-            {:then song}
-                {@const enhanced = enhanceSong(song)}
-                <Draggable
-                    items={playlistObject}
-                    onReorder={handleReorder}
-                    onDragEnd={handleDragEnd}
-                    disabled={data.loginUser?.id !== data.user.id || $isImportingPlaylist}
-                    class="w-full"
-                >
-                    {#snippet children()}
-                        <li class="w-full">
+        <Draggable
+            onReorder={handleReorder}
+            onDragEnd={handleDragEnd}
+            disabled={data.loginUser?.id !== data.user.id || $isImportingPlaylist}
+            class="flex w-full list-none flex-col items-start justify-center gap-2"
+        >
+            {#snippet children({
+                isDragging,
+                dragIndex,
+                handleDragStart,
+                handleDragOver,
+                handleDragEnter,
+                handleDragLeave,
+                handleDrop,
+                handleDragEnd,
+                handleTouchStart,
+                handleTouchEnd,
+                dragOverIndex,
+            }: any)}
+                {#each playlistObject as { id, song }, idx (id)}
+                    {#await song}
+                        <div
+                            in:fade={{ duration: 100 }}
+                            class="flex w-full items-center justify-center gap-2 rounded-lg bg-slate-800 p-2 transition-colors duration-200"
+                        >
+                            <div class="flex size-10 items-center justify-center p-1 text-lg">
+                                <span class="text-slate-200">{idx + 1}</span>
+                            </div>
+                            <div class="size-15 shrink-0 animate-pulse rounded-lg bg-slate-900"></div>
+                            <div class="flex w-full flex-col items-start justify-center gap-2 text-left">
+                                <div class="h-5 w-[80%] animate-pulse rounded-lg bg-slate-900 font-bold"></div>
+                                <div class="h-5 w-[50%] animate-pulse truncate rounded-lg bg-slate-900"></div>
+                            </div>
+                        </div>
+                    {:then song}
+                        {@const enhanced = enhanceSong(song)}
+                        <li
+                            class="w-full border-sky-500 transition-all duration-200"
+                            draggable={data.loginUser?.id !== data.user.id || $isImportingPlaylist ? "false" : "true"}
+                            ondragstart={(e) => handleDragStart(e, idx)}
+                            ondragover={(e) => handleDragOver(e, idx)}
+                            ondragenter={(e) => handleDragEnter(e, idx)}
+                            ondragleave={handleDragLeave}
+                            ondrop={(e) => handleDrop(e, idx)}
+                            ondragend={handleDragEnd}
+                            ontouchstart={(e) => handleTouchStart(e, idx)}
+                            ontouchend={handleTouchEnd}
+                            class:opacity-50={isDragging && dragIndex === idx}
+                            class:border-t={dragOverIndex === idx && dragIndex !== idx}
+                        >
                             <button
                                 onclick={async () => {
                                     await playPlaylist(
@@ -222,7 +246,7 @@
                                     );
                                     openCtxMenu(e, actions);
                                 }}
-                                class="group pl-song-handle flex w-full min-w-0 cursor-pointer items-center justify-start gap-2 rounded-lg p-2 transition-colors duration-200 hover:bg-slate-800"
+                                class="group flex w-full min-w-0 cursor-pointer items-center justify-start gap-2 rounded-lg p-2 transition-colors duration-200 hover:bg-slate-800"
                             >
                                 <div class="flex size-10 items-center justify-center p-1 text-lg">
                                     {#if song.videoId === $store.meta?.videoId}
@@ -244,9 +268,9 @@
                                 <p class="shrink-0 text-sm text-slate-400">{formatTime(song.duration ?? 0)}</p>
                             </button>
                         </li>
-                    {/snippet}
-                </Draggable>
-            {/await}
-        {/each}
+                    {/await}
+                {/each}
+            {/snippet}
+        </Draggable>
     {/if}
 </ul>

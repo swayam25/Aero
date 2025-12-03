@@ -33,18 +33,42 @@
         <h1 class="text-3xl font-bold md:text-4xl">{$userRoomStore ? "Room" : ""} Queue</h1>
     </div>
 
-    <div class="h-[calc(100vh-232px)] overflow-x-hidden overflow-y-auto px-2 pb-2 md:px-5 md:pb-5">
-        {#each $store.queue as song, idx (song.videoId)}
-            <Draggable
-                items={$store.queue}
-                onReorder={handleReorder}
-                onDragEnd={async () => {
-                    await setQueueAPI($store.queue);
-                }}
-                class="w-full"
-                disabled={!isRoomHost}
-            >
-                {#snippet children({ isDragging, dragIndex }: { isDragging: boolean; dragIndex: number })}
+    <Draggable
+        onReorder={handleReorder}
+        onDragEnd={async () => {
+            await setQueueAPI($store.queue);
+        }}
+        class="h-[calc(100vh-232px)] list-none overflow-x-hidden overflow-y-auto pb-2 md:px-5 md:pb-5"
+        disabled={!isRoomHost}
+    >
+        {#snippet children({
+            isDragging,
+            dragIndex,
+            handleDragStart,
+            handleDragOver,
+            handleDragEnter,
+            handleDragLeave,
+            handleDrop,
+            handleDragEnd,
+            handleTouchStart,
+            handleTouchEnd,
+            dragOverIndex,
+        }: any)}
+            {#each $store.queue as song, idx (song.videoId)}
+                <li
+                    draggable={!isRoomHost ? "false" : "true"}
+                    ondragstart={(e) => handleDragStart(e, idx)}
+                    ondragover={(e) => handleDragOver(e, idx)}
+                    ondragenter={(e) => handleDragEnter(e, idx)}
+                    ondragleave={handleDragLeave}
+                    ondrop={(e) => handleDrop(e, idx)}
+                    ondragend={handleDragEnd}
+                    ontouchstart={(e) => handleTouchStart(e, idx)}
+                    ontouchend={handleTouchEnd}
+                    class="song-handle border-sky-500 transition-all duration-200"
+                    class:opacity-50={isDragging && dragIndex === idx}
+                    class:border-t={dragOverIndex === idx && dragIndex !== idx}
+                >
                     <button
                         onclick={async () => {
                             await play(song, user?.id, true);
@@ -54,7 +78,7 @@
                             const actions = createSongActions(song, user?.id);
                             openCtxMenu(e, actions);
                         }}
-                        class="group song-handle flex w-full min-w-0 cursor-pointer items-center justify-start gap-2 rounded-lg p-2 transition-colors duration-200 hover:bg-slate-800"
+                        class="group flex w-full min-w-0 cursor-pointer items-center justify-start gap-2 rounded-lg p-2 transition-colors duration-200 hover:bg-slate-800"
                     >
                         <div class="size-10 p-1 text-lg">
                             {#if song.videoId === $store.meta?.videoId}
@@ -74,8 +98,8 @@
                             <p class="w-full truncate text-sm text-slate-400" title={song.artist.name}>{song.artist.name}</p>
                         </div>
                     </button>
-                {/snippet}
-            </Draggable>
-        {/each}
-    </div>
+                </li>
+            {/each}
+        {/snippet}
+    </Draggable>
 </div>

@@ -25,7 +25,7 @@
         /* Adjust height for mobile drawer context and improve padding */
         height: 100% !important;
         max-height: 100% !important;
-        padding: 0 1rem 1rem 1rem !important;
+        padding: 0 !important;
     }
 
     :global(.mobile-lyrics-wrapper p) {
@@ -34,11 +34,5 @@
         font-size: 0.95rem !important;
         white-space: pre-line !important;
         text-align: center !important;
-    }
-
-    :global(.mobile-lyrics-wrapper > div > div:last-child > div) {
-        /* Center empty state content better */
-        height: 16rem !important;
-        gap: 1rem !important;
     }
 </style>
