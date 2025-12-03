@@ -12,22 +12,33 @@ const createPlaylistsCache = () => {
         lastUpdated: 0,
     });
 
+    let refreshPromise: Promise<void> | null = null;
+
     return {
         subscribe,
         load: (playlists: InsertPlaylist[]) => {
             set({ playlists, lastUpdated: Date.now() });
         },
         refresh: async () => {
-            try {
-                const resp = await fetch(`/api/playlists`);
-                if (!resp.ok) {
-                    throw new Error(`Failed to fetch playlists: ${resp.status} ${resp.statusText}`);
-                }
-                const playlists = (await resp.json()) as InsertPlaylist[];
-                update((cache) => ({ playlists, lastUpdated: Date.now() }));
-            } catch (error) {
-                console.error("Failed to refresh playlists cache:", error);
+            if (refreshPromise) {
+                return refreshPromise;
             }
+            refreshPromise = (async () => {
+                try {
+                    const resp = await fetch(`/api/playlists`);
+                    if (!resp.ok) {
+                        throw new Error(`Failed to fetch playlists: ${resp.status} ${resp.statusText}`);
+                    }
+                    const playlists = (await resp.json()) as InsertPlaylist[];
+                    update((cache) => ({ playlists, lastUpdated: Date.now() }));
+                } catch (error) {
+                    console.error("Failed to refresh playlists cache:", error);
+                } finally {
+                    refreshPromise = null;
+                }
+            })();
+
+            return refreshPromise;
         },
         setCache: (playlists: InsertPlaylist[]) => {
             set({

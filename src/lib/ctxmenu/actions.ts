@@ -339,6 +339,8 @@ async function loadPlaylistSubmenu(song: SongDetailed): Promise<CtxAction[]> {
             playlists = playlistsCache.getPlaylists(cache);
         } else {
             await playlistsCache.refresh();
+            const updatedCache = get(playlistsCache);
+            playlists = playlistsCache.getPlaylists(updatedCache);
         }
 
         if (playlists.length === 0) {
