@@ -1,5 +1,6 @@
 <script lang="ts">
     import { invalidateAll } from "$app/navigation";
+    import Avatar from "$lib/components/ui/Avatar.svelte";
     import Draggable from "$lib/components/ui/Draggable.svelte";
     import Seo from "$lib/components/ui/Seo.svelte";
     import Switch from "$lib/components/ui/Switch.svelte";
@@ -158,16 +159,7 @@
                         animateAvatar = false;
                     }}
                 >
-                    <div class="relative flex size-8 items-center justify-center">
-                        <img src="{data.user.url?.avatar}{animateAvatar ? '' : '.webp'}" alt="User Avatar" class="size-full rounded-full" />
-                        {#if data.user?.url?.avatarDecoration}
-                            <img
-                                src="{data.user.url?.avatarDecoration}{animateAvatar ? '' : '.webp'}"
-                                alt="Avatar Decoration"
-                                class="absolute size-full rounded-full"
-                            />
-                        {/if}
-                    </div>
+                    <Avatar user={data.user} animateOnHover={false} {animateAvatar} size="sm" />
                     <p>{data.user?.global_name}</p>
                 </a>
             </div>
