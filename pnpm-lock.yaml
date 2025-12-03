@@ -11,9 +11,6 @@ importers:
       '@iconify/json':
         specifier: ^2.2.410
         version: 2.2.410
-      '@neodrag/svelte':
-        specifier: ^2.3.3
-        version: 2.3.3(svelte@5.44.0)
       '@spotify/web-api-ts-sdk':
         specifier: ^1.2.0
         version: 1.2.0
@@ -655,11 +652,6 @@ packages:
     resolution: {integrity: sha512-7SbOa11tXUS95T3fReL+dwDs5FyJtCEqrqG3inRziDws346SYLsxOQ6HmX+4BkIsQh1R8U3XNa+EMmdMt38lMA==}
     peerDependencies:
       svelte: '>=3 <5'
-
-  '@neodrag/svelte@2.3.3':
-    resolution: {integrity: sha512-avXzhrilsBsnMFljhVAQ7h+6hbSIrvRCJ61GCiGbGISkC1QOhjDCNvPZo2+7KVwiYrnUBx4NRH0kTIqrcxv9Lg==}
-    peerDependencies:
-      svelte: ^3.0.0 || ^4.0.0 || ^5.0.0
 
   '@neondatabase/serverless@0.10.4':
     resolution: {integrity: sha512-2nZuh3VUO9voBauuh+IGYRhGU/MskWHt1IuZvHcJw6GLjDgtqj/KViKo7SIrLdGLdot7vFbiRRw+BgEy3wT9HA==}
@@ -2383,10 +2375,6 @@ snapshots:
       dequal: 2.0.3
       focus-trap: 7.6.6
       nanoid: 5.1.6
-      svelte: 5.44.0
-
-  '@neodrag/svelte@2.3.3(svelte@5.44.0)':
-    dependencies:
       svelte: 5.44.0
 
   '@neondatabase/serverless@0.10.4':

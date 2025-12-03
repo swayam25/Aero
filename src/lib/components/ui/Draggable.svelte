@@ -1,91 +1,183 @@
 <script lang="ts">
-    import type { DragOptions } from "@neodrag/svelte";
-    import { draggable } from "@neodrag/svelte";
-
     type DraggableProps = {
-        items: any[];
         onReorder: (fromIndex: number, toIndex: number) => void;
         onDragStart?: (index: number) => void;
         onDragEnd?: (index: number) => void;
-        onDrag?: (index: number, translateY: number) => void;
-        dragOptions?: Partial<DragOptions>;
+        onDrag?: (index: number) => void;
         class?: string;
         disabled?: boolean;
     };
 
     let {
-        items,
         onReorder,
         onDragStart,
         onDragEnd,
         onDrag,
-        dragOptions = {},
         class: className = "",
         disabled = false,
         children,
     }: DraggableProps & { children: any } = $props();
 
-    let currentDragIndex = $state(0);
-    let translateY = $state(0);
-    let lastOffsetY = $state(0);
     let dragging = $state(false);
+    let currentDragIndex = $state(-1);
+    let dragOverIndex = $state(-1);
 
-    const defaultOptions: DragOptions = {
-        axis: "y",
-        bounds: "parent",
-        recomputeBounds: {
-            drag: true,
-        },
-        onDragStart({ rootNode, offsetY }) {
-            currentDragIndex = [...rootNode.parentNode!.children].indexOf(rootNode);
-            lastOffsetY = offsetY;
-            translateY = 0;
-            dragging = true;
-            onDragStart?.(currentDragIndex);
-        },
-        onDrag({ rootNode, offsetY }) {
-            translateY += offsetY - lastOffsetY;
-            lastOffsetY = offsetY;
+    let touchStartY = $state(0);
+    let touchCurrentY = $state(0);
+    let touchTimeout: number | null = null;
+    let isTouchDragging = $state(false);
 
-            if (translateY > 0.5 * rootNode.clientHeight && currentDragIndex < items.length - 1) {
-                shiftItem(rootNode, 1);
-            } else if (translateY < -0.5 * rootNode.clientHeight && currentDragIndex > 0) {
-                shiftItem(rootNode, -1);
-            }
-
-            onDrag?.(currentDragIndex, translateY);
-        },
-        onDragEnd({ rootNode }) {
-            rootNode.style.transform = `translate3d(0,0,0)`;
-            translateY = 0;
-            dragging = false;
-            onDragEnd?.(currentDragIndex);
-        },
-        transform() {
-            return `translate3d(0,${translateY}px,0)`;
-        },
-    };
-
-    // Merge user options with default options and apply disabled state
-    const options: DragOptions = { ...defaultOptions, ...dragOptions, disabled };
-
-    function shiftItem(item: HTMLElement, shift: number) {
-        const newIndex = currentDragIndex + shift;
-
-        // Call the reorder callback
-        onReorder(currentDragIndex, newIndex);
-
-        // Update internal state
-        currentDragIndex = newIndex;
-        translateY -= shift * item.offsetHeight;
+    function handleDragStart(e: DragEvent, index: number) {
+        if (disabled) return;
+        dragging = true;
+        currentDragIndex = index;
+        onDragStart?.(index);
+        if (e.dataTransfer) {
+            e.dataTransfer.effectAllowed = "move";
+            e.dataTransfer.setData("text/html", (e.target as HTMLElement).innerHTML);
+        }
     }
 
-    // Export the dragging state so parent components can use it
-    // This allows parent components to access dragging state for animations
+    function handleDragOver(e: DragEvent, index: number) {
+        if (disabled) return;
+        e.preventDefault();
+        if (e.dataTransfer) {
+            e.dataTransfer.dropEffect = "move";
+        }
+        dragOverIndex = index;
+        onDrag?.(index);
+    }
+
+    function handleDragEnter(e: DragEvent, index: number) {
+        if (disabled) return;
+        e.preventDefault();
+        dragOverIndex = index;
+    }
+
+    function handleDragLeave(e: DragEvent) {
+        if (disabled) return;
+        dragOverIndex = -1;
+    }
+
+    function handleDrop(e: DragEvent, dropIndex: number) {
+        if (disabled) return;
+        e.preventDefault();
+        e.stopPropagation();
+        if (currentDragIndex !== dropIndex && currentDragIndex !== -1) {
+            onReorder(currentDragIndex, dropIndex);
+        }
+        dragging = false;
+        dragOverIndex = -1;
+        const endIndex = dropIndex;
+        currentDragIndex = -1;
+        onDragEnd?.(endIndex);
+    }
+
+    function handleDragEnd(e: DragEvent) {
+        if (disabled) return;
+        dragging = false;
+        dragOverIndex = -1;
+        const endIndex = currentDragIndex;
+        currentDragIndex = -1;
+        if (endIndex !== -1) {
+            onDragEnd?.(endIndex);
+        }
+    }
+
+    function handleTouchStart(e: TouchEvent, index: number) {
+        if (disabled) return;
+        const touch = e.touches[0];
+        touchStartY = touch.clientY;
+        touchCurrentY = touch.clientY;
+        // Start a timeout to initiate drag after 500ms of holding
+        touchTimeout = window.setTimeout(() => {
+            isTouchDragging = true;
+            dragging = true;
+            currentDragIndex = index;
+            onDragStart?.(index);
+
+            // Prevent context menu
+            if (e.cancelable) {
+                e.preventDefault();
+            }
+        }, 500);
+    }
+
+    function handleTouchMove(e: TouchEvent, containerElement: HTMLElement) {
+        if (disabled || !isTouchDragging) {
+            if (touchTimeout && !isTouchDragging) {
+                clearTimeout(touchTimeout);
+                touchTimeout = null;
+            }
+            return;
+        }
+        e.preventDefault(); // Prevent scrolling while dragging
+        const touch = e.touches[0];
+        touchCurrentY = touch.clientY;
+        const elements = Array.from(containerElement.children);
+        let overIndex = -1;
+        for (let i = 0; i < elements.length; i++) {
+            const rect = elements[i].getBoundingClientRect();
+            if (touch.clientY >= rect.top && touch.clientY <= rect.bottom) {
+                overIndex = i;
+                break;
+            }
+        }
+        if (overIndex !== -1) {
+            dragOverIndex = overIndex;
+            onDrag?.(overIndex);
+        }
+    }
+
+    function handleTouchEnd(e: TouchEvent) {
+        if (touchTimeout) {
+            clearTimeout(touchTimeout);
+            touchTimeout = null;
+        }
+        if (disabled || !isTouchDragging) return;
+
+        if (currentDragIndex !== dragOverIndex && dragOverIndex !== -1 && currentDragIndex !== -1) {
+            onReorder(currentDragIndex, dragOverIndex);
+        }
+        const endIndex = dragOverIndex !== -1 ? dragOverIndex : currentDragIndex;
+        isTouchDragging = false;
+        dragging = false;
+        dragOverIndex = -1;
+        currentDragIndex = -1;
+        if (endIndex !== -1) {
+            onDragEnd?.(endIndex);
+        }
+    }
+
     let isDragging = $derived(dragging);
     let dragIndex = $derived(currentDragIndex);
+    let containerElement: HTMLElement;
 </script>
 
-<div class={className} use:draggable={options}>
-    {@render children({ isDragging, dragIndex })}
+<div
+    bind:this={containerElement}
+    class={className}
+    ontouchmove={(e) => containerElement && handleTouchMove(e, containerElement)}
+    style="touch-action: {dragging ? 'none' : 'auto'};"
+>
+    {@render children({
+        isDragging,
+        dragIndex,
+        handleDragStart,
+        handleDragOver,
+        handleDragEnter,
+        handleDragLeave,
+        handleDrop,
+        handleDragEnd,
+        handleTouchStart,
+        handleTouchEnd,
+        dragOverIndex,
+    })}
 </div>
+
+<style>
+    div {
+        -webkit-user-select: none;
+        user-select: none;
+    }
+</style>

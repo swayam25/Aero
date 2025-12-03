@@ -25,10 +25,8 @@
 
     :global(.mobile-queue-wrapper .song-handle) {
         /* Optimize for mobile touch */
-        padding: 0.75rem !important;
         margin-bottom: 0.5rem !important;
         background-color: var(--color-slate-900) !important;
-        border-radius: 0.5rem !important;
     }
 
     :global(.mobile-queue-wrapper .song-handle:hover) {
