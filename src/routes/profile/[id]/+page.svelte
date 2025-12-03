@@ -1,4 +1,5 @@
 <script lang="ts">
+    import Avatar from "$lib/components/ui/Avatar.svelte";
     import Badge from "$lib/components/ui/Badge.svelte";
     import Seo from "$lib/components/ui/Seo.svelte";
     import { formatCount } from "$lib/utils/format";
@@ -26,15 +27,8 @@
         {/if}
     </div>
     <div class="-mt-12 ml-10 flex w-full items-center justify-start gap-4">
-        <div class="relative flex size-25 shrink-0 items-center justify-center md:size-30">
-            <img
-                src={data.user?.url?.avatar}
-                alt="User Avatar"
-                class="rounded-full border-8 border-slate-950 bg-slate-950 md:border-slate-900 md:bg-slate-900"
-            />
-            {#if data.user?.url?.avatarDecoration}
-                <img src={data.user.url.avatarDecoration} alt="Avatar Decoration" class="absolute rounded-full" />
-            {/if}
+        <div class="rounded-full border-8 border-slate-900">
+            <Avatar user={data.user} class="size-24 cursor-default md:size-32" size="" animateOnHover={false} animateAvatar />
         </div>
         <div class="mt-14 flex flex-col items-start justify-center">
             <div class="flex items-center justify-center gap-1">

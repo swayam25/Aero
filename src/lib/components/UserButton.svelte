@@ -8,6 +8,7 @@
     import SolarUserCircleLinear from "~icons/solar/user-circle-linear";
     import CtxButton from "../ctxmenu/components/CtxButton.svelte";
     import AlertPopup from "./ui/AlertPopup.svelte";
+    import Avatar from "./ui/Avatar.svelte";
     import Button from "./ui/Button.svelte";
     import Popover from "./ui/Popover.svelte";
 
@@ -74,29 +75,13 @@
             console.error("Login failed:", error);
         }
     }
-
-    let animateAvatar: boolean = $state(false);
 </script>
 
 <div class="flex items-center justify-center">
     {#if user}
         <Popover side="bottom" title="Account Menu">
             {#snippet trigger()}
-                <div
-                    role="img"
-                    class="relative flex size-10 cursor-pointer items-center justify-center md:size-12"
-                    onmouseenter={() => (animateAvatar = true)}
-                    onmouseleave={() => (animateAvatar = false)}
-                >
-                    <img src="{user.url?.avatar}{animateAvatar ? '' : '.webp'}" alt="User Avatar" class="size-full rounded-full" />
-                    {#if user?.avatar_decoration_data?.asset}
-                        <img
-                            src="{user.url?.avatarDecoration}{animateAvatar ? '' : '.webp'}"
-                            alt="Avatar Decoration"
-                            class="absolute size-full rounded-full"
-                        />
-                    {/if}
-                </div>
+                <Avatar {user} />
             {/snippet}
             {#snippet content()}
                 <!-- Profile -->

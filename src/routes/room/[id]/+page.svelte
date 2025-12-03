@@ -1,5 +1,6 @@
 <script lang="ts">
     import { invalidateAll } from "$app/navigation";
+    import Avatar from "$lib/components/ui/Avatar.svelte";
     import Badge from "$lib/components/ui/Badge.svelte";
     import Button from "$lib/components/ui/Button.svelte";
     import Seo from "$lib/components/ui/Seo.svelte";
@@ -24,10 +25,11 @@
 
     let { data }: { data: PageData } = $props();
 
-    let animateAvatar: boolean = $state(false);
     let enableToggleBtn: boolean = $state(true);
     let isPublic: boolean = $derived(data.room.isPublic);
     let members: UserData[] = $derived(data.room.members);
+    let hoveredMemberId: string | null = $state(null);
+    let hostAvatarHovered: boolean = $state(false);
 
     // Thumbnail helpers for the room queue (limit to 4 thumbnails)
     const thumbnails = $derived(data.room.queue?.reverse().slice(0, 4) ?? []);
@@ -175,27 +177,10 @@
                 <a
                     href="/profile/{data.user?.id}"
                     class="flex items-center justify-start gap-1 hover:underline"
-                    onmouseenter={() => {
-                        animateAvatar = true;
-                    }}
-                    onmouseleave={() => {
-                        animateAvatar = false;
-                    }}
+                    onmouseenter={() => (hostAvatarHovered = true)}
+                    onmouseleave={() => (hostAvatarHovered = false)}
                 >
-                    <div class="relative flex size-8 items-center justify-center">
-                        <img
-                            src="{data.room.hostUserData?.url?.avatar}{animateAvatar ? '' : '.webp'}"
-                            alt="User Avatar"
-                            class="size-full rounded-full"
-                        />
-                        {#if data.room.hostUserData?.url?.avatarDecoration}
-                            <img
-                                src="{data.room.hostUserData.url?.avatarDecoration}{animateAvatar ? '' : '.webp'}"
-                                alt="Avatar Decoration"
-                                class="absolute size-full rounded-full"
-                            />
-                        {/if}
-                    </div>
+                    <Avatar user={data.room.hostUserData} size="sm" animateOnHover={false} animateAvatar={hostAvatarHovered} />
                     <p>{data.room.hostUserData?.global_name}</p>
                 </a>
             </div>
@@ -298,20 +283,11 @@
                 aria-label={member.global_name}
                 href="/profile/{member.id}"
                 class="flex items-center justify-center gap-2 rounded-lg bg-slate-800 p-4 transition-all duration-200"
-                onmouseenter={() => (animateAvatar = true)}
-                onmouseleave={() => (animateAvatar = false)}
+                onmouseenter={() => (hoveredMemberId = member.id)}
+                onmouseleave={() => (hoveredMemberId = null)}
             >
                 <div class="flex size-full items-center justify-between gap-2">
-                    <div role="img" class="relative flex size-10 cursor-pointer items-center justify-center md:size-12">
-                        <img src="{member.url?.avatar}{animateAvatar ? '' : '.webp'}" alt="User Avatar" class="size-full rounded-full" />
-                        {#if member.avatar_decoration_data?.asset}
-                            <img
-                                src="{member.url?.avatarDecoration}{animateAvatar ? '' : '.webp'}"
-                                alt="Avatar Decoration"
-                                class="absolute size-full rounded-full"
-                            />
-                        {/if}
-                    </div>
+                    <Avatar user={member} animateOnHover={false} animateAvatar={hoveredMemberId === member.id} />
                     <div class="flex flex-1 flex-col items-center justify-start gap-1">
                         <p>{member.global_name || member.username}</p>
                         <Badge role={member.role} size="xs" />
