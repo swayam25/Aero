@@ -53,7 +53,7 @@
     {onmouseleave}
     {...rest}
     class={cn(
-        "group flex w-full items-center justify-start gap-2 rounded-lg p-3 transition-colors duration-200 not-disabled:cursor-pointer disabled:cursor-not-allowed disabled:opacity-50 md:px-2 md:py-1.5",
+        "group flex w-full items-center justify-start gap-2 rounded-lg p-3 transition-colors duration-200 not-disabled:cursor-pointer disabled:cursor-not-allowed disabled:opacity-80 md:px-2 md:py-1.5",
         typeClass,
         className,
     )}

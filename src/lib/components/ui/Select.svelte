@@ -44,7 +44,7 @@
         class={cn(
             "flex h-10 w-full items-center justify-between gap-4 rounded-lg border border-slate-700 bg-slate-800 p-2 text-slate-50 transition-colors duration-200 focus:outline-none",
             (selectFocus || open) && "!border-slate-400",
-            disabled && "cursor-not-allowed opacity-50",
+            disabled && "cursor-not-allowed brightness-80",
             className,
         )}
         {disabled}
@@ -83,7 +83,7 @@
                         disabled={item.disabled}
                         class={cn(
                             "flex h-10 w-full cursor-pointer items-center gap-2 rounded-lg p-2 text-sm text-slate-50 outline-hidden transition-colors duration-200 select-none hover:bg-slate-800 focus:bg-slate-800 focus:outline-none",
-                            item.disabled && "cursor-not-allowed opacity-50 hover:bg-slate-900",
+                            item.disabled && "cursor-not-allowed opacity-80 hover:bg-slate-900",
                             "data-[highlighted]:bg-slate-800 data-[selected]:bg-slate-800",
                         )}
                     >

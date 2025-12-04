@@ -239,7 +239,7 @@
                             ondragend={handleDragEnd}
                             ontouchstart={(e) => handleTouchStart(e, idx)}
                             ontouchend={handleTouchEnd}
-                            class:opacity-50={isDragging && dragIndex === idx}
+                            class:opacity-80={isDragging && dragIndex === idx}
                             class:border-t={dragOverIndex === idx && dragIndex !== idx}
                         >
                             <button
