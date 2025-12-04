@@ -12,7 +12,7 @@
         children?: Snippet;
     }
 
-    let { class: className = "", pauseOnHover = true, direction = "left", speed = 40, pause = false, fadeSides = true, children }: Props = $props();
+    let { class: className = "", pauseOnHover = true, direction = "left", speed = 25, pause = false, fadeSides = true, children }: Props = $props();
 
     let containerWidth: number = $state(0);
     let marqueeWidth: number = $state(0);
@@ -47,22 +47,19 @@
     data-fade={fadeSides && shouldAnimate}
     style="--direction: {animationDirection}; --duration: {shouldAnimate
         ? duration + 's'
-        : '0s'};  --pause-on-hover: {pauseOnHoverState}; --marquee-distance: {marqueeWidth}px;"
+        : '0s'};  --pause-on-hover: {pauseOnHoverState}; --play: {shouldAnimate ? 'running' : 'paused'};"
 >
     <div class="marquee" bind:clientWidth={marqueeWidth} data-testid="marquee-slot">
         {@render children?.()}
     </div>
-
-    {#if shouldAnimate}
-        <div class="marquee" aria-hidden="true">
-            {@render children?.()}
-        </div>
-    {/if}
+    <div class="marquee" aria-hidden="true">
+        {@render children?.()}
+    </div>
 </div>
 
 <style>
     :root {
-        --gap: 2rem;
+        --gap: 1rem;
     }
 
     .marquee-container {
@@ -79,15 +76,15 @@
 
     .marquee {
         flex: 0 0 auto;
-        min-width: 0;
+        min-width: 100%;
         display: flex;
         flex-direction: row;
         align-items: center;
-        display: flex;
         gap: var(--gap);
         flex-shrink: 0;
+        padding-right: var(--gap);
         animation: scroll var(--duration, 0s) linear infinite;
-        animation-play-state: running;
+        animation-play-state: var(--play, running);
         animation-direction: var(--direction, normal);
     }
 
@@ -96,7 +93,7 @@
             transform: translateX(0);
         }
         100% {
-            transform: translateX(calc(-100% - var(--gap)));
+            transform: translateX(-100%);
         }
     }
 
