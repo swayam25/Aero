@@ -1,8 +1,9 @@
 <script lang="ts">
     import type { UserData } from "$lib/discord/types";
-    import { setLoop, setShuffle, setVolume, store, toggleLyrics, togglePause, toggleQueue } from "$lib/player";
+    import { getLocalStorageVolume, setLoop, setShuffle, setVolume, store, toggleLyrics, togglePause, toggleQueue } from "$lib/player";
     import { userRoomStore } from "$lib/stores/userRoom";
     import { cn } from "$lib/utils/cn";
+    import { onMount } from "svelte";
     import { toast } from "svelte-sonner";
     import SolarDownloadMinimalisticLinear from "~icons/solar/download-minimalistic-linear";
     import SolarMicrophoneLargeLinear from "~icons/solar/microphone-large-linear";
@@ -58,18 +59,12 @@
 
     // Update volume
     let volume: number = $state(100);
-    $effect(() => {
-        setVolume(volume);
-    });
     function handleVol(value: number) {
         if (onVolumeClick) onVolumeClick();
-        if (localStorage) localStorage.setItem("volume", value.toString());
         setVolume(value);
     }
-    $effect(() => {
-        if (localStorage) {
-            volume = localStorage.getItem("volume") ? Number(localStorage.getItem("volume")) : 100;
-        }
+    onMount(() => {
+        volume = getLocalStorageVolume();
         document.addEventListener("keydown", (e: KeyboardEvent) => {
             if (isRoomHost) {
                 if (document.activeElement && document.activeElement.tagName.toLowerCase() === "input") {
@@ -83,6 +78,9 @@
                 }
             }
         });
+        return () => {
+            document.removeEventListener("keydown", () => {});
+        };
     });
 
     // Loop

@@ -50,7 +50,12 @@ export async function deletePlaylist(db: DB, playlistID: string) {
 }
 
 export async function getPlaylists(db: DB, userId: string) {
-    return db.query.playlistTable.findMany({ where: eq(schema.playlistTable.userId, userId) });
+    return db.query.playlistTable.findMany({
+        where: eq(schema.playlistTable.userId, userId),
+        orderBy(fields, operators) {
+            return operators.asc(fields.name);
+        },
+    });
 }
 
 export async function getPublicPlaylists(db: DB, userId: string) {
