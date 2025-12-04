@@ -66,7 +66,7 @@
                     ontouchstart={(e) => handleTouchStart(e, idx)}
                     ontouchend={handleTouchEnd}
                     class="song-handle border-sky-500 transition-all duration-200"
-                    class:opacity-50={isDragging && dragIndex === idx}
+                    class:opacity-80={isDragging && dragIndex === idx}
                     class:border-t={dragOverIndex === idx && dragIndex !== idx}
                 >
                     <button

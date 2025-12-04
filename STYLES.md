@@ -13,6 +13,7 @@
 - Border radius: `rounded-lg` (*For every possible card/container*)
 - For buttons and links, we strictly use the [`<Button />`](./src/lib/components/ui/Button.svelte) component.
 - Transition duration: `duration-200` (*For hover effects and other transitions*) and `duration-400` for rare case (*like `SongListX` component's scroll arrow fade in/out*).
+- Transparency: Use `opacity-80`/`opacity-50`/`brightness-80` for disabled states.
 
 - Z Index Layer System
     - **Base Layer (`z-0`)**: Layout components and default content.
