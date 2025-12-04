@@ -396,7 +396,7 @@
 {/if}
 
 <div
-    class="grid h-screen w-screen grid-rows-[auto_1fr_auto] overflow-hidden md:gap-2 md:p-2"
+    class="grid h-screen w-screen overflow-hidden md:grid-rows-[auto_1fr_auto] md:gap-2 md:p-2"
     class:md:grid-cols-[5rem_1fr_30vw]={data.user && ($store.showQueue || $store.showLyrics)}
     class:md:grid-cols-[5rem_1fr]={data.user && !($store.showQueue || $store.showLyrics)}
     class:md:grid-cols-[1fr_30vw]={!data.user && ($store.showQueue || $store.showLyrics)}
@@ -406,7 +406,7 @@
         e.preventDefault();
     }}
 >
-    <div class="md:col-span-full">
+    <div class="hidden md:col-span-full md:block">
         <Navbar user={data.user} />
     </div>
     {#if data.user}
@@ -420,11 +420,7 @@
             <div class="{data.user ? 'h-40' : 'h-20'} md:hidden"></div>
         </div>
     </div>
-    {#if data.user}
-        <div class="md:hidden">
-            <BottomBar user={data.user} />
-        </div>
-    {/if}
+    <BottomBar user={data.user} />
     {#if !isMobile && ($store.showQueue || $store.showLyrics)}
         <div in:fly={{ duration: 0, easing: expoOut }} out:fly={{ duration: 0, easing: expoOut }} class="md:relative md:z-0 md:row-start-2">
             <div
@@ -440,7 +436,11 @@
             </div>
         </div>
     {/if}
-    <div class="fixed {data.user ? 'bottom-15' : 'bottom-2'} w-full p-2 md:relative md:bottom-0 md:col-span-full md:row-start-3 md:p-0">
+    <div
+        class="fixed bottom-15 w-full p-2 transition-transform duration-300 ease-out md:relative md:bottom-0 md:col-span-full md:row-start-3 md:translate-y-0 md:p-0"
+        class:translate-y-[200%]={isMobile && !$store.meta}
+        class:translate-y-0={!isMobile || $store.meta}
+    >
         <div class="rounded-lg bg-slate-900 md:rounded-none md:bg-transparent">
             <Player user={data.user} onSongInfoClick={handlePlayerClick} />
         </div>

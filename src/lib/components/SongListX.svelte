@@ -192,7 +192,7 @@
             {/each}
 
             <div
-                class="pointer-events-none absolute inset-0 flex items-center justify-between opacity-0 transition-opacity duration-400 group-hover:opacity-100"
+                class="pointer-events-none absolute inset-0 hidden items-center justify-between opacity-0 transition-opacity duration-400 group-hover:opacity-100 md:flex"
             >
                 <button
                     onclick={() => {

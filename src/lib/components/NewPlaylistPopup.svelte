@@ -63,7 +63,7 @@
         {@render children()}
     {/snippet}
     {#snippet description()}
-        Enter a new name for the playlist and click <span class="font-semibold text-sky-500">create</span> to create a new playlist.
+        Enter a new name for the playlist and click <span class="font-medium text-sky-500">create</span> to create a new playlist.
     {/snippet}
     {#snippet fields()}
         <Input

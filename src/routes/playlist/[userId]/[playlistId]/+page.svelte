@@ -206,7 +206,7 @@
                             </div>
                             <div class="size-15 shrink-0 animate-pulse rounded-lg bg-slate-900"></div>
                             <div class="flex w-full flex-col items-start justify-center gap-2 text-left">
-                                <div class="h-5 w-[80%] animate-pulse rounded-lg bg-slate-900 font-bold"></div>
+                                <div class="h-5 w-[80%] animate-pulse rounded-lg bg-slate-900"></div>
                                 <div class="h-5 w-[50%] animate-pulse truncate rounded-lg bg-slate-900"></div>
                             </div>
                         </div>
@@ -262,7 +262,7 @@
                                     style="background-image: url({enhanced.thumbnail.SMALL});"
                                 ></div>
                                 <div class="flex-truncate flex flex-col items-start justify-center text-left">
-                                    <p class="w-full truncate font-bold" title={song.name}>{song.name}</p>
+                                    <p class="w-full truncate font-medium" title={song.name}>{song.name}</p>
                                     <p class="w-full truncate text-sm text-slate-400" title={song.artist.name}>{song.artist.name}</p>
                                 </div>
                                 <p class="shrink-0 text-sm text-slate-400">{formatTime(song.duration ?? 0)}</p>

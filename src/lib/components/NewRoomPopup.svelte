@@ -68,7 +68,7 @@
         {@render children()}
     {/snippet}
     {#snippet description()}
-        Enter a new name for the room and optionally a password. Click <span class="font-semibold text-sky-500">create</span> to create a new room.
+        Enter a new name for the room and optionally a password. Click <span class="font-medium text-sky-500">create</span> to create a new room.
     {/snippet}
     {#snippet fields()}
         <div class="space-y-2">
