@@ -165,8 +165,8 @@
 
 <div
     class={cn("flex items-center justify-center", gap, py, className)}
-    class:opacity-80={$store.state === "buffering" || $store.state === "unstarted"}
-    class:pointer-events-none={$store.state === "unstarted"}
+    class:opacity-80={$store.state === "buffering" || $store.state === "unstarted" || !$store.meta}
+    class:pointer-events-none={$store.state === "unstarted" || !$store.meta}
 >
     {#if showVolume}
         <!-- Volume -->

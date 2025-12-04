@@ -119,7 +119,7 @@
         {@render children()}
     {/snippet}
     {#snippet description()}
-        Select the source and enter the playlist URL, then click <span class="font-semibold text-sky-500">import</span> to import songs.
+        Select the source and enter the playlist URL, then click <span class="font-medium text-sky-500">import</span> to import songs.
     {/snippet}
     {#snippet fields()}
         <div class="flex w-full flex-col gap-2">

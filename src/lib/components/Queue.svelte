@@ -94,7 +94,7 @@
                             style="background-image: url({song.thumbnail.LARGE});"
                         ></div>
                         <div class="flex-truncate flex flex-col items-start justify-center text-left">
-                            <p class="w-full truncate font-semibold" title={song.name}>{song.name}</p>
+                            <p class="w-full truncate font-medium" title={song.name}>{song.name}</p>
                             <p class="w-full truncate text-sm text-slate-400" title={song.artist.name}>{song.artist.name}</p>
                         </div>
                     </button>

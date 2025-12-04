@@ -64,7 +64,7 @@
                 ></div>
             </div>
             <div class="w-full max-w-sm cursor-pointer text-left" oncontextmenu={handleContextMenu} role="button" tabindex="0">
-                <MarqueeText pause={$store.state !== "playing"} class="mb-1 text-xl font-bold text-slate-50">{$store.meta?.name || ""}</MarqueeText>
+                <MarqueeText pause={$store.state !== "playing"} class="mb-1 text-xl font-medium text-slate-50">{$store.meta?.name || ""}</MarqueeText>
                 <span class="text-base text-slate-300">{$store.meta?.artist.name}</span>
             </div>
         </div>
@@ -72,8 +72,8 @@
         <!-- Player Controls -->
         <div
             class="flex w-full max-w-sm flex-col items-center gap-6 transition-all"
-            class:opacity-80={$store.state === "buffering" || $store.state === "unstarted" || !isRoomHost}
-            class:pointer-events-none={$store.state === "unstarted" || !isRoomHost}
+            class:opacity-80={$store.state === "buffering" || $store.state === "unstarted" || !$store.meta || !isRoomHost}
+            class:pointer-events-none={$store.state === "unstarted" || !$store.meta || !isRoomHost}
         >
             <!-- Progress Slider -->
             <div class="flex w-full items-center gap-3">

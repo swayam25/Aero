@@ -58,7 +58,7 @@
     role="button"
     tabindex="0"
 >
-    <h3 class="mb-2 text-lg font-semibold">Enhanced Context Menu Demo</h3>
+    <h3 class="mb-2 text-lg font-medium">Enhanced Context Menu Demo</h3>
     <p class="text-sm text-slate-400">Right-click this area to see the new simplified context menu system.</p>
     <p class="mt-2 text-xs text-slate-500">Much cleaner implementation - no more complex state management!</p>
 </div>

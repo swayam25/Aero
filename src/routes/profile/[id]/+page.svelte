@@ -27,7 +27,7 @@
         {/if}
     </div>
     <div class="-mt-12 ml-10 flex w-full items-center justify-start gap-4">
-        <div class="rounded-full border-8 border-slate-900">
+        <div class="rounded-full border-8 border-slate-950 md:border-slate-900">
             <Avatar user={data.user} class="size-24 cursor-default md:size-32" size="" animateOnHover={false} animateAvatar />
         </div>
         <div class="mt-14 flex flex-col items-start justify-center">

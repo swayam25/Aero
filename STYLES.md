@@ -9,6 +9,7 @@
 - Tertiary Background Color: `slate-800` (*For cards/options on hover*)
 - Card/Container Background Color: `slate-900` (*For cards add `border-slate-700`*)
 - For other colors use `<color>-500` as text color and `<color>-500/10` as background color on hover (*make sure to have bg color as `slate-800`/`slate-900`/`slate-950` before hover*).
+- Font weights: `font-bold` for heading or important text, `font-medium` for sub-headings, and for normal text there is no need to add any font weight class.
 - Border radius: `rounded-lg` (*For every possible card/container*)
 - For buttons and links, we strictly use the [`<Button />`](./src/lib/components/ui/Button.svelte) component.
 - Transition duration: `duration-200` (*For hover effects and other transitions*) and `duration-400` for rare case (*like `SongListX` component's scroll arrow fade in/out*).

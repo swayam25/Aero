@@ -78,8 +78,8 @@
 <AlertPopup title="ARE YOU SURE?" bind:open={$popupStore.showPlDeletePopup}>
     {#snippet description()}
         This action cannot be undone. This will permanently
-        <span class="font-semibold text-red-500">delete your playlist</span> named
-        <span class="font-semibold text-sky-500">{$popupStore.playlistData?.name}</span>. Please confirm that you want to proceed.
+        <span class="font-medium text-red-500">delete your playlist</span> named
+        <span class="font-medium text-sky-500">{$popupStore.playlistData?.name}</span>. Please confirm that you want to proceed.
     {/snippet}
     {#snippet actions()}
         <AlertDialog.Action class="hover:bg-red-500/10! hover:text-red-500" onclick={deletePlaylist}>

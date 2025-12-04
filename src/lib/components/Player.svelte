@@ -57,7 +57,7 @@
             }
         }}
         oncontextmenu={(e) => {
-            if ($store.state === "unstarted") return;
+            if ($store.state === "unstarted" || !$store.meta) return;
             e.preventDefault();
             if ($store.meta) {
                 const actions = createSongActions($store.meta, user?.id);
@@ -70,14 +70,14 @@
             class="size-15 rounded-l-lg bg-slate-800 bg-cover transition-all md:rounded-lg md:bg-slate-900"
             style="background-image: url({$store.state !== 'unstarted' ? $store.meta?.thumbnail.SMALL : ''});"
         ></div>
-        {#if $store.state === "unstarted"}
+        {#if $store.state === "unstarted" || !$store.meta}
             <div class="flex max-w-40 flex-col items-start justify-center gap-2">
                 <span class="h-3 w-40 rounded-lg bg-slate-800 md:h-4 md:bg-slate-900"></span>
                 <span class="h-3 w-40 rounded-lg bg-slate-800 md:h-4 md:bg-slate-900"></span>
             </div>
         {:else}
             <div in:fly={{ duration: 100 }} class="flex max-w-40 flex-col items-start justify-center text-left">
-                <MarqueeText pause={$store.state !== "playing"} class="text-sm font-semibold">{$store.meta?.name || ""}</MarqueeText>
+                <MarqueeText pause={$store.state !== "playing"} class="text-sm font-medium">{$store.meta?.name || ""}</MarqueeText>
                 <span class="w-20 truncate text-xs text-slate-400 md:w-40">{$store.meta?.artist.name}</span>
             </div>
         {/if}
@@ -86,8 +86,8 @@
     <!-- Main Controls -->
     <div
         class="flex flex-col items-center justify-center gap-1 transition-all"
-        class:opacity-80={$store.state === "buffering" || $store.state === "unstarted" || !isRoomHost}
-        class:pointer-events-none={$store.state === "unstarted" || !isRoomHost}
+        class:opacity-80={$store.state === "buffering" || $store.state === "unstarted" || !$store.meta || !isRoomHost}
+        class:pointer-events-none={$store.state === "unstarted" || !$store.meta || !isRoomHost}
     >
         <div class="flex items-center justify-center gap-2 transition-all *:cursor-pointer">
             <!-- Previous -->

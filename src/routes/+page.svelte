@@ -212,7 +212,7 @@
         <div class="flex flex-col items-center justify-center gap-2">
             <randomMessage.icon class="size-10 {randomMessage.color}" />
             <div class="flex flex-col items-center justify-center">
-                <h2 class="text-xl font-bold text-slate-50 md:text-2xl">{randomMessage.title}</h2>
+                <h2 class="text-xl font-medium text-slate-50 md:text-2xl">{randomMessage.title}</h2>
                 <p class="text-lg text-slate-400">{randomMessage.subtitle}</p>
             </div>
         </div>
