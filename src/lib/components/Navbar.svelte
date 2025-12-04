@@ -11,7 +11,7 @@
         <img src="/aero.webp" alt="Aero" class="size-8 md:size-10" />
     </a>
 
-    <Search class="w-[60%] lg:w-[50%]" />
+    <Search class="w-[50%]" />
 
     <UserButton {user} />
 </nav>
