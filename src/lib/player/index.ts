@@ -40,8 +40,16 @@ export const store = writable<PlayerStore>({
     showLyrics: false,
 });
 
+export function getLocalStorageVolume(): number {
+    const vol = localStorage.getItem("volume");
+    return vol ? Number(vol) : 100;
+}
+
 export function init() {
     const newPlayer = YouTubePlayer(document.getElementById("player-iframe") || "", { height: "0", width: "0" });
+    const savedVolume = getLocalStorageVolume();
+    newPlayer.setVolume(savedVolume);
+
     newPlayer.on("stateChange", async (event) => {
         store.update((state) => {
             const stateMap = {
@@ -58,8 +66,8 @@ export function init() {
             await skip(null);
         }
     });
-    newPlayer.on("volumeChange", (event) => {
-        store.update((state) => ({ ...state, volume: event.detail }));
+    newPlayer.on("volumeChange", (event: any) => {
+        localStorage.setItem("volume", (event.data.volume as number).toString());
     });
     store.update((state) => ({ ...state, player: newPlayer }));
 }

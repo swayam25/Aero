@@ -23,6 +23,8 @@
     let enableToggleBtn: boolean = $state(true);
     let playlistSongs: Promise<SongFull>[] = $derived(data.playlistSongs);
     let playlistObject: { id: number; song: Promise<SongFull> }[] = $state([]);
+    let originalOrder: string[] = $state([]);
+    let isSyncing: boolean = $state(false);
 
     let plSyncTimeout: NodeJS.Timeout | null = $state(null);
 
@@ -38,6 +40,13 @@
             clearTimeout(plSyncTimeout);
         }
         plSyncTimeout = setTimeout(async () => {
+            const currentOrder = (await Promise.all(playlistObject.map((item) => item.song))).map((item) => item.videoId);
+            const orderChanged = currentOrder.length !== originalOrder.length || currentOrder.some((id, index) => id !== originalOrder[index]);
+            if (!orderChanged) {
+                return;
+            }
+
+            isSyncing = true;
             toast.promise(
                 async () => {
                     const resp = await fetch(`/api/playlist/${data.playlist.id}`, {
@@ -46,7 +55,7 @@
                             key: "reorder",
                             value: {
                                 playlistID: data.playlist.id,
-                                songIDs: (await Promise.all(playlistObject.map((item) => item.song))).map((item) => item.videoId),
+                                songIDs: currentOrder,
                             },
                         }),
                         headers: { "Content-Type": "application/json" },
@@ -55,6 +64,8 @@
                         const respData = await resp.json();
                         throw new Error(respData.error);
                     }
+                    // Update original order after successful sync
+                    originalOrder = currentOrder;
                 },
                 {
                     loading: "Syncing playlist...",
@@ -64,6 +75,7 @@
                     },
                 },
             );
+            isSyncing = false;
         }, 1000);
     }
 
@@ -72,6 +84,10 @@
             id: index,
             song: item,
         }));
+
+        Promise.all(playlistSongs).then((songs) => {
+            originalOrder = songs.map((song) => song.videoId);
+        });
     });
 
     // Sync playlist data with db
@@ -179,7 +195,7 @@
         <Draggable
             onReorder={handleReorder}
             onDragEnd={handleDragEnd}
-            disabled={data.loginUser?.id !== data.user.id || $isImportingPlaylist}
+            disabled={data.loginUser?.id !== data.user.id || $isImportingPlaylist || isSyncing}
             class="flex w-full list-none flex-col items-start justify-center gap-2"
         >
             {#snippet children({
@@ -214,7 +230,7 @@
                         {@const enhanced = enhanceSong(song)}
                         <li
                             class="w-full border-sky-500 transition-all duration-200"
-                            draggable={data.loginUser?.id !== data.user.id || $isImportingPlaylist ? "false" : "true"}
+                            draggable={data.loginUser?.id !== data.user.id || $isImportingPlaylist || isSyncing ? "false" : "true"}
                             ondragstart={(e) => handleDragStart(e, idx)}
                             ondragover={(e) => handleDragOver(e, idx)}
                             ondragenter={(e) => handleDragEnter(e, idx)}
