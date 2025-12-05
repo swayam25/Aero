@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { goto } from "$app/navigation";
+    import { goto, onNavigate } from "$app/navigation";
     import BottomBar from "$lib/components/BottomBar.svelte";
     import Lyrics from "$lib/components/Lyrics.svelte";
     import MobilePlayerDrawers from "$lib/components/mobile/MobileDrawers.svelte";
@@ -23,7 +23,6 @@
     import { toast, Toaster } from "svelte-sonner";
     import { expoOut } from "svelte/easing";
     import { fly } from "svelte/transition";
-    import { setupViewTransition } from "sveltekit-view-transition";
     import "../app.css";
     import type { PageData } from "./$types";
 
@@ -57,7 +56,16 @@
     });
 
     // View Transitions
-    setupViewTransition();
+    onNavigate((navigation) => {
+        if (!document.startViewTransition) return;
+
+        return new Promise((resolve) => {
+            document.startViewTransition(async () => {
+                resolve();
+                await navigation.complete;
+            });
+        });
+    });
 
     // Sync playlist data with db
     $effect(() => {
