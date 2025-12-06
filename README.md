@@ -54,7 +54,7 @@ Aero makes listening to music feel light and breezy
 
     <summary>ENV Vars</summary>
 
-    - Get `DATABASE_URL` from Supabase.
+    - Get `DATABASE_URL` from Supabase. Click on the <img src="./assets/connect_btn.png" alt="Connect Button" width="50" /> button at the top bar.
         ![Supabase DB URL](./assets/db_url.png)
     - Get `VITE_SUPABASE_URL` and `VITE_SUPABASE_KEY` from Supabase API Settings.
         ![Supabase API](./assets/db_api.png)
@@ -94,8 +94,8 @@ Aero makes listening to music feel light and breezy
 8. Navigate to **Authentication** > **Policies** in Supabase Dashboard and create policies for all the tables.
     ![Policies](./assets/policies.png)
 
-9. Navigate to **Table Editor** in Supabase Dashboard and enable **Realtime** for `playlist` table.
-    ![Playlist Realtime](./assets/playlist_realtime.png)
+9. Navigate to **Table Editor** in Supabase Dashboard and enable **Realtime** for `playlist`, `room` & `room_member` table.
+    ![Playlist Realtime](./assets/realtime.png)
 
 > [!NOTE]
 > Check the [Supabase Docs](https://supabase.com/docs/guides/realtime/postgres-changes) for more information on enabling Realtime.
