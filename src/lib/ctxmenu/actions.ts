@@ -1,4 +1,4 @@
-import { goto, invalidateAll } from "$app/navigation";
+import { goto } from "$app/navigation";
 import type { InsertPlaylist, SelectRoom } from "$lib/db/schema";
 import { addToQueue, enhanceSong, play, store as playerStore, removeFromQueue, togglePause } from "$lib/player";
 import { isRoomHost, joinRoomAPI } from "$lib/room";
@@ -299,25 +299,33 @@ export function createPlaylistSongActions(
                 onclick: async (ctx) => {
                     ctx.closeMenu();
                     try {
-                        const resp = await fetch(`/api/playlist/${playlistData.id}`, {
-                            body: JSON.stringify({
-                                key: "remove_song",
-                                value: {
-                                    playlistID: playlistData.id,
-                                    songID: song.videoId,
+                        toast.promise(
+                            (async () => {
+                                const resp = await fetch(`/api/playlist/${playlistData.id}`, {
+                                    body: JSON.stringify({
+                                        key: "remove_song",
+                                        value: {
+                                            playlistID: playlistData.id,
+                                            songID: song.videoId,
+                                        },
+                                    }),
+                                    method: "POST",
+                                    headers: { "Content-Type": "application/json" },
+                                });
+                                const respData = await resp.json();
+                                if (!resp.ok) {
+                                    throw new Error(respData.error || "Failed to remove song from playlist");
+                                }
+                                return respData;
+                            })(),
+                            {
+                                loading: "Removing song from playlist...",
+                                success: "Removed song from playlist",
+                                error(error) {
+                                    return String(error) || "Failed to remove song from playlist";
                                 },
-                            }),
-                            method: "POST",
-                            headers: { "Content-Type": "application/json" },
-                        });
-
-                        const respData = await resp.json();
-                        if (resp.ok) {
-                            toast.success("Removed song from playlist");
-                            invalidateAll();
-                        } else {
-                            toast.error(respData.error);
-                        }
+                            },
+                        );
                     } catch (error) {
                         toast.error("Failed to remove song from playlist");
                     }
@@ -362,25 +370,34 @@ async function loadPlaylistSubmenu(song: SongDetailed): Promise<CtxAction[]> {
                     ctx.closeMenu();
                     try {
                         const enhanced = enhanceSong(song);
-                        const resp = await fetch(`/api/playlist/${playlist.id}`, {
-                            body: JSON.stringify({
-                                key: "add_song",
-                                value: {
-                                    playlistID: playlist.id,
-                                    songID: song.videoId,
-                                    songCover: enhanced.thumbnail.FULL,
+                        toast.promise(
+                            (async () => {
+                                const resp = await fetch(`/api/playlist/${playlist.id}`, {
+                                    body: JSON.stringify({
+                                        key: "add_song",
+                                        value: {
+                                            playlistID: playlist.id,
+                                            songID: song.videoId,
+                                            songCover: enhanced.thumbnail.FULL,
+                                        },
+                                    }),
+                                    method: "POST",
+                                    headers: { "Content-Type": "application/json" },
+                                });
+                                const respData = await resp.json();
+                                if (!resp.ok) {
+                                    throw new Error(respData.error || "Failed to add song to playlist");
+                                }
+                                return respData;
+                            })(),
+                            {
+                                loading: "Adding song to playlist...",
+                                success: "Added song to playlist",
+                                error(error) {
+                                    return String(error) || "Failed to add song to playlist";
                                 },
-                            }),
-                            method: "POST",
-                            headers: { "Content-Type": "application/json" },
-                        });
-
-                        const respData = await resp.json();
-                        if (resp.ok) {
-                            toast.success("Added song to playlist");
-                        } else {
-                            toast.error(respData.error);
-                        }
+                            },
+                        );
                     } catch (error) {
                         toast.error("Failed to add song to playlist");
                     }

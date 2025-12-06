@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { formatShortcut, store } from "$lib/ctxmenu";
+    import { closeCtxMenu, formatShortcut, store } from "$lib/ctxmenu";
     import type { CtxAction } from "$lib/ctxmenu/types";
     import { toast } from "svelte-sonner";
     import { fade } from "svelte/transition";
@@ -13,7 +13,7 @@
         if (action.disabled) return;
 
         try {
-            await action.onclick({ closeMenu: () => {} }); // Submenu actions don't typically need closeMenu context
+            await action.onclick({ closeMenu: closeCtxMenu }); // Submenu actions don't typically need closeMenu context
         } catch (error) {
             console.error("Error executing submenu action:", error);
             toast.error("An error occurred");
