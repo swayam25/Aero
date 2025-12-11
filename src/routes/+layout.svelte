@@ -296,8 +296,9 @@
                         const { song } = payload.payload as { song: EnhancedSong | null };
                         skip(data.user?.id, song);
                     })
-                    .on("broadcast", { event: "previous" }, () => {
-                        previous(data.user?.id);
+                    .on("broadcast", { event: "previous" }, (payload) => {
+                        const { song } = payload.payload as { song: EnhancedSong | null };
+                        previous(data.user?.id, song);
                     })
                     .on("broadcast", { event: "seek" }, (payload) => {
                         const { time } = payload.payload as { time: number };

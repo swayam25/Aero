@@ -248,7 +248,7 @@ export function setVolume(vol: number) {
     player.setVolume(vol);
 }
 
-export async function previous(userId: string | null | undefined) {
+export async function previous(userId: string | null | undefined, song: EnhancedSong | null = null) {
     const player = get(store).player;
     if (!player) return { error: "No player instance" };
 
@@ -261,18 +261,22 @@ export async function previous(userId: string | null | undefined) {
         if (currentID) {
             const currentIndex = queue.findIndex((item) => item.videoId === currentID); // Current video index
             let prev; // Previous video ID
-            if (get(store).shuffle) {
-                // Shuffle queue if enabled
-                prev = queue[Math.floor(Math.random() * queue.length)];
+            if (song) {
+                prev = song;
             } else {
-                // Otherwise, play previous video in queue
-                prev = queue[currentIndex - 1] || queue[queue.length - 1];
+                if (get(store).shuffle) {
+                    // Shuffle queue if enabled
+                    prev = queue[Math.floor(Math.random() * queue.length)];
+                } else {
+                    // Otherwise, play previous video in queue
+                    prev = queue[currentIndex - 1] || queue[queue.length - 1];
+                }
             }
             store.update((state) => {
                 state.meta = state.queue.find((item) => item.videoId === prev.videoId) || null;
                 return state;
             });
-            sendPlayerRoomEvent(userId, "previous");
+            sendPlayerRoomEvent(userId, "previous", { song: prev });
             player.loadVideoById(prev.videoId);
             player.playVideo();
             const isRmHost = isRoomHost(userId);
