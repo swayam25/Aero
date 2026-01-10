@@ -11,12 +11,6 @@
     outline: none;
 }
 
-*:focus-visible {
-    outline: 2px solid var(--color-sky-500);
-    outline-offset: 4px;
-    border-radius: var(--radius-lg);
-}
-
 body {
     font-family: "Rubik", sans-serif;
     background-color: var(--color-slate-950);
