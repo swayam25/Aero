@@ -40,6 +40,7 @@
     let cleanupShortcuts: (() => void) | undefined;
     let cleanupMobileQuery: (() => void) | undefined;
 
+    // svelte-ignore state_referenced_locally
     playlistsCache.load(data.playlists);
     onMount(() => {
         cleanupShortcuts = setupShortcuts();
@@ -128,9 +129,12 @@
         }
     });
     // Sync user room data initially
-    userRoomStore.set(data.userRoom);
-    if (data.userRoom) {
-        $store.queue = data.userRoom.queue || [];
+    // svelte-ignore state_referenced_locally
+    {
+        userRoomStore.set(data.userRoom);
+        if (data.userRoom) {
+            $store.queue = data.userRoom.queue || [];
+        }
     }
     $effect(() => {
         let channel: RealtimeChannel;
