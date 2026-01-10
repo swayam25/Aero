@@ -69,8 +69,8 @@
     <div in:fade={{ duration: 100 }} class="flex flex-wrap items-center justify-start gap-2">
         {#each $playlistsCache.playlists as playlist}
             <a
-                in:fly={{ duration: 500, easing: expoOut, x: -100, y: 0 }}
-                out:fly={{ duration: 500, easing: expoOut, x: 100, y: 0 }}
+                in:fly={{ duration: 400, easing: expoOut, x: -100, y: 0 }}
+                out:fly={{ duration: 400, easing: expoOut, x: 100, y: 0 }}
                 href={`/playlist/${data.user?.id}/${playlist.id}`}
                 oncontextmenu={(e) => {
                     e.preventDefault();

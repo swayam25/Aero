@@ -82,7 +82,7 @@
             <div class="flex items-center justify-center gap-1">
                 <p class="text-3xl font-bold md:text-4xl">{data.user?.global_name || data.user?.username}</p>
                 {#if showRoleMenu}
-                    <div in:fade={{ duration: 200 }} class="group flex items-center justify-center gap-2">
+                    <div in:fade={{ duration: 100 }} class="group flex items-center justify-center gap-2">
                         <Select
                             disabled={roleLoading}
                             bind:value={role}
@@ -99,18 +99,18 @@
                             onclick={() => (showRoleMenu = false)}
                         >
                             {#if roleLoading}
-                                <span in:fade={{ duration: 200 }}>
+                                <span in:fade={{ duration: 100 }}>
                                     <SvgSpinners180Ring class="size-full" />
                                 </span>
                             {:else}
-                                <span in:fade={{ duration: 200 }}>
+                                <span in:fade={{ duration: 100 }}>
                                     <MaterialSymbolsCloseRounded class="size-full" />
                                 </span>
                             {/if}
                         </button>
                     </div>
                 {:else}
-                    <div in:fade={{ duration: 200 }} class="group flex items-center justify-center gap-2">
+                    <div in:fade={{ duration: 100 }} class="group flex items-center justify-center gap-2">
                         <Badge role={data.user?.role} size="sm" />
                         {#if data.currentUser?.role === "owner" || data.currentUser?.role === "dev"}
                             <Tooltip content="Edit User Role">
@@ -136,8 +136,8 @@
     <div class="flex flex-wrap items-center justify-start gap-2 py-2 md:py-5">
         {#each data.playlists as playlist}
             <a
-                in:fly={{ duration: 500, easing: expoOut, x: -100, y: 0 }}
-                out:fly={{ duration: 500, easing: expoOut, x: 100, y: 0 }}
+                in:fly={{ duration: 400, easing: expoOut, x: -100, y: 0 }}
+                out:fly={{ duration: 400, easing: expoOut, x: 100, y: 0 }}
                 href={`/playlist/${data.user?.id}/${playlist.id}`}
                 class="group flex size-fit cursor-pointer flex-col items-start justify-center gap-2 rounded-lg p-3 transition-colors duration-200 hover:bg-slate-800"
             >

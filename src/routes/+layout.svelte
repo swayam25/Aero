@@ -437,7 +437,7 @@
     {#if !isMobile && ($store.showQueue || $store.showLyrics)}
         <div in:fly={{ duration: 0, easing: expoOut }} out:fly={{ duration: 0, easing: expoOut }} class="md:relative md:z-0 md:row-start-2">
             <div
-                in:fly={{ duration: 500, easing: expoOut, x: 100, y: 0 }}
+                in:fly={{ duration: 400, easing: expoOut, x: 100, y: 0 }}
                 out:fly={{ duration: 0, easing: expoOut, x: 0, y: 0 }}
                 class="flex size-full items-end justify-center"
             >

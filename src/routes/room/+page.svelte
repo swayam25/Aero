@@ -120,8 +120,8 @@
             {@const gridClass =
                 thumbnails.length === 1 ? "grid-cols-1 grid-rows-1" : thumbnails.length === 2 ? "grid-cols-2 grid-rows-1" : "grid-cols-2 grid-rows-2"}
             <a
-                in:fly={{ duration: 500, easing: expoOut, x: -100, y: 0 }}
-                out:fly={{ duration: 500, easing: expoOut, x: 100, y: 0 }}
+                in:fly={{ duration: 400, easing: expoOut, x: -100, y: 0 }}
+                out:fly={{ duration: 400, easing: expoOut, x: 100, y: 0 }}
                 href={`/room/${room.id}`}
                 oncontextmenu={(e) => {
                     e.preventDefault();

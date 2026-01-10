@@ -1,4 +1,10 @@
-## ✨ CSS Style Guide (*Tailwind CSS*)
+<div align="center">
+
+![Styles](./assets/styles.png)
+
+# ✨ CSS Style Guide (*Tailwind CSS*)
+
+</div>
 
 - Primary Font Color: `slate-50` (*No need to add this explicitly, it is already added as global font color in [app.css](./src/app.css)*)
 - Secondary Font Color: `slate-200`
@@ -36,5 +42,6 @@
     - Fly In/Out
 
 - Animation Durations
-    - Standard animations: `{{ duration: 200 }}` (*default for most animations*)
-    - Longest animations: `{{ duration: 400 }}`
+    - Standard animations: `{{ duration: 100 }}` (*Default duration for most animations, providing quick and responsive transitions*)
+    - Longer animations: `{{ duration: 200 }}` (*Used for components requiring smoother transitions, such as `<Queue />` & `<Lyrics />` components*)
+    - Longest animations: `{{ duration: 400 }}` (*Reserved for prominent animations including the sliding `<Queue />`/`<Lyrics />` component in desktop layout, and entry/exit transitions for dynamic content like loading songs in playlists/queues or displaying usernames in rooms*)
