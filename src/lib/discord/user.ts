@@ -1,7 +1,7 @@
 import { PUBLIC_DISCORD_URL } from "$env/static/public";
 import { getUser, type DB } from "$lib/db";
 import { error } from "@sveltejs/kit";
-import type { UserData } from "./types";
+import type { CookieUserData, UserData } from "./types";
 
 export async function getNewAccessToken(url: string, refreshToken: string, clienID: string, clientSecret: string) {
     const resp = await fetch(`${url}/oauth2/token`, {
@@ -24,7 +24,7 @@ export async function getNewAccessToken(url: string, refreshToken: string, clien
     }
 }
 
-export async function getUserData(db: DB, access_token: string): Promise<UserData> {
+export async function getUserDataForCookies(db: DB, access_token: string): Promise<CookieUserData> {
     const userDataResponse = await fetch(`${PUBLIC_DISCORD_URL}/users/@me`, {
         headers: {
             Authorization: `Bearer ${access_token}`,
@@ -34,9 +34,7 @@ export async function getUserData(db: DB, access_token: string): Promise<UserDat
         error(userDataResponse.status, userDataResponse.statusText);
     }
 
-    let userData: UserData = await userDataResponse.json();
-    const dbUser = await getUser(db, userData.id);
-    userData.role = dbUser?.role || "user";
+    let userData: CookieUserData = await userDataResponse.json();
 
     userData = {
         ...userData,

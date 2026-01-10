@@ -18,11 +18,19 @@
         placeholder?: string;
         disabled?: boolean;
         class?: string;
+        size?: "xs" | "sm" | "md" | "lg";
         onValueChange?: (value: string) => void;
     }
 
-    let { value = $bindable(""), items, placeholder = "Select an option", disabled = false, class: className, onValueChange }: Props = $props();
-
+    let {
+        value = $bindable(""),
+        items,
+        placeholder = "Select an option",
+        disabled = false,
+        class: className,
+        size = "md",
+        onValueChange,
+    }: Props = $props();
     let open = $state(false);
     let selectFocus = $state(false);
 
@@ -33,6 +41,43 @@
 
     const isPlaceholder = $derived(!value || !selectedItem);
 
+    const sizeClasses = $derived.by(() => {
+        switch (size) {
+            case "xs":
+                return {
+                    trigger: "h-7 px-1.5 py-0.5 text-xs gap-2",
+                    icon: "size-4",
+                    arrow: "size-4",
+                    item: "h-7 p-1.5 text-xs gap-1.5",
+                    itemIcon: "size-4",
+                };
+            case "sm":
+                return {
+                    trigger: "h-8 px-2 py-1 text-sm gap-3",
+                    icon: "size-5",
+                    arrow: "size-4",
+                    item: "h-8 p-2 text-sm gap-2",
+                    itemIcon: "size-4",
+                };
+            case "md":
+                return {
+                    trigger: "h-10 px-3 py-1.5 text-base gap-4",
+                    icon: "size-6",
+                    arrow: "size-5",
+                    item: "h-10 p-2 text-base gap-2",
+                    itemIcon: "size-5",
+                };
+            case "lg":
+                return {
+                    trigger: "h-12 px-4 py-2 text-lg gap-4",
+                    icon: "size-7",
+                    arrow: "size-6",
+                    item: "h-12 p-3 text-lg gap-3",
+                    itemIcon: "size-6",
+                };
+        }
+    });
+
     function handleValueChange(newValue: string) {
         value = newValue;
         onValueChange?.(newValue);
@@ -42,8 +87,9 @@
 <Select.Root bind:value bind:open onValueChange={handleValueChange} {disabled} type="single">
     <Select.Trigger
         class={cn(
-            "flex h-10 w-full items-center justify-between gap-4 rounded-lg border border-slate-700 bg-slate-800 p-2 text-slate-50 transition-colors duration-200 focus:outline-none",
-            (selectFocus || open) && "!border-slate-400",
+            "flex w-full items-center justify-between rounded-lg border border-slate-700 bg-slate-800 text-slate-50 transition-colors duration-200 focus:outline-none",
+            sizeClasses.trigger,
+            (selectFocus || open) && "border-slate-400!",
             disabled && "cursor-not-allowed brightness-80",
             className,
         )}
@@ -51,23 +97,23 @@
         onfocusin={() => (selectFocus = true)}
         onfocusout={() => (selectFocus = false)}
     >
-        <div class="flex items-center justify-center gap-4">
+        <div class="flex items-center justify-center gap-2">
             {#if selectedItem?.icon}
-                <selectedItem.icon class="size-6 text-slate-400" />
+                <selectedItem.icon class={cn(sizeClasses.icon, "text-slate-400")} />
             {/if}
             <span class={cn("truncate text-slate-200", isPlaceholder && "text-slate-400")}>
                 {selectedLabel()}
             </span>
         </div>
         <div class="flex items-center">
-            <SolarAltArrowDownLinear class={cn("size-5 text-slate-400 transition-transform duration-200", open && "rotate-180")} />
+            <SolarAltArrowDownLinear class={cn(sizeClasses.arrow, "text-slate-400 transition-transform duration-200", open && "rotate-180")} />
         </div>
     </Select.Trigger>
 
     <Select.Portal>
         <Select.Content
             sideOffset={5}
-            class="z-200 min-w-[var(--bits-select-anchor-width)] overflow-hidden rounded-lg border border-slate-700 bg-slate-900 p-2 shadow-xl outline-hidden select-none"
+            class="z-200 min-w-(--bits-select-anchor-width) overflow-hidden rounded-lg border border-slate-700 bg-slate-900 p-2 shadow-xl outline-hidden select-none"
         >
             <Select.ScrollUpButton
                 class="flex h-6 items-center justify-center bg-slate-900 text-slate-400 transition-colors duration-200 hover:bg-slate-800"
@@ -82,19 +128,20 @@
                         label={item.label}
                         disabled={item.disabled}
                         class={cn(
-                            "flex h-10 w-full cursor-pointer items-center gap-2 rounded-lg p-2 text-sm text-slate-50 outline-hidden transition-colors duration-200 select-none hover:bg-slate-800 focus:bg-slate-800 focus:outline-none",
+                            "flex w-full cursor-pointer items-center rounded-lg text-slate-50 outline-hidden transition-colors duration-200 select-none hover:bg-slate-800 focus:bg-slate-800 focus:outline-none",
+                            sizeClasses.item,
                             item.disabled && "cursor-not-allowed opacity-80 hover:bg-slate-900",
-                            "data-[highlighted]:bg-slate-800 data-[selected]:bg-slate-800",
+                            "data-highlighted:bg-slate-800 data-selected:bg-slate-800",
                         )}
                     >
                         {#snippet children({ selected })}
                             {#if item.icon}
-                                <item.icon class="size-5 text-slate-400" />
+                                <item.icon class={cn(sizeClasses.itemIcon, "text-slate-400")} />
                             {/if}
                             <span class="flex-1 truncate">{item.label}</span>
                             {#if selected}
                                 <div class="ml-auto flex items-center">
-                                    <SolarUnreadLinear class="size-5" />
+                                    <SolarUnreadLinear class={sizeClasses.itemIcon} />
                                 </div>
                             {/if}
                         {/snippet}

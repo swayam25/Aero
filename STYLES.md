@@ -30,3 +30,11 @@
         - Queue & Lyrics drawer: `zIndex={801}` and `zIndex={802}` respectively.
         - Popover drawers: `zIndex={803}`
         - Context menu drawer: `zIndex={1000}`
+
+- Animations Used
+    - Fade In/Out
+    - Fly In/Out
+
+- Animation Durations
+    - Standard animations: `{{ duration: 200 }}` (*default for most animations*)
+    - Longest animations: `{{ duration: 400 }}`

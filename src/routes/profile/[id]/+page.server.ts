@@ -25,5 +25,5 @@ export const load: PageServerLoad = async ({ params, locals }) => {
 
     const playlists = await getPublicPlaylists(locals.db, user?.id);
 
-    return { user, playlists };
+    return { user, currentUser: locals.user, playlists };
 };

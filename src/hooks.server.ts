@@ -1,7 +1,8 @@
 import { JWT_SECRET } from "$env/static/private";
+import { getUser } from "$lib/db";
 import { db } from "$lib/db/db";
 import { verifyData } from "$lib/discord/jwt";
-import type { UserData } from "$lib/discord/types";
+import type { CookieUserData } from "$lib/discord/types";
 import { init as initPlayer } from "$lib/player";
 import { redirect, type Handle, type ServerInit } from "@sveltejs/kit";
 import { sequence } from "@sveltejs/kit/hooks";
@@ -23,8 +24,12 @@ const setLocalsHook: Handle = async ({ event, resolve }) => {
     const user: string | undefined = event.cookies.get("user");
 
     if (user) {
-        const data = await verifyData<UserData>(user, JWT_SECRET);
-        event.locals.user = data;
+        const data = await verifyData<CookieUserData>(user, JWT_SECRET);
+        let dbUser = null;
+        if (data) {
+            dbUser = await getUser(db, data.id);
+        }
+        event.locals.user = data && dbUser ? { ...data, role: dbUser.role } : null;
     }
     event.locals.db = db;
 

@@ -1,7 +1,7 @@
 import { DISCORD_CLIENT_ID, DISCORD_CLIENT_SECRET, JWT_SECRET } from "$env/static/private";
 import { PUBLIC_DISCORD_URL } from "$env/static/public";
 import { signData } from "$lib/discord/jwt";
-import { getNewAccessToken, getUserData } from "$lib/discord/user";
+import { getNewAccessToken, getUserDataForCookies } from "$lib/discord/user";
 import { redirect } from "@sveltejs/kit";
 import type { RequestHandler } from "./$types";
 
@@ -31,7 +31,7 @@ export const GET: RequestHandler = async ({ fetch, cookies, locals }) => {
             secure: true,
         });
 
-        const userData = await getUserData(locals.db, newToken.access_token);
+        const userData = await getUserDataForCookies(locals.db, newToken.access_token);
         const token = await signData(userData, JWT_SECRET, `${newToken.expires_in}s`);
 
         cookies.set("user", token, {

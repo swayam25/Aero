@@ -11,7 +11,7 @@
         role: SelectUser["role"];
         size?: "xs" | "sm" | "md" | "lg" | "icon";
     }
-    let { role, size = "sm" }: Props = $props();
+    let { role, size = "md" }: Props = $props();
 
     interface IconData {
         icon: Component;
@@ -64,7 +64,7 @@
 
 {#if role}
     {@const { icon: Icon, color } = iconData}
-    <div class={cn("inline-flex items-center gap-1 rounded-lg", color, sizeClass)}>
+    <div class={cn("inline-flex items-center gap-2 rounded-lg", color, sizeClass)}>
         <Icon class="size-full" />
         {#if size !== "icon"}
             <span>{String(role)[0].toUpperCase() + String(role).slice(1)}</span>

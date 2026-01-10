@@ -21,6 +21,12 @@ export async function getUser(db: DB, id: string) {
     return db.query.userTable.findFirst({ where: eq(schema.userTable.userId, id) });
 }
 
+export const ROLES: schema.SelectUser["role"][] = ["owner", "dev", "staff", "user"];
+
+export async function setUserRole(db: DB, id: string, role: schema.SelectUser["role"]) {
+    await db.update(schema.userTable).set({ role }).where(eq(schema.userTable.userId, id)).returning();
+}
+
 export async function getUserRoom(db: DB, id: string): Promise<schema.SelectRoom | null> {
     const user = await db.query.userTable.findFirst({
         where: eq(schema.userTable.userId, id),

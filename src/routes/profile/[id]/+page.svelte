@@ -1,13 +1,61 @@
 <script lang="ts">
+    import { invalidateAll } from "$app/navigation";
     import Avatar from "$lib/components/ui/Avatar.svelte";
     import Badge from "$lib/components/ui/Badge.svelte";
+    import Select from "$lib/components/ui/Select.svelte";
     import Seo from "$lib/components/ui/Seo.svelte";
+    import Tooltip from "$lib/components/ui/Tooltip.svelte";
+    import { ROLES } from "$lib/db";
     import { formatCount } from "$lib/utils/format";
+    import { toast } from "svelte-sonner";
     import { expoOut } from "svelte/easing";
-    import { fly } from "svelte/transition";
+    import { fade, fly } from "svelte/transition";
+    import MaterialSymbolsCloseRounded from "~icons/material-symbols/close-rounded";
+    import SolarCode2Linear from "~icons/solar/code-2-linear";
+    import SolarCrownLineLinear from "~icons/solar/crown-line-linear";
+    import SolarPenLinear from "~icons/solar/pen-linear";
+    import SolarSledgehammerOutline from "~icons/solar/sledgehammer-outline";
+    import SolarUserOutline from "~icons/solar/user-outline";
+    import SvgSpinners180Ring from "~icons/svg-spinners/180-ring";
     import type { PageData } from "./$types";
 
     let { data }: { data: PageData } = $props();
+
+    let role = $derived(data.user?.role || "user");
+    let showRoleMenu = $state(false);
+    let roleLoading = $state(false);
+    async function setUserRole() {
+        roleLoading = true;
+        const response = await fetch(`/api/user`, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify({ id: data.user?.id, role }),
+        });
+
+        if (response.ok) {
+            await invalidateAll();
+            showRoleMenu = false;
+        } else {
+            toast.error("Failed to update user role");
+        }
+        roleLoading = false;
+    }
+    const roleIcons = {
+        owner: SolarCrownLineLinear,
+        dev: SolarCode2Linear,
+        staff: SolarSledgehammerOutline,
+        user: SolarUserOutline,
+    };
+
+    let roles = $derived(
+        ROLES.map((roleValue) => ({
+            value: roleValue,
+            label: roleValue.charAt(0).toUpperCase() + roleValue.slice(1),
+            icon: roleIcons[roleValue],
+        })),
+    );
 </script>
 
 <Seo
@@ -33,7 +81,49 @@
         <div class="mt-14 flex flex-col items-start justify-center">
             <div class="flex items-center justify-center gap-1">
                 <p class="text-3xl font-bold md:text-4xl">{data.user?.global_name || data.user?.username}</p>
-                <Badge role={data.user?.role} />
+                {#if showRoleMenu}
+                    <div in:fade={{ duration: 200 }} class="group flex items-center justify-center gap-2">
+                        <Select
+                            disabled={roleLoading}
+                            bind:value={role}
+                            onValueChange={setUserRole}
+                            items={roles}
+                            size="sm"
+                            class={roleLoading ? "cursor-progress!" : ""}
+                        />
+                        <button
+                            class="flex size-full cursor-pointer items-center justify-center text-slate-200 opacity-100 transition-opacity duration-200 group-hover:opacity-100"
+                            disabled={roleLoading}
+                            class:cursor-progress!={roleLoading}
+                            class:brightness-80={roleLoading}
+                            onclick={() => (showRoleMenu = false)}
+                        >
+                            {#if roleLoading}
+                                <span in:fade={{ duration: 200 }}>
+                                    <SvgSpinners180Ring class="size-full" />
+                                </span>
+                            {:else}
+                                <span in:fade={{ duration: 200 }}>
+                                    <MaterialSymbolsCloseRounded class="size-full" />
+                                </span>
+                            {/if}
+                        </button>
+                    </div>
+                {:else}
+                    <div in:fade={{ duration: 200 }} class="group flex items-center justify-center gap-2">
+                        <Badge role={data.user?.role} size="sm" />
+                        {#if data.currentUser?.role === "owner" || data.currentUser?.role === "dev"}
+                            <Tooltip content="Edit User Role">
+                                <button
+                                    class="flex cursor-pointer items-center justify-center text-slate-200 opacity-0 transition-opacity duration-200 group-hover:opacity-100"
+                                    onclick={() => (showRoleMenu = true)}
+                                >
+                                    <SolarPenLinear class="size-full" />
+                                </button>
+                            </Tooltip>
+                        {/if}
+                    </div>
+                {/if}
             </div>
             <p class="font-mono text-sm text-slate-400">{data.user?.id}</p>
         </div>
