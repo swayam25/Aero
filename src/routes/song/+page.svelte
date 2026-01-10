@@ -10,6 +10,7 @@
     import { onMount } from "svelte";
     import { toast } from "svelte-sonner";
     import { fade } from "svelte/transition";
+    import LineMdConfirm from "~icons/line-md/confirm";
     import SolarConfoundedCircleLinear from "~icons/solar/confounded-circle-linear";
     import SolarCopyLinear from "~icons/solar/copy-linear";
     import SolarPauseCircleBold from "~icons/solar/pause-circle-bold";
@@ -20,6 +21,7 @@
     let { data }: { data: PageData } = $props();
     let enhancedSong = $derived(enhanceSong(data.song));
     let openPlaylistPopover = $state(false);
+    let copied = $state(false);
 
     onMount(async () => {
         if (playlistsCache.isStale($playlistsCache)) {
@@ -65,29 +67,40 @@
                     <div
                         role="button"
                         tabindex="0"
-                        class="size-6 cursor-pointer opacity-80 transition-colors duration-200 hover:opacity-100"
+                        class="size-6 cursor-pointer brightness-80 transition-all duration-200 hover:brightness-100"
+                        class:brightness-100!={copied}
                         onclick={() => {
                             const link = `${window.location.origin}/song?id=${data.song.videoId}`;
                             navigator.clipboard.writeText(link);
-                            toast.success("Song link copied to clipboard");
+                            copied = true;
+                            setTimeout(() => (copied = false), 2000);
                         }}
                         onkeydown={(e) => {
                             if (e.key === "Enter" || e.key === " ") {
                                 e.preventDefault();
                                 const link = `${window.location.origin}/song?id=${data.song.videoId}`;
                                 navigator.clipboard.writeText(link);
-                                toast.success("Song link copied to clipboard");
+                                copied = true;
+                                setTimeout(() => (copied = false), 2000);
                             }
                         }}
                     >
-                        <SolarCopyLinear class="size-full" />
+                        {#if copied}
+                            <span in:fade={{ duration: 100 }}>
+                                <LineMdConfirm class="size-full text-green-500" />
+                            </span>
+                        {:else}
+                            <span in:fade={{ duration: 100 }}>
+                                <SolarCopyLinear class="size-full" />
+                            </span>
+                        {/if}
                     </div>
                 </Tooltip>
                 {#if data.user && $playlistsCache.playlists}
                     <!-- Add to Playlist -->
                     <Popover arrow side="bottom" bind:open={openPlaylistPopover} title="Add to Playlist">
                         {#snippet trigger()}
-                            <div class="size-6 cursor-pointer opacity-80 transition-colors duration-200 hover:opacity-100">
+                            <div class="size-6 cursor-pointer brightness-80 transition-all duration-200 hover:brightness-100">
                                 <SolarPlaylist2Linear class="size-full" />
                             </div>
                         {/snippet}
