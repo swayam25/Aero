@@ -45,7 +45,7 @@ export function getLocalStorageVolume(): number {
     return vol ? Number(vol) : 100;
 }
 
-export function init() {
+export function init(userId: string | null | undefined = null) {
     const newPlayer = YouTubePlayer(document.getElementById("player-iframe") || "", { height: "0", width: "0" });
     const savedVolume = getLocalStorageVolume();
     newPlayer.setVolume(savedVolume);
@@ -63,7 +63,7 @@ export function init() {
             return { ...state, state: stateMap[event.data as keyof typeof stateMap] as PlayerStore["state"] };
         });
         if (event.data === 0) {
-            await skip(null);
+            await skip(userId);
         }
     });
     newPlayer.on("volumeChange", (event: any) => {
@@ -92,7 +92,7 @@ export async function play(song: SongDetailed, userId: string | null | undefined
 
     const isRmHost = isRoomHost(userId);
     if (!fromRoom && !isRmHost) {
-        if (!player) init();
+        if (!player) init(userId);
         return;
     }
 
@@ -101,7 +101,7 @@ export async function play(song: SongDetailed, userId: string | null | undefined
     store.update((state) => ({ ...state, meta: enhancedSong }));
 
     // Initialize player if not already
-    if (!player) init();
+    if (!player) init(userId);
 
     player = get(store).player;
     player?.loadVideoById(song.videoId);
@@ -137,7 +137,7 @@ export async function playPlaylist(song: SongDetailed, plSongs: Promise<SongFull
     store.update((state) => ({ ...state, meta: enhancedSong }));
 
     // Initialize player if not already
-    if (!player) init();
+    if (!player) init(userId);
 
     // Play the given song
     await play(song, userId);
@@ -157,7 +157,9 @@ export async function playPlaylist(song: SongDetailed, plSongs: Promise<SongFull
     }));
 
     // Room
-    setQueueAPI(reorderedPlaylist);
+    if (isRoomHost(userId)) {
+        await setQueueAPI(reorderedPlaylist);
+    }
 }
 
 export async function addToQueue(song: SongDetailed, userId: string | null | undefined) {
