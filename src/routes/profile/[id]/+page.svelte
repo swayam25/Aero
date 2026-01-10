@@ -50,7 +50,11 @@
     };
 
     let roles = $derived(
-        ROLES.map((roleValue) => ({
+        ROLES.filter((roleValue) => {
+            const currentUserRoleIndex = ROLES.indexOf(data.currentUser?.role || "user");
+            const targetRoleIndex = ROLES.indexOf(roleValue);
+            return targetRoleIndex >= currentUserRoleIndex;
+        }).map((roleValue) => ({
             value: roleValue,
             label: roleValue.charAt(0).toUpperCase() + roleValue.slice(1),
             icon: roleIcons[roleValue],
