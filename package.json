@@ -20,7 +20,7 @@
     "devDependencies": {
         "@supabase/supabase-js": "^2.86.2",
         "@sveltejs/adapter-node": "^5.4.0",
-        "@sveltejs/kit": "^2.49.1",
+        "@sveltejs/kit": "^2.49.5",
         "@sveltejs/vite-plugin-svelte": "^5.1.1",
         "@tailwindcss/vite": "^4.1.17",
         "@types/youtube-player": "^5.5.11",
