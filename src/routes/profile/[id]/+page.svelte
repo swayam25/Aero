@@ -10,13 +10,14 @@
     import { toast } from "svelte-sonner";
     import { expoOut } from "svelte/easing";
     import { fade, fly } from "svelte/transition";
-    import MaterialSymbolsCloseRounded from "~icons/material-symbols/close-rounded";
+    import IconParkOutlineClose from "~icons/icon-park-outline/close";
+    import IconParkOutlineLoadingFour from "~icons/icon-park-outline/loading-four";
     import SolarCode2Linear from "~icons/solar/code-2-linear";
     import SolarCrownLineLinear from "~icons/solar/crown-line-linear";
     import SolarPenLinear from "~icons/solar/pen-linear";
     import SolarSledgehammerOutline from "~icons/solar/sledgehammer-outline";
     import SolarUserOutline from "~icons/solar/user-outline";
-    import SvgSpinners180Ring from "~icons/svg-spinners/180-ring";
+
     import type { PageData } from "./$types";
 
     let { data }: { data: PageData } = $props();
@@ -104,11 +105,11 @@
                         >
                             {#if roleLoading}
                                 <span in:fade={{ duration: 100 }}>
-                                    <SvgSpinners180Ring class="size-full" />
+                                    <IconParkOutlineLoadingFour class="size-full animate-spin" />
                                 </span>
                             {:else}
                                 <span in:fade={{ duration: 100 }}>
-                                    <MaterialSymbolsCloseRounded class="size-full" />
+                                    <IconParkOutlineClose class="size-full" />
                                 </span>
                             {/if}
                         </button>

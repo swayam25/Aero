@@ -2,7 +2,7 @@
     import { Dialog } from "bits-ui";
     import type { Snippet } from "svelte";
     import { fade } from "svelte/transition";
-    import MaterialSymbolsCloseRounded from "~icons/material-symbols/close-rounded";
+    import IconParkOutlineClose from "~icons/icon-park-outline/close";
 
     interface Props {
         title: string;
@@ -37,7 +37,7 @@
                                 <div class="flex items-center justify-between gap-2">
                                     <Dialog.Title class="text-xl font-extrabold">{title}</Dialog.Title>
                                     <Dialog.Close class="cursor-pointer transition-all duration-200 hover:brightness-80">
-                                        <MaterialSymbolsCloseRounded class="size-6" />
+                                        <IconParkOutlineClose class="size-6" />
                                     </Dialog.Close>
                                 </div>
                                 {#if description}

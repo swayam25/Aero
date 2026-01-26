@@ -2,7 +2,7 @@
     import { cn } from "$lib/utils/cn";
     import type { Component } from "svelte";
     import { fade } from "svelte/transition";
-    import MaterialSymbolsCloseRounded from "~icons/material-symbols/close-rounded";
+    import IconParkOutlineClose from "~icons/icon-park-outline/close";
     import SolarEyeClosedLinear from "~icons/solar/eye-closed-linear";
     import SolarEyeLinear from "~icons/solar/eye-linear";
 
@@ -59,7 +59,7 @@
                     ref?.focus();
                 }}
             >
-                <MaterialSymbolsCloseRounded class="size-full" />
+                <IconParkOutlineClose class="size-full" />
             </button>
         {/if}
     {/if}

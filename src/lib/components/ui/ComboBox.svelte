@@ -3,7 +3,7 @@
     import { Combobox } from "bits-ui";
     import { type Component } from "svelte";
     import { fade, fly } from "svelte/transition";
-    import MaterialSymbolsCloseRounded from "~icons/material-symbols/close-rounded";
+    import IconParkOutlineClose from "~icons/icon-park-outline/close";
     import SolarAltArrowDownLinear from "~icons/solar/alt-arrow-down-linear";
     import SolarAltArrowUpLinear from "~icons/solar/alt-arrow-up-linear";
     import SolarConfoundedCircleLinear from "~icons/solar/confounded-circle-linear";
@@ -74,7 +74,7 @@
                         ref?.focus();
                     }}
                 >
-                    <MaterialSymbolsCloseRounded class="size-full" />
+                    <IconParkOutlineClose class="size-full" />
                 </button>
             {/if}
         {/if}
@@ -108,7 +108,7 @@
     <Combobox.Portal>
         <Combobox.Content
             sideOffset={15}
-            class="z-50 max-h-[var(--bits-combobox-content-available-height)] w-[var(--bits-combobox-anchor-width)] min-w-[var(--bits-combobox-anchor-width)] rounded-lg border border-slate-700 bg-slate-900 p-2 shadow-xl outline-hidden select-none"
+            class="z-50 max-h-(--bits-combobox-content-available-height) w-(--bits-combobox-anchor-width) min-w-(--bits-combobox-anchor-width) rounded-lg border border-slate-700 bg-slate-900 p-2 shadow-xl outline-hidden select-none"
         >
             {#snippet child({ wrapperProps, props, open })}
                 {#if open}
