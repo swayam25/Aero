@@ -1,5 +1,6 @@
 <script lang="ts">
     import { goto, onNavigate } from "$app/navigation";
+    import { navigating } from "$app/state";
     import BottomBar from "$lib/components/BottomBar.svelte";
     import Lyrics from "$lib/components/Lyrics.svelte";
     import MobilePlayerDrawers from "$lib/components/mobile/MobileDrawers.svelte";
@@ -54,6 +55,14 @@
             cleanupShortcuts?.();
             cleanupMobileQuery?.();
         };
+    });
+
+    $effect(() => {
+        if (navigating && (navigating.type === "link" || navigating.type === "goto" || navigating.type === "popstate")) {
+            document.body.classList.add("loading");
+        } else {
+            document.body.classList.remove("loading");
+        }
     });
 
     // View Transitions

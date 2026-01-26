@@ -21,6 +21,13 @@ body {
     -moz-osx-font-smoothing: grayscale;
 }
 
+body.loading {
+    cursor: progress;
+}
+body.loading * {
+    cursor: progress !important;
+}
+
 ::-webkit-scrollbar {
     @apply w-0.5 md:w-2;
 }

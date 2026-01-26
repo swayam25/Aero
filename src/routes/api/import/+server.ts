@@ -1,6 +1,7 @@
 import { addSongToPlaylist, createPlaylist, setPlaylistCover, type DB } from "$lib/db";
 import { enhanceSong } from "$lib/player";
 import { getSpotifyPlaylist } from "$lib/services/spotify";
+import { executeWithRateLimit } from "$lib/utils/rateLimit";
 import type { Track } from "@spotify/web-api-ts-sdk";
 import { json, type RequestHandler } from "@sveltejs/kit";
 import type YTMusic from "ytmusic-api";
@@ -115,27 +116,48 @@ async function importPlaylistFromSource(source: string, playlistID: string, user
     let importedSongs = 0;
     let lastVideoId: string | null = null;
 
-    for (const track of playlistData.tracks) {
-        let videoId: string | null = track.videoId || null;
+    // Process tracks concurrently with rate limit handling
+    const results = await executeWithRateLimit(
+        playlistData.tracks,
+        async (track) => {
+            let videoId: string | null = track.videoId || null;
 
-        if (!videoId) {
-            videoId = await searchYTMusicSong(track.name, track.artist, ytmusic);
-        }
+            if (!videoId) {
+                videoId = await searchYTMusicSong(track.name, track.artist, ytmusic);
+            }
 
-        if (!videoId) {
+            return { videoId, track };
+        },
+        {
+            initialConcurrency: 5,
+            minConcurrency: 1,
+            maxConcurrency: 10,
+            retryDelay: 1000,
+            backoffMultiplier: 1.5,
+        },
+    );
+
+    // Add all songs to playlist and track stats
+    for (const result of results) {
+        if (!result.videoId) {
             unmatchedSongs++;
         } else {
-            await addSongToPlaylist(db, playlistDbId, videoId);
-            lastVideoId = videoId;
+            await addSongToPlaylist(db, playlistDbId, result.videoId);
+            lastVideoId = result.videoId;
             importedSongs++;
         }
     }
 
+    // Set playlist cover from the last imported song
     if (lastVideoId) {
-        let song = await ytmusic.getSong(lastVideoId);
-        if (song && song.thumbnails && song.thumbnails.length > 0) {
-            const enhancedSong = enhanceSong(song);
-            await setPlaylistCover(db, playlistDbId, enhancedSong.thumbnail.FULL);
+        try {
+            let song = await ytmusic.getSong(lastVideoId);
+            if (song && song.thumbnails && song.thumbnails.length > 0) {
+                const enhancedSong = enhanceSong(song);
+                await setPlaylistCover(db, playlistDbId, enhancedSong.thumbnail.FULL);
+            }
+        } catch (error) {
+            console.log("Failed to set playlist cover:", error);
         }
     }
 
