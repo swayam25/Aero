@@ -5,6 +5,8 @@ import YouTubePlayer from "youtube-player";
 import type { SongDetailed, SongFull } from "ytmusic-api";
 import type { EnhancedSong, PlayerStore } from "./types";
 
+let updateTimeFrameId: number | null = null;
+
 /**
  * Enhances a song with proxied thumbnail URLs
  */
@@ -108,6 +110,12 @@ export async function play(song: SongDetailed, userId: string | null | undefined
     if (!fromQueue) await addToQueue(song, userId);
     player?.playVideo();
 
+    // Cancel previous update loop to prevent memory leaks
+    if (updateTimeFrameId !== null) {
+        cancelAnimationFrame(updateTimeFrameId);
+        updateTimeFrameId = null;
+    }
+
     // Continuously update current time and total duration
     const updateTime = async () => {
         const state = get(store).state;
@@ -116,7 +124,7 @@ export async function play(song: SongDetailed, userId: string | null | undefined
             const totalDuration = (await player?.getDuration()) || 0;
             store.update((state) => ({ ...state, currentTime, totalDuration }));
         }
-        requestAnimationFrame(updateTime);
+        updateTimeFrameId = requestAnimationFrame(updateTime);
     };
 
     if (isRmHost) {
@@ -226,6 +234,11 @@ export async function togglePause(userId: string | null | undefined) {
 export function stop() {
     const player = get(store).player;
     if (!player) return { error: "No player instance" };
+
+    if (updateTimeFrameId !== null) {
+        cancelAnimationFrame(updateTimeFrameId);
+        updateTimeFrameId = null;
+    }
 
     player.stopVideo();
     store.update((state) => ({
