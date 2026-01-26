@@ -241,9 +241,13 @@
                         }}
                     >
                         {#if $popupStore.isPlDeleting}
-                            <IconParkOutlineLoadingFour class="size-5 animate-spin" />
+                            <span in:fade={{ duration: 100 }}>
+                                <IconParkOutlineLoadingFour class="size-5 animate-spin" />
+                            </span>
                         {:else}
-                            <SolarTrashBinTrashLinear class="size-5" />
+                            <span in:fade={{ duration: 100 }}>
+                                <SolarTrashBinTrashLinear class="size-5" />
+                            </span>
                         {/if}
                     </Button>
                 </Tooltip>
@@ -256,9 +260,13 @@
                         }}
                     >
                         {#if $popupStore.isPlRenaming}
-                            <IconParkOutlineLoadingFour class="size-5 animate-spin" />
+                            <span in:fade={{ duration: 100 }}>
+                                <IconParkOutlineLoadingFour class="size-5 animate-spin" />
+                            </span>
                         {:else}
-                            <SolarRestartLinear class="size-5" />
+                            <span in:fade={{ duration: 100 }}>
+                                <SolarRestartLinear class="size-5" />
+                            </span>
                         {/if}
                     </Button>
                 </Tooltip>

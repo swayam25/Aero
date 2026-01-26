@@ -5,6 +5,8 @@
     import { joinRoomAPI } from "$lib/room";
     import { hideJoinRoomPopup, isCreatingRoom, isJoiningRoom, store } from "$lib/stores";
     import { toast } from "svelte-sonner";
+    import { fade } from "svelte/transition";
+    import IconParkOutlineLoadingFour from "~icons/icon-park-outline/loading-four";
     import SolarLoginLinear from "~icons/solar/login-linear";
 
     let input: HTMLInputElement | null = $state(null);
@@ -76,7 +78,15 @@
             disabled={!inputValue || $isJoiningRoom}
             class:!cursor-progress={$isJoiningRoom}
         >
-            <SolarLoginLinear class="size-5" />
+            {#if $isJoiningRoom}
+                <span in:fade={{ duration: 100 }}>
+                    <IconParkOutlineLoadingFour class="size-5 animate-spin" />
+                </span>
+            {:else}
+                <span in:fade={{ duration: 100 }}>
+                    <SolarLoginLinear class="size-5" />
+                </span>
+            {/if}
             Join
         </button>
     {/snippet}

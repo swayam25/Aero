@@ -86,9 +86,13 @@
             <Tooltip side="bottom" content="New Room">
                 <Button size="icon" type="div" disabled={$isCreatingRoom || $isJoiningRoom}>
                     {#if $isCreatingRoom}
-                        <IconParkOutlineLoadingFour class="size-5 animate-spin" />
+                        <span in:fade={{ duration: 100 }}>
+                            <IconParkOutlineLoadingFour class="size-5 animate-spin" />
+                        </span>
                     {:else}
-                        <MaterialSymbolsAdd2Rounded class="size-5" />
+                        <span in:fade={{ duration: 100 }}>
+                            <MaterialSymbolsAdd2Rounded class="size-5" />
+                        </span>
                     {/if}
                 </Button>
             </Tooltip>
@@ -96,9 +100,13 @@
         <Tooltip side="bottom" content="Join Room">
             <Button size="icon" type="div" disabled={$isJoiningRoom || $isCreatingRoom} onclick={showJoinRoomPopup}>
                 {#if $isJoiningRoom}
-                    <IconParkOutlineLoadingFour class="size-5 animate-spin" />
+                    <span in:fade={{ duration: 100 }}>
+                        <IconParkOutlineLoadingFour class="size-5 animate-spin" />
+                    </span>
                 {:else}
-                    <SolarLoginLinear class="size-5" />
+                    <span in:fade={{ duration: 100 }}>
+                        <SolarLoginLinear class="size-5" />
+                    </span>
                 {/if}
             </Button>
         </Tooltip>
@@ -113,18 +121,26 @@
             <NewRoomPopup>
                 <Button disabled={$isCreatingRoom || $isJoiningRoom}>
                     {#if $isCreatingRoom}
-                        <IconParkOutlineLoadingFour class="size-5 animate-spin" />
+                        <span in:fade={{ duration: 100 }}>
+                            <IconParkOutlineLoadingFour class="size-5 animate-spin" />
+                        </span>
                     {:else}
-                        <MaterialSymbolsAdd2Rounded class="size-5" />
+                        <span in:fade={{ duration: 100 }}>
+                            <MaterialSymbolsAdd2Rounded class="size-5" />
+                        </span>
                     {/if}
                     <span>Create New</span>
                 </Button>
             </NewRoomPopup>
             <Button disabled={$isJoiningRoom || $isCreatingRoom} onclick={showJoinRoomPopup}>
                 {#if $isJoiningRoom}
-                    <IconParkOutlineLoadingFour class="size-5 animate-spin" />
+                    <span in:fade={{ duration: 100 }}>
+                        <IconParkOutlineLoadingFour class="size-5 animate-spin" />
+                    </span>
                 {:else}
-                    <SolarLoginLinear class="size-5" />
+                    <span in:fade={{ duration: 100 }}>
+                        <SolarLoginLinear class="size-5" />
+                    </span>
                 {/if}
                 <span>Join</span>
             </Button>

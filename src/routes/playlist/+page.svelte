@@ -34,9 +34,13 @@
             <Tooltip side="bottom" content="New playlist">
                 <Button size="icon" type="div" disabled={$isCreatingPlaylist}>
                     {#if $isCreatingPlaylist}
-                        <IconParkOutlineLoadingFour class="size-5 animate-spin" />
+                        <span in:fade={{ duration: 100 }}>
+                            <IconParkOutlineLoadingFour class="size-5 animate-spin" />
+                        </span>
                     {:else}
-                        <MaterialSymbolsAdd2Rounded class="size-5" />
+                        <span in:fade={{ duration: 100 }}>
+                            <MaterialSymbolsAdd2Rounded class="size-5" />
+                        </span>
                     {/if}
                 </Button>
             </Tooltip>
@@ -45,9 +49,13 @@
             <Tooltip side="bottom" content="Import playlist">
                 <Button size="icon" type="div" disabled={$isImportingPlaylist}>
                     {#if $isImportingPlaylist}
-                        <IconParkOutlineLoadingFour class="size-5 animate-spin" />
+                        <span in:fade={{ duration: 100 }}>
+                            <IconParkOutlineLoadingFour class="size-5 animate-spin" />
+                        </span>
                     {:else}
-                        <SolarImportLinear class="size-5" />
+                        <span in:fade={{ duration: 100 }}>
+                            <SolarImportLinear class="size-5" />
+                        </span>
                     {/if}
                 </Button>
             </Tooltip>
@@ -63,9 +71,13 @@
             <NewPlaylistPopup>
                 <Button disabled={$isCreatingPlaylist}>
                     {#if $isCreatingPlaylist}
-                        <IconParkOutlineLoadingFour class="size-5 animate-spin" />
+                        <span in:fade={{ duration: 100 }}>
+                            <IconParkOutlineLoadingFour class="size-5 animate-spin" />
+                        </span>
                     {:else}
-                        <MaterialSymbolsAdd2Rounded class="size-5" />
+                        <span in:fade={{ duration: 100 }}>
+                            <MaterialSymbolsAdd2Rounded class="size-5" />
+                        </span>
                     {/if}
                     <span>Create New</span>
                 </Button>
@@ -73,9 +85,13 @@
             <ImportPlaylist>
                 <Button disabled={$isImportingPlaylist}>
                     {#if $isImportingPlaylist}
-                        <IconParkOutlineLoadingFour class="size-5 animate-spin" />
+                        <span in:fade={{ duration: 100 }}>
+                            <IconParkOutlineLoadingFour class="size-5 animate-spin" />
+                        </span>
                     {:else}
-                        <SolarImportLinear class="size-5" />
+                        <span in:fade={{ duration: 100 }}>
+                            <SolarImportLinear class="size-5" />
+                        </span>
                     {/if}
                     <span>Import</span>
                 </Button>

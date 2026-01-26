@@ -6,6 +6,8 @@
     import { isCreatingRoom, isJoiningRoom } from "$lib/stores";
     import { type Snippet } from "svelte";
     import { toast } from "svelte-sonner";
+    import { fade } from "svelte/transition";
+    import IconParkOutlineLoadingFour from "~icons/icon-park-outline/loading-four";
     import MaterialSymbolsAdd2Rounded from "~icons/material-symbols/add-2-rounded";
     import Switch from "./ui/Switch.svelte";
     import Tooltip from "./ui/Tooltip.svelte";
@@ -101,7 +103,15 @@
             disabled={!inputValue.trim() || $isCreatingRoom}
             class:!cursor-progress={$isCreatingRoom}
         >
-            <MaterialSymbolsAdd2Rounded class="size-5" />
+            {#if $isCreatingRoom}
+                <span in:fade={{ duration: 100 }}>
+                    <IconParkOutlineLoadingFour class="size-5 animate-spin" />
+                </span>
+            {:else}
+                <span in:fade={{ duration: 100 }}>
+                    <MaterialSymbolsAdd2Rounded class="size-5" />
+                </span>
+            {/if}
             Create
         </button>
     {/snippet}

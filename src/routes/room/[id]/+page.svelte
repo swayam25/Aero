@@ -205,9 +205,13 @@
                         }}
                     >
                         {#if $popupStore.isRoomDeleting}
-                            <IconParkOutlineLoadingFour class="size-5 animate-spin" />
+                            <span in:fade={{ duration: 100 }}>
+                                <IconParkOutlineLoadingFour class="size-5 animate-spin" />
+                            </span>
                         {:else}
-                            <SolarTrashBinTrashLinear class="size-5" />
+                            <span in:fade={{ duration: 100 }}>
+                                <SolarTrashBinTrashLinear class="size-5" />
+                            </span>
                         {/if}
                     </Button>
                 </Tooltip>
@@ -220,9 +224,13 @@
                         }}
                     >
                         {#if $popupStore.isRoomRenaming}
-                            <IconParkOutlineLoadingFour class="size-5 animate-spin" />
+                            <span in:fade={{ duration: 100 }}>
+                                <IconParkOutlineLoadingFour class="size-5 animate-spin" />
+                            </span>
                         {:else}
-                            <SolarRestartOutline class="size-5" />
+                            <span in:fade={{ duration: 100 }}>
+                                <SolarRestartOutline class="size-5" />
+                            </span>
                         {/if}
                     </Button>
                 </Tooltip>
