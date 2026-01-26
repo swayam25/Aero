@@ -10,6 +10,7 @@
     import { formatCount } from "$lib/utils/format";
     import { expoOut } from "svelte/easing";
     import { fade, fly } from "svelte/transition";
+    import IconParkOutlineLoadingFour from "~icons/icon-park-outline/loading-four";
     import MaterialSymbolsAdd2Rounded from "~icons/material-symbols/add-2-rounded";
     import SolarConfoundedCircleLinear from "~icons/solar/confounded-circle-linear";
     import SolarLoginLinear from "~icons/solar/login-linear";
@@ -84,13 +85,21 @@
         <NewRoomPopup>
             <Tooltip side="bottom" content="New Room">
                 <Button size="icon" type="div" disabled={$isCreatingRoom || $isJoiningRoom}>
-                    <MaterialSymbolsAdd2Rounded class="size-5" />
+                    {#if $isCreatingRoom}
+                        <IconParkOutlineLoadingFour class="size-5 animate-spin" />
+                    {:else}
+                        <MaterialSymbolsAdd2Rounded class="size-5" />
+                    {/if}
                 </Button>
             </Tooltip>
         </NewRoomPopup>
         <Tooltip side="bottom" content="Join Room">
             <Button size="icon" type="div" disabled={$isJoiningRoom || $isCreatingRoom} onclick={showJoinRoomPopup}>
-                <SolarLoginLinear class="size-5" />
+                {#if $isJoiningRoom}
+                    <IconParkOutlineLoadingFour class="size-5 animate-spin" />
+                {:else}
+                    <SolarLoginLinear class="size-5" />
+                {/if}
             </Button>
         </Tooltip>
     </div>
@@ -103,12 +112,20 @@
             <p class="text-lg text-slate-400 md:text-xl">No rooms found</p>
             <NewRoomPopup>
                 <Button disabled={$isCreatingRoom || $isJoiningRoom}>
-                    <MaterialSymbolsAdd2Rounded class="size-5" />
+                    {#if $isCreatingRoom}
+                        <IconParkOutlineLoadingFour class="size-5 animate-spin" />
+                    {:else}
+                        <MaterialSymbolsAdd2Rounded class="size-5" />
+                    {/if}
                     <span>Create New</span>
                 </Button>
             </NewRoomPopup>
             <Button disabled={$isJoiningRoom || $isCreatingRoom} onclick={showJoinRoomPopup}>
-                <SolarLoginLinear class="size-5" />
+                {#if $isJoiningRoom}
+                    <IconParkOutlineLoadingFour class="size-5 animate-spin" />
+                {:else}
+                    <SolarLoginLinear class="size-5" />
+                {/if}
                 <span>Join</span>
             </Button>
         </div>

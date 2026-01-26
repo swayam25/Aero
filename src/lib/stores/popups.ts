@@ -9,6 +9,11 @@ export interface PopupsStore {
     showRoomRenamePopup?: boolean;
     showJoinRoomPopup?: boolean;
     roomData?: SelectRoom | null;
+
+    isPlDeleting?: boolean;
+    isPlRenaming?: boolean;
+    isRoomDeleting?: boolean;
+    isRoomRenaming?: boolean;
 }
 
 export const store = writable<PopupsStore>({
@@ -17,6 +22,11 @@ export const store = writable<PopupsStore>({
     showRoomDeletePopup: false,
     showRoomRenamePopup: false,
     showJoinRoomPopup: false,
+
+    isPlDeleting: false,
+    isPlRenaming: false,
+    isRoomDeleting: false,
+    isRoomRenaming: false,
 });
 
 export function showPlDeletePopup(playlistData: PopupsStore["playlistData"]) {

@@ -13,19 +13,24 @@
     async function deletePlaylist() {
         const plID = $popupStore.playlistData?.id;
         hidePlDeletePopup();
+        popupStore.update((s) => ({ ...s, isPlDeleting: true }));
         toast.promise(
             (async () => {
-                const resp = await fetch(`/api/playlist`, {
-                    body: JSON.stringify({ id: plID }),
-                    method: "DELETE",
-                    headers: {
-                        "Content-Type": "application/json",
-                    },
-                });
-                const respData = await resp.json();
-                if (!resp.ok) throw new Error(respData.error || "Failed to delete playlist");
-                await playlistsCache.refresh();
-                return respData;
+                try {
+                    const resp = await fetch(`/api/playlist`, {
+                        body: JSON.stringify({ id: plID }),
+                        method: "DELETE",
+                        headers: {
+                            "Content-Type": "application/json",
+                        },
+                    });
+                    const respData = await resp.json();
+                    if (!resp.ok) throw new Error(respData.error || "Failed to delete playlist");
+                    await playlistsCache.refresh();
+                    return respData;
+                } finally {
+                    popupStore.update((s) => ({ ...s, isPlDeleting: false }));
+                }
             })(),
             {
                 loading: "Deleting playlist...",
@@ -48,19 +53,24 @@
         const newName = inputValue.trim();
         hidePlRenamePopup();
         inputValue = "";
+        popupStore.update((s) => ({ ...s, isPlRenaming: true }));
         toast.promise(
             (async () => {
-                const resp = await fetch(`/api/playlist`, {
-                    body: JSON.stringify({ key: "rename_pl", value: { playlistID: plID, name: newName } }),
-                    method: "POST",
-                    headers: {
-                        "Content-Type": "application/json",
-                    },
-                });
-                const respData = await resp.json();
-                if (!resp.ok) throw new Error(respData.error || "Failed to rename playlist");
-                await playlistsCache.refresh();
-                return respData;
+                try {
+                    const resp = await fetch(`/api/playlist`, {
+                        body: JSON.stringify({ key: "rename_pl", value: { playlistID: plID, name: newName } }),
+                        method: "POST",
+                        headers: {
+                            "Content-Type": "application/json",
+                        },
+                    });
+                    const respData = await resp.json();
+                    if (!resp.ok) throw new Error(respData.error || "Failed to rename playlist");
+                    await playlistsCache.refresh();
+                    return respData;
+                } finally {
+                    popupStore.update((s) => ({ ...s, isPlRenaming: false }));
+                }
             })(),
             {
                 loading: "Renaming playlist...",

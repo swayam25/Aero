@@ -10,6 +10,7 @@
     import { onMount } from "svelte";
     import { expoOut } from "svelte/easing";
     import { fade, fly } from "svelte/transition";
+    import IconParkOutlineLoadingFour from "~icons/icon-park-outline/loading-four";
     import MaterialSymbolsAdd2Rounded from "~icons/material-symbols/add-2-rounded";
     import SolarConfoundedCircleLinear from "~icons/solar/confounded-circle-linear";
     import SolarImportLinear from "~icons/solar/import-linear";
@@ -32,14 +33,22 @@
         <NewPlaylistPopup>
             <Tooltip side="bottom" content="New playlist">
                 <Button size="icon" type="div" disabled={$isCreatingPlaylist}>
-                    <MaterialSymbolsAdd2Rounded class="size-5" />
+                    {#if $isCreatingPlaylist}
+                        <IconParkOutlineLoadingFour class="size-5 animate-spin" />
+                    {:else}
+                        <MaterialSymbolsAdd2Rounded class="size-5" />
+                    {/if}
                 </Button>
             </Tooltip>
         </NewPlaylistPopup>
         <ImportPlaylist>
             <Tooltip side="bottom" content="Import playlist">
                 <Button size="icon" type="div" disabled={$isImportingPlaylist}>
-                    <SolarImportLinear class="size-5" />
+                    {#if $isImportingPlaylist}
+                        <IconParkOutlineLoadingFour class="size-5 animate-spin" />
+                    {:else}
+                        <SolarImportLinear class="size-5" />
+                    {/if}
                 </Button>
             </Tooltip>
         </ImportPlaylist>
@@ -53,13 +62,21 @@
             <p class="text-lg text-slate-400 md:text-xl">No playlists found</p>
             <NewPlaylistPopup>
                 <Button disabled={$isCreatingPlaylist}>
-                    <MaterialSymbolsAdd2Rounded class="size-5" />
+                    {#if $isCreatingPlaylist}
+                        <IconParkOutlineLoadingFour class="size-5 animate-spin" />
+                    {:else}
+                        <MaterialSymbolsAdd2Rounded class="size-5" />
+                    {/if}
                     <span>Create New</span>
                 </Button>
             </NewPlaylistPopup>
             <ImportPlaylist>
                 <Button disabled={$isImportingPlaylist}>
-                    <SolarImportLinear class="size-5" />
+                    {#if $isImportingPlaylist}
+                        <IconParkOutlineLoadingFour class="size-5 animate-spin" />
+                    {:else}
+                        <SolarImportLinear class="size-5" />
+                    {/if}
                     <span>Import</span>
                 </Button>
             </ImportPlaylist>

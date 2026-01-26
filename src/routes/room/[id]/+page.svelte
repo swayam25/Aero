@@ -9,11 +9,13 @@
     import type { SelectRoomMember } from "$lib/db/schema";
     import type { UserData } from "$lib/discord/types";
     import { joinRoomAPI, leaveRoomAPI, toggleRoomVisibilityAPI } from "$lib/room";
-    import { isJoiningRoom, showJoinRoomPopup, showRoomDeletePopup, showRoomRenamePopup } from "$lib/stores";
+    import { isJoiningRoom, store as popupStore, showJoinRoomPopup, showRoomDeletePopup, showRoomRenamePopup } from "$lib/stores";
     import { userRoomStore } from "$lib/stores/userRoom";
     import { supabaseChannel } from "$lib/supabase/channel";
     import { toast } from "svelte-sonner";
     import { fade, fly } from "svelte/transition";
+    import IconParkOutlineLoadingFour from "~icons/icon-park-outline/loading-four";
+    import LineMdConfirm from "~icons/line-md/confirm";
     import SolarConfoundedCircleLinear from "~icons/solar/confounded-circle-linear";
     import SolarCopyOutline from "~icons/solar/copy-outline";
     import SolarLoginOutline from "~icons/solar/login-outline";
@@ -30,6 +32,10 @@
     let members: UserData[] = $derived(data.room.members);
     let hoveredMemberId: string | null = $state(null);
     let hostAvatarHovered: boolean = $state(false);
+
+    // Button feedback states
+    let copyIdSuccess: boolean = $state(false);
+    let shareSuccess: boolean = $state(false);
 
     // Thumbnail helpers for the room queue (limit to 4 thumbnails)
     const thumbnails = $derived(data.room.queue?.reverse().slice(0, 4) ?? []);
@@ -190,22 +196,34 @@
                 <Tooltip content="Delete Room" side="bottom">
                     <Button
                         size="icon"
-                        class="brightness-100! hover:bg-red-500/10! hover:text-red-500"
+                        class={!$popupStore.isRoomDeleting && !$popupStore.isRoomRenaming
+                            ? "brightness-100! hover:bg-red-500/10! hover:text-red-500"
+                            : ""}
+                        disabled={$popupStore.isRoomDeleting || $popupStore.isRoomRenaming}
                         onclick={() => {
                             showRoomDeletePopup(data.room);
                         }}
                     >
-                        <SolarTrashBinTrashLinear class="size-5" />
+                        {#if $popupStore.isRoomDeleting}
+                            <IconParkOutlineLoadingFour class="size-5 animate-spin" />
+                        {:else}
+                            <SolarTrashBinTrashLinear class="size-5" />
+                        {/if}
                     </Button>
                 </Tooltip>
                 <Tooltip content="Rename Room" side="bottom">
                     <Button
                         size="icon"
+                        disabled={$popupStore.isRoomDeleting || $popupStore.isRoomRenaming}
                         onclick={() => {
                             showRoomRenamePopup(data.room);
                         }}
                     >
-                        <SolarRestartOutline class="size-5" />
+                        {#if $popupStore.isRoomRenaming}
+                            <IconParkOutlineLoadingFour class="size-5 animate-spin" />
+                        {:else}
+                            <SolarRestartOutline class="size-5" />
+                        {/if}
                     </Button>
                 </Tooltip>
             {/if}
@@ -214,10 +232,20 @@
                     size="icon"
                     onclick={() => {
                         navigator.clipboard.writeText(data.room.id);
-                        toast.success("Room ID copied to clipboard!");
+                        copyIdSuccess = true;
+                        setTimeout(() => (copyIdSuccess = false), 2000);
                     }}
+                    class={copyIdSuccess ? "bg-green-500/10! brightness-100!" : ""}
                 >
-                    <SolarCopyOutline class="size-5" />
+                    {#if copyIdSuccess}
+                        <span in:fade={{ duration: 100 }}>
+                            <LineMdConfirm class="size-5 text-green-500" />
+                        </span>
+                    {:else}
+                        <span in:fade={{ duration: 100 }}>
+                            <SolarCopyOutline class="size-5" />
+                        </span>
+                    {/if}
                 </Button>
             </Tooltip>
             <Tooltip content="Share" side="bottom">
@@ -225,10 +253,20 @@
                     size="icon"
                     onclick={() => {
                         navigator.clipboard.writeText(window.location.href);
-                        toast.success("Room link copied to clipboard!");
+                        shareSuccess = true;
+                        setTimeout(() => (shareSuccess = false), 2000);
                     }}
+                    class={shareSuccess ? "bg-green-500/10! brightness-100!" : ""}
                 >
-                    <SolarShareOutline class="size-5" />
+                    {#if shareSuccess}
+                        <span in:fade={{ duration: 100 }}>
+                            <LineMdConfirm class="size-5 text-green-500" />
+                        </span>
+                    {:else}
+                        <span in:fade={{ duration: 100 }}>
+                            <SolarShareOutline class="size-5" />
+                        </span>
+                    {/if}
                 </Button>
             </Tooltip>
             {#if data.room.hostUserId !== data.user?.id}

@@ -8,7 +8,7 @@
     import Tooltip from "$lib/components/ui/Tooltip.svelte";
     import { createPlaylistSongActions, openCtxMenu } from "$lib/ctxmenu";
     import { enhanceSong, fetchSongDetailed, playPlaylist, store } from "$lib/player";
-    import { isImportingPlaylist, showPlDeletePopup, showPlRenamePopup } from "$lib/stores";
+    import { isImportingPlaylist, store as popupStore, showPlDeletePopup, showPlRenamePopup } from "$lib/stores";
     import { supabaseChannel } from "$lib/supabase/channel";
     import { formatTime } from "$lib/utils/time";
     import { toast } from "svelte-sonner";
@@ -232,22 +232,34 @@
                 <Tooltip content="Delete Playlist" side="bottom">
                     <Button
                         size="icon"
-                        class="brightness-100! hover:bg-red-500/10! hover:text-red-500"
+                        class={!$popupStore.isPlDeleting && !$popupStore.isPlRenaming
+                            ? "brightness-100! hover:bg-red-500/10! hover:text-red-500"
+                            : ""}
+                        disabled={$popupStore.isPlDeleting || $popupStore.isPlRenaming}
                         onclick={() => {
                             showPlDeletePopup({ name: data.playlist.name, id: data.playlist.id });
                         }}
                     >
-                        <SolarTrashBinTrashLinear class="size-5" />
+                        {#if $popupStore.isPlDeleting}
+                            <IconParkOutlineLoadingFour class="size-5 animate-spin" />
+                        {:else}
+                            <SolarTrashBinTrashLinear class="size-5" />
+                        {/if}
                     </Button>
                 </Tooltip>
                 <Tooltip content="Rename Playlist" side="bottom">
                     <Button
                         size="icon"
+                        disabled={$popupStore.isPlDeleting || $popupStore.isPlRenaming}
                         onclick={() => {
                             showPlRenamePopup({ name: data.playlist.name, id: data.playlist.id });
                         }}
                     >
-                        <SolarRestartLinear class="size-5" />
+                        {#if $popupStore.isPlRenaming}
+                            <IconParkOutlineLoadingFour class="size-5 animate-spin" />
+                        {:else}
+                            <SolarRestartLinear class="size-5" />
+                        {/if}
                     </Button>
                 </Tooltip>
             {/if}

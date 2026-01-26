@@ -19,11 +19,16 @@
         const roomID = $popupStore.roomData?.id;
         if (!roomID) return;
         hideRoomDeletePopup();
+        popupStore.update((s) => ({ ...s, isRoomDeleting: true }));
         toast.promise(
             (async () => {
-                const resp = await deleteRoomAPI(roomID);
-                if ("error" in resp) throw new Error(resp.error || "Failed to delete room");
-                return resp;
+                try {
+                    const resp = await deleteRoomAPI(roomID);
+                    if ("error" in resp) throw new Error(resp.error || "Failed to delete room");
+                    return resp;
+                } finally {
+                    popupStore.update((s) => ({ ...s, isRoomDeleting: false }));
+                }
             })(),
             {
                 loading: "Deleting room...",
@@ -41,11 +46,16 @@
         const newName = inputValue.trim();
         hideRoomRenamePopup();
         inputValue = "";
+        popupStore.update((s) => ({ ...s, isRoomRenaming: true }));
         toast.promise(
             (async () => {
-                const resp = await renameRoomAPI(roomID, newName);
-                if ("error" in resp) throw new Error(resp.error || "Failed to rename room");
-                return resp;
+                try {
+                    const resp = await renameRoomAPI(roomID, newName);
+                    if ("error" in resp) throw new Error(resp.error || "Failed to rename room");
+                    return resp;
+                } finally {
+                    popupStore.update((s) => ({ ...s, isRoomRenaming: false }));
+                }
             })(),
             {
                 loading: "Renaming room...",
