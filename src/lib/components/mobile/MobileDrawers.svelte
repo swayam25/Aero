@@ -65,6 +65,8 @@
         });
         return cleanup;
     });
+
+    let seekStarted = $state(false);
 </script>
 
 <!-- Mobile Player Drawer (Full Screen) -->
@@ -75,8 +77,9 @@
     fullScreen={true}
     backgroundImage={$store.meta?.thumbnail.XLARGE || ""}
     blur={true}
+    dismissible={!seekStarted}
 >
-    <MobilePlayer {user} bind:show={showMobilePlayer} />
+    <MobilePlayer {user} bind:show={showMobilePlayer} bind:seekStarted />
 </MobileDrawer>
 
 <!-- Queue Drawer -->

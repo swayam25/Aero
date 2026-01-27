@@ -15,8 +15,9 @@
     interface Props {
         user: UserData | null;
         show: boolean;
+        seekStarted?: boolean;
     }
-    let { user, show = $bindable() }: Props = $props();
+    let { user, show = $bindable(), seekStarted = $bindable(false) }: Props = $props();
 
     // Update currentTime
     let currentTime: number = $derived($store.currentTime);
@@ -76,9 +77,24 @@
             class:pointer-events-none={$store.state === "unstarted" || !$store.meta || !isRoomHost}
         >
             <!-- Progress Slider -->
-            <div class="flex w-full items-center gap-3">
+            <div
+                class="flex w-full items-center gap-3"
+                style="touch-action: none;"
+                onpointerdown={(e) => e.stopPropagation()}
+                ontouchstart={(e) => e.stopPropagation()}
+            >
                 <span class="min-w-10 text-center text-xs text-slate-300">{formatTime(currentTime)}</span>
-                <Slider max={$store.totalDuration} value={currentTime} class="flex-1" onChange={$store.player?.pauseVideo} onStop={handleSeek} />
+                <Slider
+                    max={$store.totalDuration}
+                    value={currentTime}
+                    class="flex-1"
+                    onStart={() => (seekStarted = true)}
+                    onChange={$store.player?.pauseVideo}
+                    onStop={(value) => {
+                        handleSeek(value);
+                        seekStarted = false;
+                    }}
+                />
                 <span class="min-w-10 text-center text-xs text-slate-300">{formatTime($store.totalDuration)}</span>
             </div>
 
