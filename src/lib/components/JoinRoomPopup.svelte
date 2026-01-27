@@ -10,7 +10,7 @@
     import SolarLoginLinear from "~icons/solar/login-linear";
 
     let input: HTMLInputElement | null = $state(null);
-    let inputValue: string = $state($store.roomData?.id || "");
+    let inputValue: string = $derived($store.roomData?.id || "");
     let passwordValue: string = $state("");
 
     async function joinRoom() {
@@ -61,9 +61,17 @@
     {/snippet}
     {#snippet fields()}
         <div class="space-y-2">
-            <div class="flex flex-col gap-1" class:hidden={$store.roomData?.id}>
+            <div class="flex flex-col gap-1">
                 <label for="roomID" class="text-sm text-slate-200">Room ID</label>
-                <Input id="roomID" bind:value={inputValue} class="w-full" placeholder="Enter room id" onEnter={joinRoom} bind:ref={input} />
+                <Input
+                    id="roomID"
+                    disabled={$store.roomData?.id !== undefined}
+                    bind:value={inputValue}
+                    class="w-full"
+                    placeholder="Enter room id"
+                    onEnter={joinRoom}
+                    bind:ref={input}
+                />
             </div>
             <div class="flex flex-col gap-1">
                 <label for="roomPassword" class="text-sm text-slate-200">Password (if required)</label>
