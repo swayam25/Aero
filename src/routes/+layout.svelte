@@ -41,8 +41,9 @@
     let cleanupShortcuts: (() => void) | undefined;
     let cleanupMobileQuery: (() => void) | undefined;
 
-    // svelte-ignore state_referenced_locally
-    playlistsCache.load(data.playlists);
+    $effect(() => {
+        playlistsCache.load(data.playlists);
+    });
     onMount(() => {
         cleanupShortcuts = setupShortcuts();
 
