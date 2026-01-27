@@ -19,7 +19,7 @@
     let { user, show = $bindable() }: Props = $props();
 
     // Update currentTime
-    let currentTime: number = $state($store.currentTime);
+    let currentTime: number = $derived($store.currentTime);
     let isSeeking: boolean = $state(false);
 
     $effect(() => {
