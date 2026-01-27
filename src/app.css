@@ -78,3 +78,54 @@ body.loading * {
         @apply block w-full min-w-0 flex-1 truncate overflow-hidden;
     }
 }
+
+@keyframes wiggle {
+    0%,
+    100% {
+        transform: translateX(0) rotate(0deg);
+    }
+    10% {
+        transform: translateX(-0.5px) rotate(-0.15deg);
+    }
+    20% {
+        transform: translateX(0.5px) rotate(0.15deg);
+    }
+    30% {
+        transform: translateX(-0.5px) rotate(-0.15deg);
+    }
+    40% {
+        transform: translateX(0.5px) rotate(0.15deg);
+    }
+    50% {
+        transform: translateX(-0.5px) rotate(-0.15deg);
+    }
+    60% {
+        transform: translateX(0.5px) rotate(0.15deg);
+    }
+    70% {
+        transform: translateX(-0.5px) rotate(-0.15deg);
+    }
+    80% {
+        transform: translateX(0.5px) rotate(0.15deg);
+    }
+    90% {
+        transform: translateX(-0.5px) rotate(-0.15deg);
+    }
+}
+
+.wiggle {
+    animation: wiggle 0.8s ease-in-out infinite;
+}
+
+/* Add slight random delay to each item for more natural effect */
+.wiggle:nth-child(2n) {
+    animation-delay: 0.1s;
+}
+
+.wiggle:nth-child(3n) {
+    animation-delay: 0.2s;
+}
+
+.wiggle:nth-child(5n) {
+    animation-delay: 0.15s;
+}

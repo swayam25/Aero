@@ -8,6 +8,7 @@
         dismissible?: boolean;
         onClose?: () => void;
         title?: string;
+        header?: Snippet;
         showHandle?: boolean;
         maxHeight?: string;
         fullScreen?: boolean;
@@ -25,6 +26,7 @@
         dismissible = true,
         onClose = () => {},
         title = "",
+        header = undefined,
         showHandle = true,
         maxHeight = "max-h-96",
         fullScreen = false,
@@ -40,15 +42,7 @@
 
 <Drawer.Root {onClose} {open} {dismissible}>
     <Drawer.Portal>
-        <Drawer.Overlay
-            onclick={() => {
-                if (!dismissible) {
-                    open = false;
-                }
-            }}
-            class="fixed inset-0 bg-black/50"
-            style="z-index: {zIndex - 1};"
-        />
+        <Drawer.Overlay class="fixed inset-0 bg-black/50" style="z-index: {zIndex - 1};" />
         <Drawer.Content
             class={cn(
                 "fixed inset-x-0 flex flex-col rounded-t-2xl border-t border-slate-700",
@@ -69,21 +63,17 @@
             <div class="relative z-10 flex h-full flex-col">
                 <!-- Handle -->
                 {#if showHandle}
-                    <button
-                        aria-label="Close"
-                        onpointerdown={() => {
-                            if (!dismissible) {
-                                open = false;
-                            }
-                        }}
-                        class={cn("mx-auto h-2 w-12 rounded-full bg-slate-600", fullScreen ? "mt-8" : "mt-4")}
-                    ></button>
+                    <button aria-label="Close" class={cn("mx-auto h-2 w-12 rounded-full bg-slate-600", fullScreen ? "mt-8" : "mt-4")}></button>
                 {/if}
 
                 <!-- Header -->
                 {#if title}
                     <div class={cn("relative flex items-center justify-center py-4", headerClass)}>
-                        <h2 class="text-lg font-medium text-slate-200">{title}</h2>
+                        <h2 class="text-xl font-medium text-slate-200">{title}</h2>
+                    </div>
+                {:else if header}
+                    <div class={cn("relative flex items-center justify-center py-4", headerClass)}>
+                        {@render header()}
                     </div>
                 {/if}
 

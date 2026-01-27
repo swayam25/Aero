@@ -10,18 +10,23 @@
     import { enhanceSong, fetchSongDetailed, playPlaylist, store } from "$lib/player";
     import { isImportingPlaylist, store as popupStore, showPlDeletePopup, showPlRenamePopup } from "$lib/stores";
     import { supabaseChannel } from "$lib/supabase/channel";
+    import { createMobileMediaQuery, createTouchDeviceQuery } from "$lib/utils/mobile";
     import { formatTime } from "$lib/utils/time";
+    import { onMount } from "svelte";
     import { toast } from "svelte-sonner";
     import { expoOut } from "svelte/easing";
     import { fade, fly } from "svelte/transition";
     import type { SongFull } from "ytmusic-api";
     import HugeiconsCd from "~icons/hugeicons/cd";
+    import IconParkOutlineCheck from "~icons/icon-park-outline/check";
+    import IconParkOutlineDrag from "~icons/icon-park-outline/drag";
     import IconParkOutlineLoadingFour from "~icons/icon-park-outline/loading-four";
     import LineMdCancel from "~icons/line-md/cancel";
     import LineMdConfirm from "~icons/line-md/confirm";
     import SolarConfoundedCircleLinear from "~icons/solar/confounded-circle-linear";
     import SolarRestartLinear from "~icons/solar/restart-linear";
     import SolarShareLinear from "~icons/solar/share-linear";
+    import SolarSortLinear from "~icons/solar/sort-linear";
     import SolarTrashBinTrashLinear from "~icons/solar/trash-bin-trash-linear";
     import type { PageData } from "./$types";
 
@@ -32,13 +37,22 @@
     let playlistObject: { id: number; song: Promise<SongFull> }[] = $state([]);
     let originalOrder: string[] = $state([]);
     let isSyncing: boolean = $state(false);
+    let isRearrangeMode: boolean = $state(false);
+    let touchStartY: number = $state(0);
+    let touchStartX: number = $state(0);
+    let touchCurrentY: number = $state(0);
+    let draggedIndex: number | null = $state(null);
+    let dragOverIdx: number | null = $state(null);
+    let isDraggingStarted: boolean = $state(false);
 
     let plSyncTimeout: NodeJS.Timeout | null = $state(null);
 
     // Handle reordering items in the playlist
     function handleReorder(fromIndex: number, toIndex: number) {
         const [movedItem] = playlistObject.splice(fromIndex, 1);
-        playlistObject.splice(toIndex, 0, movedItem);
+        // Adjust toIndex if moving down (fromIndex < toIndex)
+        const adjustedIndex = fromIndex < toIndex ? toIndex - 1 : toIndex;
+        playlistObject.splice(adjustedIndex, 0, movedItem);
     }
 
     // Handle drag end - sync with server
@@ -46,44 +60,123 @@
         if (plSyncTimeout) {
             clearTimeout(plSyncTimeout);
         }
-        plSyncTimeout = setTimeout(async () => {
-            const currentOrder = (await Promise.all(playlistObject.map((item) => item.song))).map((item) => item.videoId);
-            const orderChanged = currentOrder.length !== originalOrder.length || currentOrder.some((id, index) => id !== originalOrder[index]);
-            if (!orderChanged) {
+        plSyncTimeout = setTimeout(
+            async () => {
+                isSyncing = true;
+
+                const currentOrder = (await Promise.all(playlistObject.map((item) => item.song))).map((item) => item.videoId);
+                const orderChanged = currentOrder.length !== originalOrder.length || currentOrder.some((id, index) => id !== originalOrder[index]);
+                if (!orderChanged) {
+                    isSyncing = false;
+                    return;
+                }
+
+                toast.promise(
+                    async () => {
+                        const resp = await fetch(`/api/playlist/${data.playlist.id}`, {
+                            method: "POST",
+                            body: JSON.stringify({
+                                key: "reorder",
+                                value: {
+                                    playlistID: data.playlist.id,
+                                    songIDs: currentOrder,
+                                },
+                            }),
+                            headers: { "Content-Type": "application/json" },
+                        });
+                        if (!resp.ok) {
+                            const respData = await resp.json();
+                            throw new Error(respData.error);
+                        }
+                        // Update original order after successful sync
+                        originalOrder = currentOrder;
+                    },
+                    {
+                        loading: "Syncing playlist...",
+                        success: "Playlist synced successfully",
+                        error: (e) => {
+                            return `${e}`;
+                        },
+                        finally: () => {
+                            isSyncing = false;
+                        },
+                    },
+                );
+            },
+            isMobile ? 0 : 1000,
+        );
+    }
+
+    async function toggleRearrangeMode() {
+        // If exiting rearrange mode, sync the playlist first
+        if (isRearrangeMode) {
+            isSyncing = true;
+            await handleDragEnd();
+        }
+
+        isRearrangeMode = !isRearrangeMode;
+        if (isRearrangeMode && "vibrate" in navigator) {
+            navigator.vibrate([30, 10, 20]);
+        }
+    }
+
+    function handleTouchStart(e: TouchEvent, idx: number) {
+        if (!isRearrangeMode) return;
+        const touch = e.touches[0];
+        touchStartY = touch.clientY;
+        touchStartX = touch.clientX;
+        draggedIndex = idx;
+        isDraggingStarted = false;
+    }
+
+    function handleTouchMove(e: TouchEvent, container: HTMLElement) {
+        if (!isRearrangeMode || draggedIndex === null) return;
+
+        const touch = e.touches[0];
+        const deltaY = Math.abs(touch.clientY - touchStartY);
+        const deltaX = Math.abs(touch.clientX - touchStartX);
+
+        // Start dragging if moved more than 10px vertically or horizontally or if already dragging
+        if (!isDraggingStarted) {
+            if (deltaY > 10 || deltaX > 10) {
+                isDraggingStarted = true;
+                if ("vibrate" in navigator) {
+                    navigator.vibrate([10, 5, 10]);
+                }
+            } else {
                 return;
             }
+        }
 
-            isSyncing = true;
-            toast.promise(
-                async () => {
-                    const resp = await fetch(`/api/playlist/${data.playlist.id}`, {
-                        method: "POST",
-                        body: JSON.stringify({
-                            key: "reorder",
-                            value: {
-                                playlistID: data.playlist.id,
-                                songIDs: currentOrder,
-                            },
-                        }),
-                        headers: { "Content-Type": "application/json" },
-                    });
-                    if (!resp.ok) {
-                        const respData = await resp.json();
-                        throw new Error(respData.error);
-                    }
-                    // Update original order after successful sync
-                    originalOrder = currentOrder;
-                },
-                {
-                    loading: "Syncing playlist...",
-                    success: "Playlist synced successfully",
-                    error: (e) => {
-                        return `${e}`;
-                    },
-                },
-            );
-            isSyncing = false;
-        }, 1000);
+        touchCurrentY = touch.clientY;
+
+        const items = Array.from(container.querySelectorAll("li"));
+        let overIndex = -1;
+
+        for (let i = 0; i < items.length; i++) {
+            const rect = items[i].getBoundingClientRect();
+            if (touchCurrentY >= rect.top && touchCurrentY <= rect.bottom) {
+                overIndex = i;
+                break;
+            }
+        }
+
+        if (overIndex !== -1) {
+            dragOverIdx = overIndex;
+        }
+    }
+
+    function handleTouchEnd() {
+        if (!isRearrangeMode || draggedIndex === null) return;
+
+        if (isDraggingStarted && dragOverIdx !== null && draggedIndex !== dragOverIdx) {
+            handleReorder(draggedIndex, dragOverIdx);
+            // Don't sync immediately on mobile - wait for user to exit rearrange mode
+        }
+
+        draggedIndex = null;
+        dragOverIdx = null;
+        isDraggingStarted = false;
     }
 
     $effect(() => {
@@ -174,6 +267,22 @@
             shareLoading = false;
         }
     }
+
+    let isMobile = $state(false);
+    onMount(() => {
+        const cleanup = createMobileMediaQuery((mobile) => {
+            isMobile = mobile;
+        });
+        return cleanup;
+    });
+
+    let hasTouchPoint = $state(false);
+    onMount(() => {
+        const cleanup = createTouchDeviceQuery((touch) => {
+            hasTouchPoint = touch;
+        });
+        return cleanup;
+    });
 </script>
 
 {#if data.playlist.isPublic}
@@ -301,6 +410,30 @@
                     {/if}
                 </Button>
             </Tooltip>
+            {#if isMobile && hasTouchPoint}
+                <Tooltip side="right" content={isRearrangeMode ? "Done" : "Rearrange"}>
+                    <Button
+                        size="icon"
+                        onclick={toggleRearrangeMode}
+                        class={isRearrangeMode && !isSyncing ? "bg-green-500/10! text-green-500!" : ""}
+                        disabled={isSyncing}
+                    >
+                        {#if isSyncing}
+                            <span in:fade={{ duration: 100 }}>
+                                <IconParkOutlineLoadingFour class="size-5 animate-spin" />
+                            </span>
+                        {:else if isRearrangeMode}
+                            <span in:fade={{ duration: 100 }}>
+                                <IconParkOutlineCheck class="size-5" />
+                            </span>
+                        {:else}
+                            <span in:fade={{ duration: 100 }}>
+                                <SolarSortLinear class="size-5" />
+                            </span>
+                        {/if}
+                    </Button>
+                </Tooltip>
+            {/if}
         </div>
     </div>
 </div>
@@ -314,101 +447,133 @@
             </div>
         </div>
     {:else}
-        <Draggable
-            onReorder={handleReorder}
-            onDragEnd={handleDragEnd}
-            disabled={data.loginUser?.id !== data.user.id || $isImportingPlaylist || isSyncing}
-            class="flex w-full list-none flex-col items-start justify-center gap-2"
+        <div
+            class="flex w-full list-none flex-col items-start justify-center"
+            class:overflow-hidden={isRearrangeMode}
+            class:overflow-y-auto={isRearrangeMode}
+            ontouchmove={(e) => isMobile && isRearrangeMode && handleTouchMove(e, e.currentTarget)}
+            ontouchend={handleTouchEnd}
         >
-            {#snippet children({
-                isDragging,
-                dragIndex,
-                handleDragStart,
-                handleDragOver,
-                handleDragEnter,
-                handleDragLeave,
-                handleDrop,
-                handleDragEnd,
-                handleTouchStart,
-                handleTouchEnd,
-                dragOverIndex,
-            }: any)}
-                {#each playlistObject as { id, song }, idx (id)}
-                    {#await song}
+            <Draggable
+                class="w-full"
+                onReorder={handleReorder}
+                onDragEnd={handleDragEnd}
+                disabled={data.loginUser?.id !== data.user.id || $isImportingPlaylist || isSyncing}
+            >
+                {#snippet children({
+                    isDragging,
+                    dragIndex,
+                    handleDragStart,
+                    handleDragOver,
+                    handleDragEnter,
+                    handleDragLeave,
+                    handleDrop,
+                    handleDragEnd,
+                    dragOverIndex,
+                }: any)}
+                    {#each playlistObject as { id, song }, idx (id)}
+                        <!-- Drop indicator before item -->
                         <div
-                            in:fade={{ duration: 100 }}
-                            class="flex w-full items-center justify-center gap-2 rounded-lg bg-slate-800 p-2 transition-colors duration-200"
-                        >
-                            <div class="flex size-10 items-center justify-center p-1 text-lg">
-                                <span class="text-slate-200">{idx + 1}</span>
-                            </div>
-                            <div class="size-15 shrink-0 animate-pulse rounded-lg bg-slate-900"></div>
-                            <div class="flex w-full flex-col items-start justify-center gap-2 text-left">
-                                <div class="h-5 w-[80%] animate-pulse rounded-lg bg-slate-900"></div>
-                                <div class="h-5 w-[50%] animate-pulse truncate rounded-lg bg-slate-900"></div>
-                            </div>
-                        </div>
-                    {:then song}
-                        {@const enhanced = enhanceSong(song)}
-                        <li
-                            class="w-full border-sky-500 transition-all duration-200"
-                            draggable={data.loginUser?.id !== data.user.id || $isImportingPlaylist || isSyncing ? "false" : "true"}
-                            ondragstart={(e) => handleDragStart(e, idx)}
-                            ondragover={(e) => handleDragOver(e, idx)}
-                            ondragenter={(e) => handleDragEnter(e, idx)}
-                            ondragleave={handleDragLeave}
-                            ondrop={(e) => handleDrop(e, idx)}
-                            ondragend={handleDragEnd}
-                            ontouchstart={(e) => handleTouchStart(e, idx)}
-                            ontouchend={handleTouchEnd}
-                            class:opacity-80={isDragging && dragIndex === idx}
-                            class:border-t={dragOverIndex === idx && dragIndex !== idx}
-                        >
-                            <button
-                                onclick={async () => {
-                                    await playPlaylist(
-                                        fetchSongDetailed(song),
-                                        playlistObject.map((item) => item.song),
-                                        data.loginUser?.id || null,
-                                    );
-                                }}
-                                in:fly={{ duration: 400, easing: expoOut, x: -100, y: 0 }}
-                                out:fly={{ duration: 400, easing: expoOut, x: 100, y: 0 }}
-                                oncontextmenu={(e) => {
-                                    e.preventDefault();
-                                    const actions = createPlaylistSongActions(
-                                        fetchSongDetailed(song),
-                                        data.playlist,
-                                        data.loginUser?.id || null,
-                                        data.user?.id || null,
-                                    );
-                                    openCtxMenu(e, actions);
-                                }}
-                                class="group flex w-full min-w-0 cursor-pointer items-center justify-start gap-2 rounded-lg p-2 transition-colors duration-200 hover:bg-slate-800"
+                            class="h-2 w-full rounded-lg transition-all duration-200"
+                            class:bg-sky-500={(dragOverIndex === idx && dragIndex !== idx) || (dragOverIdx === idx && draggedIndex !== idx)}
+                        ></div>
+                        {#await song}
+                            <div
+                                in:fade={{ duration: 100 }}
+                                class="flex w-full items-center justify-center gap-2 rounded-lg bg-slate-800 p-2 transition-colors duration-200"
                             >
                                 <div class="flex size-10 items-center justify-center p-1 text-lg">
-                                    {#if song.videoId === $store.meta?.videoId}
-                                        <span in:fade={{ duration: 100 }} class="size-full">
-                                            <HugeiconsCd class="size-full animate-spin text-sky-500" />
-                                        </span>
-                                    {:else}
-                                        <span in:fade={{ duration: 100 }} class="text-slate-200">{idx + 1}</span>
-                                    {/if}
+                                    <span class="text-slate-200">{idx + 1}</span>
                                 </div>
-                                <div
-                                    class="size-15 shrink-0 rounded-lg bg-slate-800 bg-cover transition-colors duration-200 group-hover:bg-slate-900"
-                                    style="background-image: url({enhanced.thumbnail.SMALL});"
-                                ></div>
-                                <div class="flex-truncate flex flex-col items-start justify-center text-left">
-                                    <p class="w-full truncate font-medium" title={song.name}>{song.name}</p>
-                                    <p class="w-full truncate text-sm text-slate-400" title={song.artist.name}>{song.artist.name}</p>
+                                <div class="size-15 shrink-0 animate-pulse rounded-lg bg-slate-900"></div>
+                                <div class="flex w-full flex-col items-start justify-center gap-2 text-left">
+                                    <div class="h-5 w-[80%] animate-pulse rounded-lg bg-slate-900"></div>
+                                    <div class="h-5 w-[50%] animate-pulse truncate rounded-lg bg-slate-900"></div>
                                 </div>
-                                <p class="shrink-0 text-sm text-slate-400">{formatTime(song.duration ?? 0)}</p>
-                            </button>
-                        </li>
-                    {/await}
-                {/each}
-            {/snippet}
-        </Draggable>
+                            </div>
+                        {:then song}
+                            {@const enhanced = enhanceSong(song)}
+                            <li
+                                class="w-full transition-all duration-200"
+                                draggable={data.loginUser?.id !== data.user.id || $isImportingPlaylist || isSyncing || isRearrangeMode
+                                    ? "false"
+                                    : "true"}
+                                ondragstart={(e) => handleDragStart(e, idx)}
+                                ondragover={(e) => handleDragOver(e, idx)}
+                                ondragenter={(e) => handleDragEnter(e, idx)}
+                                ondragleave={handleDragLeave}
+                                ondrop={(e) => handleDrop(e, idx)}
+                                ondragend={handleDragEnd}
+                                class:opacity-80={isDragging && dragIndex === idx}
+                                class:wiggle={isRearrangeMode && isMobile}
+                            >
+                                <button
+                                    onclick={async () => {
+                                        if (!isRearrangeMode) {
+                                            await playPlaylist(
+                                                fetchSongDetailed(song),
+                                                playlistObject.map((item) => item.song),
+                                                data.loginUser?.id || null,
+                                            );
+                                        }
+                                    }}
+                                    in:fly={{ duration: 400, easing: expoOut, x: -100, y: 0 }}
+                                    out:fly={{ duration: 400, easing: expoOut, x: 100, y: 0 }}
+                                    oncontextmenu={(e) => {
+                                        if (!isRearrangeMode) {
+                                            e.preventDefault();
+                                            const actions = createPlaylistSongActions(
+                                                fetchSongDetailed(song),
+                                                data.playlist,
+                                                data.loginUser?.id || null,
+                                                data.user?.id || null,
+                                            );
+                                            openCtxMenu(e, actions);
+                                        }
+                                    }}
+                                    class="group flex w-full min-w-0 items-center justify-start gap-2 rounded-lg p-2 transition-colors duration-200"
+                                    class:cursor-pointer={!isRearrangeMode}
+                                    class:hover:bg-slate-800={!isRearrangeMode}
+                                    class:cursor-default={isRearrangeMode}
+                                >
+                                    <div class="flex size-10 items-center justify-center p-1 text-lg">
+                                        {#if isRearrangeMode && isMobile}
+                                            <div
+                                                ontouchstart={(e) => handleTouchStart(e, idx)}
+                                                class="flex size-full touch-none items-center justify-center text-slate-400"
+                                                style="touch-action: none;"
+                                            >
+                                                <IconParkOutlineDrag class="size-6" />
+                                            </div>
+                                        {:else if song.videoId === $store.meta?.videoId}
+                                            <span in:fade={{ duration: 100 }} class="size-full">
+                                                <HugeiconsCd class="size-full animate-spin text-sky-500" />
+                                            </span>
+                                        {:else}
+                                            <span in:fade={{ duration: 100 }} class="text-slate-200">{idx + 1}</span>
+                                        {/if}
+                                    </div>
+                                    <div
+                                        class="size-15 shrink-0 rounded-lg bg-slate-800 bg-cover transition-colors duration-200 group-hover:bg-slate-900"
+                                        style="background-image: url({enhanced.thumbnail.SMALL});"
+                                    ></div>
+                                    <div class="flex-truncate flex flex-col items-start justify-center text-left">
+                                        <p class="w-full truncate font-medium" title={song.name}>{song.name}</p>
+                                        <p class="w-full truncate text-sm text-slate-400" title={song.artist.name}>{song.artist.name}</p>
+                                    </div>
+                                    <p class="shrink-0 text-sm text-slate-400">{formatTime(song.duration ?? 0)}</p>
+                                </button>
+                            </li>
+                        {/await}
+                    {/each}
+                    <!-- Drop indicator after last item -->
+                    <div
+                        class="h-2 w-full rounded-lg transition-all duration-200"
+                        class:bg-sky-500={(dragOverIndex === playlistObject.length && dragIndex !== null) ||
+                            (dragOverIdx === playlistObject.length && draggedIndex !== null)}
+                    ></div>
+                {/snippet}
+            </Draggable>
+        </div>
     {/if}
 </ul>

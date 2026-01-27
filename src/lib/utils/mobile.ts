@@ -16,3 +16,22 @@ export function createMobileMediaQuery(callback: (isMobile: boolean) => void): (
     // Return cleanup function
     return () => mediaQuery.removeEventListener("change", handler);
 }
+
+/**
+ * Check if current device has touch capabilities
+ */
+export function createTouchDeviceQuery(callback: (isTouchDevice: boolean) => void): () => void {
+    if (typeof window === "undefined") return () => {};
+
+    const mediaQuery = window.matchMedia("(pointer: coarse)");
+
+    // Initial check
+    callback(mediaQuery.matches);
+
+    // Listen for changes
+    const handler = (e: MediaQueryListEvent) => callback(e.matches);
+    mediaQuery.addEventListener("change", handler);
+
+    // Return cleanup function
+    return () => mediaQuery.removeEventListener("change", handler);
+}
