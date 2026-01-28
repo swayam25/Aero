@@ -12,9 +12,20 @@
         fields: Snippet;
         actions?: Snippet;
         onOpenAutoFocus?: (e: Event) => void;
+        onCloseAutoFocus?: (e: Event) => void;
         disabled?: boolean;
     }
-    let { title, open = $bindable(false), trigger, description, fields, actions, onOpenAutoFocus, disabled = false }: Props = $props();
+    let {
+        title,
+        open = $bindable(false),
+        trigger,
+        description,
+        fields,
+        actions,
+        onOpenAutoFocus,
+        onCloseAutoFocus,
+        disabled = false,
+    }: Props = $props();
 </script>
 
 <Dialog.Root bind:open>
@@ -31,7 +42,10 @@
                         <Dialog.Content
                             class="flex max-w-[90%] flex-col rounded-lg border border-slate-700 bg-slate-900 p-5 text-sm md:max-w-[50%]"
                             {onOpenAutoFocus}
-                            onCloseAutoFocus={(e) => e.preventDefault()}
+                            onCloseAutoFocus={(e) => {
+                                e.preventDefault();
+                                onCloseAutoFocus?.(e);
+                            }}
                         >
                             <div class="flex flex-col gap-2 text-left">
                                 <div class="flex items-center justify-between gap-2">

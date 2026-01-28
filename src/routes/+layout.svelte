@@ -11,7 +11,7 @@
     import Sidebar from "$lib/components/Sidebar.svelte";
     import { store as ctxStore, setupShortcuts } from "$lib/ctxmenu";
     import ContextMenu from "$lib/ctxmenu/components/ContextMenu.svelte";
-    import type { InsertPlaylist, SelectRoom, SelectRoomMember } from "$lib/db/schema";
+    import type { InsertPlaylist, SelectRoom, SelectRoomMember, SelectRoomSafe } from "$lib/db/schema";
     import { clearQueue, play, previous, seekTo, setLoop, setShuffle, skip, stop, store } from "$lib/player";
     import type { EnhancedSong, PlayerStore } from "$lib/player/types";
     import { fetchRoomAPI, sendPlayerRoomEvent } from "$lib/room";
@@ -155,8 +155,9 @@
                 "postgres_changes",
                 { event: "INSERT", schema: "public", table: "room", filter: `host_user_id=eq.${data.user.id}` },
                 (payload) => {
-                    const newRoom = payload.new as SelectRoom;
-                    userRoomStore.set(newRoom);
+                    const newRoom = payload.new as SelectRoom; // Here the response may include the password which is unsafe, but uhh. We can avoid this by saving password in different table or using some hashing mechanism but for now this will get the work done.
+                    const { password, ...safeRoom } = newRoom;
+                    userRoomStore.set({ ...safeRoom, hasPassword: !!password });
                     stop();
                 },
             );
@@ -206,7 +207,7 @@
                     (payload) => {
                         // Supabase Realtime returns only the updated columns for UPDATE events.
                         // Merge the partial payload into the existing store instead of fully replacing it, to avoid losing large jsonb fields.
-                        const updated = payload.new as Partial<SelectRoom>;
+                        const updated = payload.new as Partial<SelectRoomSafe>;
                         if (updated) {
                             userRoomStore.update(updated);
                         }
@@ -219,7 +220,7 @@
                     "postgres_changes",
                     { event: "UPDATE", schema: "public", table: "room", filter: `id=eq.${$userRoomStore?.id}` },
                     (payload) => {
-                        const updatedRoom = payload.new as Partial<SelectRoom>;
+                        const updatedRoom = payload.new as Partial<SelectRoomSafe>;
                         if (updatedRoom.queue !== undefined) {
                             $store.queue = (updatedRoom.queue as any) || [];
                         }

@@ -1,4 +1,4 @@
-import type { SelectRoom } from "$lib/db/schema";
+import type { SelectRoomSafe } from "$lib/db/schema";
 import { writable } from "svelte/store";
 
 export interface PopupsStore {
@@ -8,7 +8,7 @@ export interface PopupsStore {
     showRoomDeletePopup?: boolean;
     showRoomRenamePopup?: boolean;
     showJoinRoomPopup?: boolean;
-    roomData?: SelectRoom | null;
+    roomData?: SelectRoomSafe | null;
 
     isPlDeleting?: boolean;
     isPlRenaming?: boolean;

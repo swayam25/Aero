@@ -1,4 +1,4 @@
-import type { SelectRoom } from "$lib/db/schema";
+import type { SelectRoomSafe } from "$lib/db/schema";
 import type { EnhancedSong } from "$lib/player/types";
 import { userRoomStore } from "$lib/stores/userRoom";
 import supabaseChannel from "$lib/supabase/channel";
@@ -23,8 +23,8 @@ export async function createRoomAPI(
     name: string,
     password: string = "",
     isPublic: boolean = true,
-): Promise<{ success: true; room: SelectRoom } | { error: string }> {
-    return await postRoot<{ room: SelectRoom }>("create_room", { name, password, isPublic });
+): Promise<{ success: true; room: SelectRoomSafe } | { error: string }> {
+    return await postRoot<{ room: SelectRoomSafe }>("create_room", { name, password, isPublic });
 }
 
 export async function renameRoomAPI(roomId: string, name: string): Promise<{ success: true } | { error: string }> {
@@ -44,7 +44,7 @@ export async function deleteRoomAPI(roomId: string): Promise<{ success: true } |
 
 // --- ROOM SPECIFIC ---
 
-export async function fetchRoomAPI(roomId: string): Promise<SelectRoom | { error: string }> {
+export async function fetchRoomAPI(roomId: string): Promise<SelectRoomSafe | { error: string }> {
     const resp = await fetch(`/api/room/${roomId}`, {
         method: "GET",
         headers: {
@@ -54,7 +54,7 @@ export async function fetchRoomAPI(roomId: string): Promise<SelectRoom | { error
     const respData = await resp.json();
     if (resp.ok) {
         if (respData.room) {
-            return respData.room as SelectRoom;
+            return respData.room as SelectRoomSafe;
         } else {
             return { error: "Room not found" };
         }

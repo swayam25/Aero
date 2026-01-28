@@ -286,7 +286,7 @@
                             if (isMember) {
                                 leaveRoom();
                             } else {
-                                if (data.room.password) {
+                                if (data.room.hasPassword) {
                                     showJoinRoomPopup(data.room);
                                 } else {
                                     joinRoom();

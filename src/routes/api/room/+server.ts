@@ -11,7 +11,8 @@ export const POST: RequestHandler = async ({ locals, request }) => {
 
     if (key === "create_room") {
         const room = await createRoom(locals.db, value.name.substring(0, 20).trim(), value.password || "", user, value.isPublic);
-        return json({ success: true, room });
+        const { password, ...safeRoom } = room;
+        return json({ success: true, room: { ...safeRoom, hasPassword: !!room.password } });
     } else if (key === "rename_room") {
         await renameRoom(locals.db, value.roomID, value.name.substring(0, 20).trim());
     } else if (key === "host_disconnect") {

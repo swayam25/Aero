@@ -1,5 +1,5 @@
 import { goto } from "$app/navigation";
-import type { InsertPlaylist, SelectRoom } from "$lib/db/schema";
+import type { InsertPlaylist, SelectRoomSafe } from "$lib/db/schema";
 import { addToQueue, enhanceSong, play, store as playerStore, removeFromQueue, togglePause } from "$lib/player";
 import { isRoomHost, joinRoomAPI } from "$lib/room";
 import { isJoiningRoom, playlistsCache, showJoinRoomPopup, showPlDeletePopup, showPlRenamePopup } from "$lib/stores";
@@ -410,7 +410,7 @@ async function loadPlaylistSubmenu(song: SongDetailed): Promise<CtxAction[]> {
 }
 
 // Room context menu factory
-export function createRoomActions(room: SelectRoom, isHost: boolean): CtxAction[] {
+export function createRoomActions(room: SelectRoomSafe, isHost: boolean): CtxAction[] {
     const actions: CtxAction[] = [];
 
     // Copy Room Link
@@ -437,7 +437,7 @@ export function createRoomActions(room: SelectRoom, isHost: boolean): CtxAction[
                 disabled: get(isJoiningRoom),
                 onclick: async (ctx) => {
                     ctx.closeMenu();
-                    if (room.password) showJoinRoomPopup(room);
+                    if (room.hasPassword) showJoinRoomPopup(room);
                     else {
                         toast.promise(
                             (async () => {

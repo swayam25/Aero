@@ -10,6 +10,7 @@
     import SolarLoginLinear from "~icons/solar/login-linear";
 
     let input: HTMLInputElement | null = $state(null);
+    let passwordInput: HTMLInputElement | null = $state(null);
     let inputValue: string = $derived($store.roomData?.id || "");
     let passwordValue: string = $state("");
 
@@ -47,9 +48,13 @@
     bind:open={$store.showJoinRoomPopup}
     onOpenAutoFocus={(e) => {
         e.preventDefault();
-        input?.focus();
+        if (!$store.roomData?.id) input?.focus();
+        else passwordInput?.focus();
     }}
     disabled={$isJoiningRoom || $isCreatingRoom}
+    onCloseAutoFocus={() => {
+        passwordValue = "";
+    }}
 >
     {#snippet trigger()}{/snippet}
     {#snippet description()}
@@ -75,7 +80,15 @@
             </div>
             <div class="flex flex-col gap-1">
                 <label for="roomPassword" class="text-sm text-slate-200">Password (if required)</label>
-                <Input id="roomPassword" bind:value={passwordValue} class="w-full" placeholder={"•".repeat(16)} type="password" onEnter={joinRoom} />
+                <Input
+                    id="roomPassword"
+                    bind:value={passwordValue}
+                    class="w-full"
+                    placeholder={"•".repeat(16)}
+                    type="password"
+                    onEnter={joinRoom}
+                    bind:ref={passwordInput}
+                />
             </div>
         </div>
     {/snippet}
@@ -83,7 +96,7 @@
         <button
             class="not-disabled:hover:bg-green-500/10! not-disabled:hover:text-green-500 disabled:cursor-not-allowed"
             onclick={joinRoom}
-            disabled={!inputValue || $isJoiningRoom}
+            disabled={!inputValue || (!passwordValue && $store.roomData?.hasPassword) || $isJoiningRoom}
             class:!cursor-progress={$isJoiningRoom}
         >
             {#if $isJoiningRoom}

@@ -1,11 +1,11 @@
 import { getPlaylists, getUserRoom } from "$lib/db";
-import type { InsertPlaylist, SelectRoom } from "$lib/db/schema";
+import type { InsertPlaylist, SelectRoomSafe } from "$lib/db/schema";
 import type { UserData } from "$lib/discord/types";
 import type { LayoutServerLoad } from "./$types";
 
 export const load: LayoutServerLoad = async ({ locals }) => {
     const user = locals.user as UserData;
-    let userRoom: SelectRoom | null = null;
+    let userRoom: SelectRoomSafe | null = null;
     let playlists: InsertPlaylist[] = [];
 
     if (user) {

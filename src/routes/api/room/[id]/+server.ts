@@ -1,5 +1,4 @@
 import { addRoomMember, addSongToQueue, getRoom, playRoom, removeRoomMember, removeSongFromQueue, setQueue, toggleRoomVisibility } from "$lib/db";
-import type { SelectRoom } from "$lib/db/schema";
 import { json, type RequestHandler } from "@sveltejs/kit";
 
 export const POST: RequestHandler = async ({ locals, request, params }) => {
@@ -12,7 +11,7 @@ export const POST: RequestHandler = async ({ locals, request, params }) => {
 
     let roomExists;
     try {
-        roomExists = await getRoom(locals.db, params.id);
+        roomExists = await getRoom(locals.db, params.id, true, false);
     } catch {
         return json({ error: "Room not found" }, { status: 404 });
     }
@@ -83,7 +82,7 @@ export const GET: RequestHandler = async ({ locals, params }) => {
 
     let room;
     try {
-        room = await getRoom(locals.db, params.id);
+        room = await getRoom(locals.db, params.id, true, true);
     } catch {
         return json({ error: "Room not found" }, { status: 404 });
     }
@@ -96,5 +95,5 @@ export const GET: RequestHandler = async ({ locals, params }) => {
     }
 
     const { members, ...roomWithoutMembers } = room;
-    return json({ success: true, room: roomWithoutMembers as SelectRoom });
+    return json({ success: true, room: roomWithoutMembers });
 };

@@ -27,7 +27,7 @@ export async function setUserRole(db: DB, id: string, role: schema.SelectUser["r
     await db.update(schema.userTable).set({ role }).where(eq(schema.userTable.userId, id)).returning();
 }
 
-export async function getUserRoom(db: DB, id: string): Promise<schema.SelectRoom | null> {
+export async function getUserRoom(db: DB, id: string): Promise<schema.SelectRoomSafe | null> {
     const user = await db.query.userTable.findFirst({
         where: eq(schema.userTable.userId, id),
         with: {
@@ -39,7 +39,7 @@ export async function getUserRoom(db: DB, id: string): Promise<schema.SelectRoom
     const roomId = user?.hostedRooms?.[0]?.id ?? user?.joinedRooms?.[0]?.roomId;
     if (!roomId) return null;
 
-    return await getRoom(db, roomId, false);
+    return await getRoom(db, roomId, false, true);
 }
 
 export async function createPlaylist(db: DB, userId: string, name: string): Promise<schema.InsertPlaylist> {
@@ -101,25 +101,42 @@ export async function reorderPlaylist(db: DB, playlistID: string, songs: string[
     await db.update(schema.playlistTable).set({ songs }).where(eq(schema.playlistTable.id, playlistID));
 }
 
-export async function getRooms(db: DB): Promise<schema.SelectRoomWithMembers[]> {
+export async function getRooms(db: DB): Promise<schema.SelectRoomWithMembersSafe[]> {
     const rooms = await db.query.roomTable.findMany();
 
     // Attach members from room_member table for compatibility with UI
     const roomsWithMembers = await Promise.all(
         rooms.map(async (room) => {
             const members = await db.query.roomMemberTable.findMany({ where: eq(schema.roomMemberTable.roomId, room.id) });
-            return { ...room, members: members.map((m) => m.userData) };
+            const { password, ...safeRoom } = room;
+            return { ...safeRoom, hasPassword: !!password, members: members.map((m) => m.userData) };
         }),
     );
     return roomsWithMembers;
 }
 
-export function getRoom(db: DB, id: string): Promise<schema.SelectRoomWithMembers | null>;
-export function getRoom(db: DB, id: string, withMembers: true): Promise<schema.SelectRoomWithMembers | null>;
-export function getRoom(db: DB, id: string, withMembers: false): Promise<schema.SelectRoom | null>;
-export async function getRoom(db: DB, id: string, withMembers: boolean = true): Promise<schema.SelectRoomWithMembers | schema.SelectRoom | null> {
+export function getRoom(db: DB, id: string): Promise<schema.SelectRoomWithMembersSafe | null>;
+export function getRoom(db: DB, id: string, withMembers: true, safe?: true): Promise<schema.SelectRoomWithMembersSafe | null>;
+export function getRoom(db: DB, id: string, withMembers: false, safe?: true): Promise<schema.SelectRoomSafe | null>;
+export function getRoom(db: DB, id: string, withMembers: true, safe: false): Promise<schema.SelectRoomWithMembers | null>;
+export function getRoom(db: DB, id: string, withMembers: false, safe: false): Promise<schema.SelectRoom | null>;
+export async function getRoom(
+    db: DB,
+    id: string,
+    withMembers: boolean = true,
+    safe: boolean = true,
+): Promise<schema.SelectRoomWithMembers | schema.SelectRoom | schema.SelectRoomWithMembersSafe | schema.SelectRoomSafe | null> {
     const room = await db.query.roomTable.findFirst({ where: eq(schema.roomTable.id, id) });
     if (!room) return null;
+
+    if (safe) {
+        const { password, ...safeRoom } = room;
+        const safeRoomWithFlag = { ...safeRoom, hasPassword: !!password };
+        if (!withMembers) return safeRoomWithFlag as schema.SelectRoomSafe;
+        const members = await db.query.roomMemberTable.findMany({ where: eq(schema.roomMemberTable.roomId, id) });
+        return { ...safeRoomWithFlag, members: members.map((m) => m.userData) } as schema.SelectRoomWithMembersSafe;
+    }
+
     if (!withMembers) return room;
     const members = await db.query.roomMemberTable.findMany({ where: eq(schema.roomMemberTable.roomId, id) });
     return { ...room, members: members.map((m) => m.userData) } as schema.SelectRoomWithMembers;

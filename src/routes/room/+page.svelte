@@ -4,7 +4,7 @@
     import Seo from "$lib/components/ui/Seo.svelte";
     import Tooltip from "$lib/components/ui/Tooltip.svelte";
     import { createRoomActions, openCtxMenu } from "$lib/ctxmenu";
-    import type { SelectRoom } from "$lib/db/schema";
+    import type { SelectRoom, SelectRoomSafe } from "$lib/db/schema";
     import { isCreatingRoom, isJoiningRoom, showJoinRoomPopup } from "$lib/stores";
     import { supabaseChannel } from "$lib/supabase/channel";
     import { formatCount } from "$lib/utils/format";
@@ -13,12 +13,13 @@
     import IconParkOutlineLoadingFour from "~icons/icon-park-outline/loading-four";
     import MaterialSymbolsAdd2Rounded from "~icons/material-symbols/add-2-rounded";
     import SolarConfoundedCircleLinear from "~icons/solar/confounded-circle-linear";
+    import SolarLockPasswordLinear from "~icons/solar/lock-password-linear";
     import SolarLoginLinear from "~icons/solar/login-linear";
     import type { PageData } from "./$types";
 
     let { data }: { data: PageData } = $props();
-    let rooms: SelectRoom[] = $derived(data.rooms);
-    let publicRooms: SelectRoom[] = $derived(rooms.filter((room) => room.isPublic));
+    let rooms: SelectRoomSafe[] = $derived(data.rooms);
+    let publicRooms: SelectRoomSafe[] = $derived(rooms.filter((room) => room.isPublic));
 
     $effect(() => {
         const channel = supabaseChannel("room-changes-rooms")
@@ -30,10 +31,12 @@
                     table: "room",
                 },
                 (payload) => {
-                    const newRoom = payload.new as Partial<SelectRoom>;
-                    rooms = rooms.map((room: SelectRoom) => {
+                    const rawRoom = payload.new as Partial<SelectRoom>;
+                    const { password, ...safeRoom } = rawRoom;
+                    const newRoom = { ...safeRoom, hasPassword: password !== undefined ? !!password : undefined } as Partial<SelectRoomSafe>;
+                    rooms = rooms.map((room: SelectRoomSafe) => {
                         if (room.id === newRoom.id) {
-                            return { ...room, ...newRoom } as SelectRoom;
+                            return { ...room, ...newRoom } as SelectRoomSafe;
                         }
                         return room;
                     });
@@ -47,7 +50,9 @@
                     table: "room",
                 },
                 (payload) => {
-                    const newRoom = payload.new as SelectRoom;
+                    const rawRoom = payload.new as SelectRoom;
+                    const { password, ...safeRoom } = rawRoom;
+                    const newRoom = { ...safeRoom, hasPassword: !!password } as SelectRoomSafe;
                     rooms = [newRoom, ...rooms];
                 },
             )
@@ -176,7 +181,12 @@
                     {/each}
                 </div>
                 <div class="flex w-40 items-center justify-between gap-2 text-sm md:w-50">
-                    <p class="min-w-0 flex-1 truncate" title={room.name}>{room.name}</p>
+                    <div class="flex items-center justify-between gap-2">
+                        <p class="min-w-0 flex-1 truncate" title={room.name}>{room.name}</p>
+                        {#if room.hasPassword}
+                            <SolarLockPasswordLinear class="size-4 text-yellow-500" />
+                        {/if}
+                    </div>
                     {#if room.queue.length >= 1}
                         <p class="shrink-0 text-slate-400">{formatCount(room.queue.length)} songs</p>
                     {/if}

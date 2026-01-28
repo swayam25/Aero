@@ -88,6 +88,10 @@ export type InsertPlaylist = typeof playlistTable.$inferInsert;
 export type SelectRoom = typeof roomTable.$inferSelect;
 export type InsertRoom = typeof roomTable.$inferInsert;
 
+// Safe room type without password (for client-side use)
+export type SelectRoomSafe = Omit<SelectRoom, "password"> & { hasPassword: boolean };
+export type SelectRoomWithMembersSafe = SelectRoomSafe & { members: UserData[] };
+
 export type SelectRoomMember = typeof roomMemberTable.$inferSelect;
 export type InsertRoomMember = typeof roomMemberTable.$inferInsert;
 export type SelectRoomWithMembers = SelectRoom & { members: UserData[] };

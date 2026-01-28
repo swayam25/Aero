@@ -1,14 +1,14 @@
-import type { SelectRoom } from "$lib/db/schema";
+import type { SelectRoomSafe } from "$lib/db/schema";
 import { writable } from "svelte/store";
 
 const createUserRoomStore = () => {
-    const { subscribe, set, update } = writable<SelectRoom | null>(null);
+    const { subscribe, set, update } = writable<SelectRoomSafe | null>(null);
     return {
         subscribe,
-        set: (room: SelectRoom | null) => {
+        set: (room: SelectRoomSafe | null) => {
             set(room);
         },
-        update: (room: Partial<SelectRoom>) => {
+        update: (room: Partial<SelectRoomSafe>) => {
             update((currentRoom) => {
                 if (!currentRoom) return currentRoom;
                 return { ...currentRoom, ...room };
