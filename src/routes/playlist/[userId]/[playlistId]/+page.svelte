@@ -12,10 +12,10 @@
     import { supabaseChannel } from "$lib/supabase/channel";
     import { createMobileMediaQuery, createTouchDeviceQuery } from "$lib/utils/mobile";
     import { formatTime } from "$lib/utils/time";
-    import { onMount } from "svelte";
+    import { animate, stagger } from "animejs";
+    import { onMount, tick } from "svelte";
     import { toast } from "svelte-sonner";
-    import { expoOut } from "svelte/easing";
-    import { fade, fly } from "svelte/transition";
+    import { fade } from "svelte/transition";
     import type { SongFull } from "ytmusic-api";
     import HugeiconsCd from "~icons/hugeicons/cd";
     import IconParkOutlineCheck from "~icons/icon-park-outline/check";
@@ -44,6 +44,9 @@
     let draggedIndex: number | null = $state(null);
     let dragOverIdx: number | null = $state(null);
     let isDraggingStarted: boolean = $state(false);
+    let songsContainer: HTMLDivElement | undefined = $state();
+    let hasAnimated: boolean = $state(false);
+    let animatedSongIds: Set<number> = $state(new Set());
 
     let plSyncTimeout: NodeJS.Timeout | null = $state(null);
 
@@ -188,6 +191,84 @@
         Promise.all(playlistSongs).then((songs) => {
             originalOrder = songs.map((song) => song.videoId);
         });
+    });
+
+    // Animate songs on initial load and when new songs are added
+    $effect(() => {
+        if (songsContainer && playlistObject.length > 0) {
+            tick().then(() => {
+                const songElements = songsContainer?.querySelectorAll(".playlist-song-item");
+                const skeletonElements = songsContainer?.querySelectorAll(".playlist-skeleton-item");
+
+                // Animate skeleton loaders with shimmer effect
+                if (skeletonElements && skeletonElements.length > 0) {
+                    skeletonElements.forEach((element) => {
+                        const el = element as HTMLElement;
+                        el.style.opacity = "0";
+                        el.style.transform = "translateX(-20px) rotate(-1deg)";
+                    });
+
+                    animate(skeletonElements, {
+                        opacity: [0, 1],
+                        translateX: [-20, 0],
+                        rotate: [-1, 0],
+                        easing: "out(2)",
+                        duration: 400,
+                        delay: stagger(50),
+                    });
+                }
+
+                // Animate actual songs with creative bounce effect
+                if (songElements && songElements.length > 0) {
+                    const newSongs: HTMLElement[] = [];
+
+                    songElements.forEach((element, idx) => {
+                        const songId = playlistObject[idx]?.id;
+                        if (songId !== undefined && !animatedSongIds.has(songId)) {
+                            newSongs.push(element as HTMLElement);
+                            animatedSongIds.add(songId);
+                        }
+                    });
+
+                    if (newSongs.length > 0) {
+                        // Set initial state with more dramatic effect
+                        newSongs.forEach((element) => {
+                            element.style.opacity = "0";
+                            element.style.transform = "translateY(30px) translateX(-15px) scale(0.9) rotate(-2deg)";
+                            element.style.filter = "blur(4px)";
+                        });
+
+                        // Animate with creative bounce and blur removal
+                        animate(newSongs, {
+                            opacity: [0, 1],
+                            scale: [0.9, 1.02, 1],
+                            translateY: [30, -5, 0],
+                            translateX: [-15, 0],
+                            rotate: [-2, 1, 0],
+                            filter: ["blur(4px)", "blur(0px)"],
+                            easing: "out(3)",
+                            duration: hasAnimated ? 400 : 500,
+                            delay: hasAnimated ? 0 : stagger(60, { start: 100 }),
+                        });
+
+                        hasAnimated = true;
+                    }
+                }
+            });
+        }
+    });
+
+    // Handle cleanup when songs are removed
+    $effect(() => {
+        const currentIds = new Set(playlistObject.map((item) => item.id));
+        // Clean up animation tracking for songs no longer in the playlist
+        const idsToRemove: number[] = [];
+        animatedSongIds.forEach((id) => {
+            if (!currentIds.has(id)) {
+                idsToRemove.push(id);
+            }
+        });
+        idsToRemove.forEach((id) => animatedSongIds.delete(id));
     });
 
     // Sync playlist data with db
@@ -448,6 +529,7 @@
         </div>
     {:else}
         <div
+            bind:this={songsContainer}
             class="flex w-full list-none flex-col items-start justify-center"
             class:overflow-hidden={isRearrangeMode}
             class:overflow-y-auto={isRearrangeMode}
@@ -479,8 +561,7 @@
                         ></div>
                         {#await song}
                             <div
-                                in:fade={{ duration: 100 }}
-                                class="flex w-full items-center justify-center gap-2 rounded-lg bg-slate-800 p-2 transition-colors duration-200"
+                                class="playlist-skeleton-item flex w-full items-center justify-center gap-2 rounded-lg bg-slate-800 p-2 transition-colors duration-200"
                             >
                                 <div class="flex size-10 items-center justify-center p-1 text-lg">
                                     <span class="text-slate-200">{idx + 1}</span>
@@ -508,6 +589,7 @@
                                 class:wiggle={isRearrangeMode && isMobile}
                             >
                                 <button
+                                    in:fade={{ duration: 100 }}
                                     onclick={async () => {
                                         if (!isRearrangeMode) {
                                             await playPlaylist(
@@ -517,8 +599,6 @@
                                             );
                                         }
                                     }}
-                                    in:fly={{ duration: 400, easing: expoOut, x: -100, y: 0 }}
-                                    out:fly={{ duration: 400, easing: expoOut, x: 100, y: 0 }}
                                     oncontextmenu={(e) => {
                                         if (!isRearrangeMode) {
                                             e.preventDefault();
@@ -531,7 +611,7 @@
                                             openCtxMenu(e, actions);
                                         }
                                     }}
-                                    class="group flex w-full min-w-0 items-center justify-start gap-2 rounded-lg p-2 transition-colors duration-200"
+                                    class="playlist-song-item group flex w-full min-w-0 items-center justify-start gap-2 rounded-lg p-2 transition-colors duration-200"
                                     class:cursor-pointer={!isRearrangeMode}
                                     class:hover:bg-slate-800={!isRearrangeMode}
                                     class:cursor-default={isRearrangeMode}
