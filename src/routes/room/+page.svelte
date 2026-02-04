@@ -8,6 +8,8 @@
     import { isCreatingRoom, isJoiningRoom, showJoinRoomPopup } from "$lib/stores";
     import { supabaseChannel } from "$lib/supabase/channel";
     import { formatCount } from "$lib/utils/format";
+    import { animate, stagger } from "animejs";
+    import { tick } from "svelte";
     import { expoOut } from "svelte/easing";
     import { fade, fly } from "svelte/transition";
     import IconParkOutlineLoadingFour from "~icons/icon-park-outline/loading-four";
@@ -20,6 +22,8 @@
     let { data }: { data: PageData } = $props();
     let rooms: SelectRoomSafe[] = $derived(data.rooms);
     let publicRooms: SelectRoomSafe[] = $derived(rooms.filter((room) => room.isPublic));
+    let roomsContainer: HTMLDivElement | undefined = $state();
+    let hasAnimated = $state(false);
 
     $effect(() => {
         const channel = supabaseChannel("room-changes-rooms")
@@ -80,6 +84,31 @@
         3: ["var(--radius-lg) var(--radius-lg) 0 0", "0 0 0 var(--radius-lg)", "0 0 var(--radius-lg) 0"],
         4: ["var(--radius-lg) 0 0 0", "0 var(--radius-lg) 0 0", "0 0 0 var(--radius-lg)", "0 0 var(--radius-lg) 0"],
     };
+
+    $effect(() => {
+        if (roomsContainer && !hasAnimated && publicRooms.length > 0) {
+            tick().then(() => {
+                const roomCards = roomsContainer?.querySelectorAll(".room-card");
+
+                if (roomCards && roomCards.length > 0) {
+                    hasAnimated = true;
+
+                    roomCards.forEach((card) => {
+                        (card as HTMLElement).style.opacity = "0";
+                    });
+
+                    animate(roomCards, {
+                        opacity: [0, 1],
+                        scale: [0.8, 1],
+                        translateY: [20, 0],
+                        easing: "out(3)",
+                        duration: 200,
+                        delay: stagger(80, { start: 100 }),
+                    });
+                }
+            });
+        }
+    });
 </script>
 
 <Seo title="Rooms" />
@@ -152,7 +181,7 @@
         </div>
     </div>
 {:else}
-    <div in:fade={{ duration: 100 }} class="flex flex-wrap items-center justify-start gap-2">
+    <div bind:this={roomsContainer} in:fade={{ duration: 100 }} class="flex flex-wrap items-center justify-start gap-2">
         {#each publicRooms as room}
             {@const thumbnails = room.queue?.reverse().slice(0, 4) ?? []}
             {@const gridClass =
@@ -166,7 +195,7 @@
                     const actions = createRoomActions(room, room.hostUserId === data.user?.id);
                     openCtxMenu(e, actions);
                 }}
-                class="group flex size-fit cursor-pointer flex-col items-center justify-center gap-2 rounded-lg p-3 transition-colors duration-200 hover:bg-slate-800"
+                class="room-card group flex size-fit cursor-pointer flex-col items-center justify-center gap-2 rounded-lg p-3 transition-colors duration-200 hover:bg-slate-800"
             >
                 <div
                     class="grid size-40 shrink-0 rounded-lg bg-slate-800 transition-colors duration-200 group-hover:bg-slate-900 md:size-50 {gridClass}"

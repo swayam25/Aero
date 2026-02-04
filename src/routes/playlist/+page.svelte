@@ -7,9 +7,9 @@
     import { createPlaylistActions, openCtxMenu } from "$lib/ctxmenu";
     import { isCreatingPlaylist, isImportingPlaylist, playlistsCache } from "$lib/stores";
     import { formatCount } from "$lib/utils/format";
-    import { onMount } from "svelte";
-    import { expoOut } from "svelte/easing";
-    import { fade, fly } from "svelte/transition";
+    import { animate, stagger } from "animejs";
+    import { onMount, tick } from "svelte";
+    import { fade } from "svelte/transition";
     import IconParkOutlineLoadingFour from "~icons/icon-park-outline/loading-four";
     import MaterialSymbolsAdd2Rounded from "~icons/material-symbols/add-2-rounded";
     import SolarConfoundedCircleLinear from "~icons/solar/confounded-circle-linear";
@@ -17,10 +17,37 @@
     import type { PageData } from "./$types";
 
     let { data }: { data: PageData } = $props();
+    let playlistsContainer: HTMLDivElement | undefined = $state();
+    let hasAnimated = $state(false);
 
     onMount(async () => {
         if (playlistsCache.isStale($playlistsCache)) {
             await playlistsCache.refresh();
+        }
+    });
+
+    $effect(() => {
+        if (playlistsContainer && !hasAnimated && $playlistsCache.playlists.length > 0) {
+            tick().then(() => {
+                const playlistCards = playlistsContainer?.querySelectorAll(".playlist-card");
+
+                if (playlistCards && playlistCards.length > 0) {
+                    hasAnimated = true;
+
+                    playlistCards.forEach((card) => {
+                        (card as HTMLElement).style.opacity = "0";
+                    });
+
+                    animate(playlistCards, {
+                        opacity: [0, 1],
+                        scale: [0.8, 1],
+                        translateY: [20, 0],
+                        easing: "out(3)",
+                        duration: 200,
+                        delay: stagger(80, { start: 100 }),
+                    });
+                }
+            });
         }
     });
 </script>
@@ -99,18 +126,16 @@
         </div>
     </div>
 {:else}
-    <div in:fade={{ duration: 100 }} class="flex flex-wrap items-center justify-start gap-2">
+    <div bind:this={playlistsContainer} in:fade={{ duration: 100 }} class="flex flex-wrap items-center justify-start gap-2">
         {#each $playlistsCache.playlists as playlist}
             <a
-                in:fly={{ duration: 400, easing: expoOut, x: -100, y: 0 }}
-                out:fly={{ duration: 400, easing: expoOut, x: 100, y: 0 }}
                 href={`/playlist/${data.user?.id}/${playlist.id}`}
                 oncontextmenu={(e) => {
                     e.preventDefault();
                     const actions = createPlaylistActions({ name: playlist.name, id: playlist.id ?? "" }, data.user?.id);
                     openCtxMenu(e, actions);
                 }}
-                class="group flex size-fit cursor-pointer flex-col items-start justify-center gap-2 rounded-lg p-3 transition-colors duration-200 hover:bg-slate-800"
+                class="playlist-card group flex size-fit cursor-pointer flex-col items-start justify-center gap-2 rounded-lg p-3 transition-colors duration-200 hover:bg-slate-800"
             >
                 <div
                     class="size-40 shrink-0 rounded-lg bg-slate-800 bg-cover transition-colors duration-200 group-hover:bg-slate-900 md:size-50"

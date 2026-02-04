@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { goto, onNavigate } from "$app/navigation";
+    import { goto } from "$app/navigation";
     import { navigating } from "$app/state";
     import BottomBar from "$lib/components/BottomBar.svelte";
     import Lyrics from "$lib/components/Lyrics.svelte";
@@ -64,18 +64,6 @@
         } else {
             document.body.classList.remove("loading");
         }
-    });
-
-    // View Transitions
-    onNavigate((navigation) => {
-        if (!document.startViewTransition) return;
-
-        return new Promise((resolve) => {
-            document.startViewTransition(async () => {
-                resolve();
-                await navigation.complete;
-            });
-        });
     });
 
     // Sync playlist data with db
