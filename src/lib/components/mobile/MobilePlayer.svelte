@@ -78,6 +78,7 @@
         >
             <!-- Progress Slider -->
             <div
+                role="group"
                 class="flex w-full items-center gap-3"
                 style="touch-action: none;"
                 onpointerdown={(e) => e.stopPropagation()}

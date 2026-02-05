@@ -148,6 +148,7 @@
 {:else if songs}
     <div class={cn("group relative", className)}>
         <div
+            role="list"
             in:fade={{ duration: 100 }}
             bind:this={songList}
             onpointerdown={onPointerDown}

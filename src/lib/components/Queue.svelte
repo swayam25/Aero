@@ -117,6 +117,7 @@
     </div>
 
     <div
+        role="list"
         class="h-[calc(100vh-232px)] list-none pb-2 md:px-5 md:pb-5"
         class:overflow-hidden={isRearrangeMode}
         class:overflow-y-auto={!isRearrangeMode}
@@ -181,6 +182,8 @@
                             <div class="size-10 p-1 text-lg">
                                 {#if isRearrangeMode && isMobile}
                                     <div
+                                        role="button"
+                                        tabindex="0"
                                         ontouchstart={(e) => handleTouchStart(e, idx)}
                                         class="flex size-full touch-none items-center justify-center text-slate-400"
                                         style="touch-action: none;"

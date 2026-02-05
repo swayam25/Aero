@@ -535,6 +535,7 @@
             class:overflow-y-auto={isRearrangeMode}
             ontouchmove={(e) => isMobile && isRearrangeMode && handleTouchMove(e, e.currentTarget)}
             ontouchend={handleTouchEnd}
+            role="list"
         >
             <Draggable
                 class="w-full"
@@ -622,6 +623,9 @@
                                                 ontouchstart={(e) => handleTouchStart(e, idx)}
                                                 class="flex size-full touch-none items-center justify-center text-slate-400"
                                                 style="touch-action: none;"
+                                                role="button"
+                                                tabindex="0"
+                                                aria-label="Drag to reorder"
                                             >
                                                 <IconParkOutlineDrag class="size-6" />
                                             </div>
