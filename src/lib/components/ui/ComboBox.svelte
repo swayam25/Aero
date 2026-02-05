@@ -14,6 +14,7 @@
         class?: string;
         placeholder?: string;
         icon?: Component;
+        showSelectedIndicator?: boolean;
         onEnter?: (value: string) => void;
         onInput?: (value: string) => void;
         ref?: HTMLInputElement | null;
@@ -25,6 +26,7 @@
         class: className,
         placeholder,
         icon,
+        showSelectedIndicator = true,
         onEnter = (value: string) => {},
         onInput = (value: string) => {},
         ref = $bindable(),
@@ -33,10 +35,13 @@
     }: Props = $props();
 
     let inputFocus: boolean = $state(false);
+    let anchor: HTMLDivElement | null = $state(null);
+    let inputValue: string = $state("");
 
     // Handle value changes when an item is selected
     function handleValueChange(newValue: string) {
         value = newValue;
+        inputValue = newValue;
         open = false;
         onEnter(newValue);
     }
@@ -49,6 +54,7 @@
 
 <Combobox.Root type="single" bind:value bind:open onOpenChange={handleOpenChange} onValueChange={handleValueChange}>
     <div
+        bind:this={anchor}
         class={cn(
             "flex h-10 items-center justify-center gap-4 rounded-lg border border-slate-700 bg-slate-800 p-2 transition-colors duration-200",
             className,
@@ -56,7 +62,7 @@
         class:!border-slate-400={inputFocus}
     >
         {#if icon}
-            {#if !value}
+            {#if !inputValue}
                 {@const Icon = icon}
                 <span in:fade={{ duration: 100 }} class="size-6 text-slate-400">
                     <Icon class="size-full" />
@@ -67,6 +73,7 @@
                     class="size-6 cursor-pointer text-slate-400 transition-opacity duration-200 hover:opacity-80"
                     onclick={() => {
                         value = "";
+                        inputValue = "";
                         if (ref) {
                             ref.value = "";
                             onInput("");
@@ -98,9 +105,10 @@
                 }
             }}
             oninput={(e) => {
-                const inputValue = (e.target as HTMLInputElement).value;
-                value = inputValue;
-                onInput(inputValue);
+                const newInputValue = (e.target as HTMLInputElement).value;
+                value = newInputValue;
+                inputValue = newInputValue;
+                onInput(newInputValue);
             }}
         />
     </div>
@@ -109,6 +117,7 @@
         <Combobox.Content
             sideOffset={15}
             class="z-50 max-h-(--bits-combobox-content-available-height) w-(--bits-combobox-anchor-width) min-w-(--bits-combobox-anchor-width) rounded-lg border border-slate-700 bg-slate-900 p-2 shadow-xl outline-hidden select-none"
+            customAnchor={anchor}
         >
             {#snippet child({ wrapperProps, props, open })}
                 {#if open}
@@ -129,7 +138,7 @@
                                             <span class="block" class:font-medium={selected}>
                                                 {opt.label}
                                             </span>
-                                            {#if selected}
+                                            {#if selected && showSelectedIndicator}
                                                 <div class="ml-auto">
                                                     <SolarUnreadLinear />
                                                 </div>

@@ -76,6 +76,7 @@
     class={className}
     placeholder="Search"
     icon={SolarMagniferLinear}
+    showSelectedIndicator={false}
     bind:ref={input}
     onEnter={handleSearch}
     onInput={handleInput}
