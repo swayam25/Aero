@@ -75,11 +75,7 @@ Aero makes listening to music feel light and breezy
         - Copy the Client ID and Client Secret.
             ![Spotify Client Info](./assets/spotify_client_info.png)
     - Set `YOUTUBE_DL_PATH` to the path of `youtube-dl` or `yt-dlp` executable. You can install it from [GitHub Releases](https://github.com/yt-dlp/yt-dlp/releases) (`yt-dlp`) or use a package manager.
-    - Set `PORT` to the port number you want the server to listen on. The default is `3000`.
-        ```env
-        PORT=3000
-        ```
-    - Set `DOMAIN` to your domain name or `http://localhost:${PORT}` for local development. The variable is required for production.
+    - Set `DOMAIN` to your domain name or `http://localhost:3000` for local development. The variable is required for production.
         ```env
         DOMAIN="https://your-domain.com"
         ```
@@ -113,12 +109,7 @@ Aero makes listening to music feel light and breezy
 
 1. Follow steps 1-9 from the [installation](#-installation) section.
 
-2. Change `PORT` in `.env` file to the port number you want the server to listen on (*optional, default is `3000`*).
-    ```env
-    PORT=3000
-    ```
-
-3. Change `DOMAIN` in `.env` file to your domain name.
+2. Change `DOMAIN` in `.env` file to your domain name.
     ```env
     DOMAIN="https://your-domain.com"
     ```
@@ -126,7 +117,7 @@ Aero makes listening to music feel light and breezy
 > [!IMPORTANT]
 > `DOMAIN` is the URL you will use to access the app.
 > This dynamically sets `ORIGIN` during `node build` and configure the Caddy server's domain (*for the reverse proxy*).
-> For local development, you can set it to `https://localhost`.
+> For local development, you can set it to `http://localhost:3000`.
 > Ensure this matches the Redirect URL in the Discord Developer Portal (*see step 5 in the [installation](#-installation) section*).
 >
 > Check the [SvelteKit Docs](https://svelte.dev/docs/kit/adapter-node#Environment-variables) for more information about the `ORIGIN` variable.

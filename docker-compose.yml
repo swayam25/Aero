@@ -12,7 +12,7 @@ services:
     environment:
       - ORIGIN=$DOMAIN
     ports:
-      - $PORT:$PORT
+      - 3000:3000
     networks:
       - caddy
 
