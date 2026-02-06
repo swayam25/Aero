@@ -1,6 +1,21 @@
 name: aero
 
+networks:
+  caddy:
+
 services:
+  app:
+    build: .
+    container_name: "aero"
+    restart: unless-stopped
+    env_file: ".env"
+    environment:
+      - ORIGIN=$DOMAIN
+    ports:
+      - $PORT:$PORT
+    networks:
+      - caddy
+
   caddy:
     image: caddy:latest
     restart: unless-stopped
@@ -10,25 +25,15 @@ services:
     cap_add:
       - NET_ADMIN
     ports:
-      - "80:80"
-      - "443:443"
-      - "443:443/udp"
+      - 80:80
+      - 443:443
+      - 443:443/udp
     volumes:
       - ./Caddyfile:/etc/caddy/Caddyfile
       - caddy_data:/data
       - caddy_config:/config
-
-  app:
-    build: .
-    container_name: "aero"
-    restart: unless-stopped
-    env_file: ".env"
-    environment:
-      - ORIGIN=$DOMAIN
-    expose:
-      - 3000
-    ports:
-      - "3000:3000"
+    networks:
+      - caddy
 
 volumes:
   caddy_data:

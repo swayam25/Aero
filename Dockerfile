@@ -1,15 +1,19 @@
-FROM node:22-alpine AS builder
+FROM node:22-slim AS base
+ENV PNPM_HOME="/pnpm"
+ENV PATH="$PNPM_HOME:$PATH"
+RUN corepack enable
+COPY . /app
 WORKDIR /app
-COPY . .
-RUN npm i -g pnpm && pnpm i
-RUN pnpm run build
-RUN pnpm prune --prod
 
-FROM node:22-alpine
-WORKDIR /app
-COPY --from=builder /app/build build/
-COPY --from=builder /app/node_modules node_modules/
-COPY --from=builder /app/package.json package.json
-RUN apk add yt-dlp
-EXPOSE 3000
-CMD ["node", "build"]
+FROM base AS prod-deps
+RUN --mount=type=cache,id=pnpm,target=/pnpm/store pnpm install --prod --frozen-lockfile
+
+FROM base AS build
+RUN --mount=type=cache,id=pnpm,target=/pnpm/store pnpm install --frozen-lockfile
+RUN pnpm run build
+
+FROM base
+COPY --from=prod-deps /app/node_modules /app/node_modules
+COPY --from=build /app/build /app/build
+RUN apt-get update && apt-get install -y yt-dlp
+CMD [ "node", "build/index.js" ]
