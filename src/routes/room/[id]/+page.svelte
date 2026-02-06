@@ -174,7 +174,7 @@
                 </h1>
                 {#if data.room.hostUserId === data.user?.id}
                     <Tooltip side="right" disabled={!enableToggleBtn} content="{isPublic ? 'Public' : 'Private'} Room">
-                        <Switch size="md" checked={isPublic} disabled={!enableToggleBtn} onCheckedChange={toggleRoomVisibility} />
+                        <Switch size="md" checked={isPublic} loading={!enableToggleBtn} onCheckedChange={toggleRoomVisibility} />
                     </Tooltip>
                 {/if}
             </div>

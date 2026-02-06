@@ -390,7 +390,7 @@
                 </h1>
                 {#if data.loginUser?.id === data.user?.id}
                     <Tooltip side="right" disabled={!enableToggleBtn} content="{isPublic ? 'Public' : 'Private'} Playlist">
-                        <Switch size="md" checked={isPublic} disabled={!enableToggleBtn} onCheckedChange={togglePlaylistView} />
+                        <Switch size="md" checked={isPublic} loading={!enableToggleBtn} onCheckedChange={togglePlaylistView} />
                     </Tooltip>
                 {/if}
             </div>
