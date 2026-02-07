@@ -394,7 +394,6 @@
             title: "text-sm",
             description: "text-[0.65rem]",
         },
-        style: "z-index: 2000;",
     }}
 >
     {#snippet loadingIcon()}
