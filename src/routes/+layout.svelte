@@ -24,6 +24,7 @@
     import { toast, Toaster } from "svelte-sonner";
     import { expoOut } from "svelte/easing";
     import { fly } from "svelte/transition";
+    import IconParkOutlineLoadingFour from "~icons/icon-park-outline/loading-four";
     import "../app.css";
     import type { PageData } from "./$types";
 
@@ -395,7 +396,11 @@
         },
         style: "z-index: 2000;",
     }}
-/>
+>
+    {#snippet loadingIcon()}
+        <IconParkOutlineLoadingFour class="animate-spin" />
+    {/snippet}
+</Toaster>
 
 <PlaylistActionPopups />
 

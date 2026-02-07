@@ -39,8 +39,8 @@ importers:
         specifier: ^3.2.2
         version: 3.2.2(svelte@5.49.2)
       svelte-sonner:
-        specifier: ^0.3.28
-        version: 0.3.28(svelte@5.49.2)
+        specifier: ^1.0.7
+        version: 1.0.7(svelte@5.49.2)
       tailwind-merge:
         specifier: ^3.4.0
         version: 3.4.0
@@ -1787,6 +1787,11 @@ packages:
     peerDependencies:
       svelte: ^5.7.0
 
+  runed@0.28.0:
+    resolution: {integrity: sha512-k2xx7RuO9hWcdd9f+8JoBeqWtYrm5CALfgpkg2YDB80ds/QE4w0qqu34A7fqiAwiBBSBQOid7TLxwxVC27ymWQ==}
+    peerDependencies:
+      svelte: ^5.7.0
+
   sade@1.8.1:
     resolution: {integrity: sha512-xal3CZX1Xlo/k4ApwCFrHVACi9fBqJ7V+mwhBsuf/1IOKbBy098Fex+Wa/5QMubw09pSZ/u8EY8PWgevJsXp1A==}
     engines: {node: '>=6'}
@@ -1869,10 +1874,10 @@ packages:
     peerDependencies:
       svelte: ^4.2.7 || ^5.0.0
 
-  svelte-sonner@0.3.28:
-    resolution: {integrity: sha512-K3AmlySeFifF/cKgsYNv5uXqMVNln0NBAacOYgmkQStLa/UoU0LhfAACU6Gr+YYC8bOCHdVmFNoKuDbMEsppJg==}
+  svelte-sonner@1.0.7:
+    resolution: {integrity: sha512-1EUFYmd7q/xfs2qCHwJzGPh9n5VJ3X6QjBN10fof2vxgy8fYE7kVfZ7uGnd7i6fQaWIr5KvXcwYXE/cmTEjk5A==}
     peerDependencies:
-      svelte: ^3.0.0 || ^4.0.0 || ^5.0.0-next.1
+      svelte: ^5.0.0
 
   svelte-toolbelt@0.7.1:
     resolution: {integrity: sha512-HcBOcR17Vx9bjaOceUvxkY3nGmbBmCBBbuWLLEWO6jtmWH8f/QoWmbyUfQZrpDINH39en1b8mptfPQT9VKQ1xQ==}
@@ -3353,6 +3358,11 @@ snapshots:
       esm-env: 1.2.2
       svelte: 5.49.2
 
+  runed@0.28.0(svelte@5.49.2):
+    dependencies:
+      esm-env: 1.2.2
+      svelte: 5.49.2
+
   sade@1.8.1:
     dependencies:
       mri: 1.2.0
@@ -3424,8 +3434,9 @@ snapshots:
     dependencies:
       svelte: 5.49.2
 
-  svelte-sonner@0.3.28(svelte@5.49.2):
+  svelte-sonner@1.0.7(svelte@5.49.2):
     dependencies:
+      runed: 0.28.0(svelte@5.49.2)
       svelte: 5.49.2
 
   svelte-toolbelt@0.7.1(svelte@5.49.2):
