@@ -18,8 +18,8 @@
         "gen-secret": "node -e \"console.log(require('crypto').randomBytes(32).toString('hex'))\""
     },
     "devDependencies": {
-        "@sveltejs/adapter-node": "^5.5.2",
-        "@sveltejs/kit": "^2.50.2",
+        "@sveltejs/adapter-node": "^5.5.3",
+        "@sveltejs/kit": "^2.51.0",
         "@sveltejs/vite-plugin-svelte": "^5.1.1",
         "@tailwindcss/vite": "^4.1.18",
         "@types/youtube-player": "^5.5.11",
@@ -29,7 +29,7 @@
         "prettier": "^3.8.1",
         "prettier-plugin-svelte": "^3.4.1",
         "prettier-plugin-tailwindcss": "^0.7.2",
-        "svelte": "^5.49.2",
+        "svelte": "^5.50.3",
         "svelte-check": "^4.3.6",
         "tailwindcss": "^4.1.18",
         "typescript": "^5.9.3",
@@ -37,9 +37,9 @@
         "vite": "^6.4.1"
     },
     "dependencies": {
-        "@iconify/json": "^2.2.435",
+        "@iconify/json": "^2.2.439",
         "@spotify/web-api-ts-sdk": "^1.2.0",
-        "@supabase/supabase-js": "^2.95.1",
+        "@supabase/supabase-js": "^2.95.3",
         "animejs": "^4.3.5",
         "bits-ui": "^1.8.0",
         "clsx": "^2.1.1",
@@ -50,9 +50,9 @@
         "svelte-sonner": "^1.0.7",
         "tailwind-merge": "^3.4.0",
         "vaul-svelte": "^0.3.2",
-        "youtube-dl-exec": "^3.0.30",
+        "youtube-dl-exec": "^3.1.1",
         "youtube-player": "^5.6.0",
-        "ytmusic-api": "^5.3.0"
+        "ytmusic-api": "^5.3.1"
     },
     "pnpm": {
         "onlyBuiltDependencies": [
