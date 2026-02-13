@@ -183,7 +183,7 @@ Aero makes listening to music feel light and breezy
 
 > [!IMPORTANT]
 > `DOMAIN` is the URL you will use to access the app.
-> This dynamically sets `ORIGIN` during deployment and configure the Caddy server's domain (*for the reverse proxy*).
+> This dynamically sets `ORIGIN` during deployment and configures the Caddy server's domain (*for the reverse proxy*).
 > ![Redirect URl for Production](./assets/redirect_url_prod.png)
 > Ensure that the domain name matches the Redirect URL in the Discord Developer Portal (*see step 4 of the [production](#-production) section*).
 >
