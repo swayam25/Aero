@@ -33,99 +33,161 @@ Aero makes listening to music feel light and breezy
 
 </details>
 
-## 🚩 Installation
+## 💫 Prerequisites
 
-1. Clone this repository
-    ```sh
-    git clone https://github.com/swayam25/Aero aero
-    cd aero
-    ```
+### 🧰 Tools
 
-2. Install dependencies
-    ```sh
-    pnpm i
-    ```
+| Tool                                                                                                                                               | Type                     | Version     | Purpose                                                |
+| -------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------ | ----------- | ------------------------------------------------------ |
+| [![Docker](https://img.shields.io/badge/Docker-%232560FF?style=for-the-badge&logo=docker&logoColor=%23FFFFFF)](https://www.docker.com/)            | Required                 | 20.10+      | To deploy the app using containerization.              |
+| [![Git](https://img.shields.io/badge/Git-%23F05133?style=for-the-badge&logo=git&logoColor=%23FFFFFF)](https://git-scm.com/)                        | Required                 | 2.50+       | To clone the repository and manage version control.    |
+| [![Node.js](https://img.shields.io/badge/Node.js-%235FA04E?style=for-the-badge&logo=node.js&logoColor=%23FFFFFF)](https://nodejs.org/)             | Optional (*Development*) | 24+         | To run the app locally and contribute to the codebase. |
+| [![Pnpm](https://img.shields.io/badge/Pnpm-%23F69220?style=for-the-badge&logo=pnpm&logoColor=%23FFFFFF)](https://pnpm.io/)                         | Optional (*Development*) | 10.20+      | To manage project dependencies efficiently.            |
+| [![YT-DLP](https://img.shields.io/badge/YT--DLP-%23FF0000?style=for-the-badge&logo=youtube&logoColor=%23FFFFFF)](https://github.com/yt-dlp/yt-dlp) | Optional (*Development*) | 2026.02.04+ | To download music.                                     |
 
-3. Create an application at the [Discord Developer Portal](https://discord.com/developers/applications).
+### 🧲 VPS Specs
+
+| Component | Minimum Requirement | Recommended Requirement |
+| --------- | ------------------- | ----------------------- |
+| CPU       | 2 vCPU              | 4 vCPU or more          |
+| RAM       | 4 GB                | 8 GB or more            |
+| Storage   | 10 GB               | 20 GB                   |
+| Network   | 100 Mbps            | 1 Gbps or more          |
+
+## 🚀 Production
+
+1. Clone the repository
+
+   ```sh
+   git clone https://github.com/swayam25/Aero aero
+   cd aero
+   ```
+
+2. Create an application at the [Discord Developer Portal](https://discord.com/developers/applications).
     ![New Application](./assets/new_app.png)
 
-4. Create `.env` file from `.env.example` in the root directory and fill in the required values.
-    <details>
+3. Create `.env` file from the provided `.env.example` and fill in the required environment variables.
+    ```sh
+    cp .env.example .env
+    ```
+> [!TIP]
+> Check [environment variables](#-environment-variables) section for details on the environment variables.
 
-    <summary>ENV Vars</summary>
-
-    - Get `DATABASE_URL` from Supabase. Click on the <img src="./assets/connect_btn.png" alt="Connect Button" width="50" /> button at the top bar.
-        ![Supabase DB URL](./assets/db_url.png)
-    - Get `VITE_SUPABASE_URL` and `VITE_SUPABASE_KEY` from Supabase API Settings.
-        ![Supabase API](./assets/db_api.png)
-        ![Supabase Publishable Key](./assets/publishable_key.png)
-    - Get `JWT_SECRET` by running the following command.
-        ```sh
-        pnpm run gen-secret
-        ```
-    - Get `DISCORD_CLIENT_ID` and `DISCORD_CLIENT_SECRET` from the Discord Developer Portal.
-        ![Client Info](./assets/client_info.png)
-    - Get `DISCORD_BOT_TOKEN` from the Discord Developer Portal.
-        ![Bot Token](./assets/bot_token.png)
-    - Get `SPOTIFY_CLIENT_ID` and `SPOTIFY_CLIENT_SECRET` from the [Spotify Developer Dashboard](https://developer.spotify.com/dashboard/applications).
-        - Create a new application and fill in the required details.
-        - Set Redirect URI to `http://localhost` (*we don't need it, but Spotify requires it to be set*).
-        - Select the API scopes required for the app.
-            ![Spotify App](./assets/spotify_scopes.png)
-        - Copy the Client ID and Client Secret.
-            ![Spotify Client Info](./assets/spotify_client_info.png)
-    - Set `YOUTUBE_DL_PATH` to the path of `youtube-dl` or `yt-dlp` executable. You can install it from [GitHub Releases](https://github.com/yt-dlp/yt-dlp/releases) (`yt-dlp`) or use a package manager.
-    - Set `DOMAIN` to your domain name or `http://localhost:3000` for local development. The variable is required for production.
-        ```env
-        DOMAIN="https://your-domain.com"
-        ```
-    </details>
-
-5. Add redirect url at the Discord Developer Portal.
+4. Add redirect url at the Discord Developer Portal.
     ![Discord Developer Portal](./assets/redirect_url.png)
 
-6. Push the database schema to Supabase.
+5. Push the database schema to Supabase.
     ```sh
     pnpm run db:push
     ```
 
-7. Navigate to **Table Editor** in Supabase Dashboard and enable **RLS** for all the tables.
+6. Navigate to **Table Editor** in Supabase Dashboard and enable **RLS** for all the tables.
 
-8. Navigate to **Authentication** > **Policies** in Supabase Dashboard and create policies for all the tables.
+7. Navigate to **Authentication** > **Policies** in Supabase Dashboard and create policies for all the tables.
     ![Policies](./assets/policies.png)
 
-9. Navigate to **Table Editor** in Supabase Dashboard and enable **Realtime** for `playlist`, `room` & `room_member` table.
+8. Navigate to **Table Editor** in Supabase Dashboard and enable **Realtime** for `playlist`, `room` & `room_member` table.
     ![Playlist Realtime](./assets/realtime.png)
 
 > [!NOTE]
 > Check the [Supabase Docs](https://supabase.com/docs/guides/realtime/postgres-changes) for more information on enabling Realtime.
 
-10. Start the app
+9. Docker compose
+   ```sh
+   docker compose up -d
+   ```
+
+## 🛸 Development
+
+1. Follow first 8 steps from the [production](#-production) section.
+
+2. Install dependencies
+   ```sh
+   pnpm i
+   ```
+
+3. Start the development server
+   ```sh
+   pnpm run dev
+   ```
+
+## 🔑 Environment Variables
+
+| Variable                | Type     | Description                                              |
+| ----------------------- | -------- | -------------------------------------------------------- |
+| `PUBLIC_DISCORD_URL`    | `string` | Discord API base URI                                     |
+| `DATABASE_URL`          | `string` | Supabase connection string                               |
+| `VITE_SUPABASE_URL`     | `string` | Supabase project URL                                     |
+| `VITE_SUPABASE_KEY`     | `string` | Supabase API Key                                         |
+| `JWT_SECRET`            | `string` | JWT secret                                               |
+| `DISCORD_CLIENT_ID`     | `string` | Discord client ID                                        |
+| `DISCORD_CLIENT_SECRET` | `string` | Discord client secret                                    |
+| `DISCORD_BOT_TOKEN`     | `string` | Discord bot token                                        |
+| `SPOTIFY_CLIENT_ID`     | `string` | Spotify client ID                                        |
+| `SPOTIFY_CLIENT_SECRET` | `string` | Spotify client secret                                    |
+| `YOUTUBE_DL_PATH`       | `string` | Path to `youtube-dl`/`yt-dlp` binary                     |
+| `DOMAIN`                | `string` | Your domain for the reverse proxy, also used as `ORIGIN` |
+
+### 📚 Getting database keys
+
+- Create a supabase project
+    ![Supabase New Project](./assets/supabase_project.png)
+
+- Get `DATABASE_URL` from Supabase. Click on the <img src="./assets/connect_btn.png" alt="Connect Button" width="80" /> button at the top bar.
+    ![Supabase DB URL](./assets/db_url.png)
+
+- Get `VITE_SUPABASE_URL` and `VITE_SUPABASE_KEY` from Supabase API Settings.
+    | `VITE_SUPABASE_URL`                  | `VITE_SUPABASE_KEY`                                       |
+    | ------------------------------------ | --------------------------------------------------------- |
+    | ![Supabase API](./assets/db_api.png) | ![Supabase Publishable Key](./assets/publishable_key.png) |
+
+### 🔮 Getting Discord OAuth keys
+
+- Get `DISCORD_CLIENT_ID` and `DISCORD_CLIENT_SECRET` from the Discord Developer Portal.
+        ![Client Info](./assets/client_info.png)
+
+- Get `DISCORD_BOT_TOKEN` from the Discord Developer Portal.
+    ![Bot Token](./assets/bot_token.png)
+
+### 🎷 Getting Spotify API keys
+
+- Get `SPOTIFY_CLIENT_ID` and `SPOTIFY_CLIENT_SECRET` from the [Spotify Developer Dashboard](https://developer.spotify.com/dashboard/applications).
+    - Create a new application and fill in the required details.
+    - Set Redirect URI to `http://localhost` (*we don't need it, but Spotify requires it to be set*).
+    - Select the API scopes required for the app.
+        ![Spotify App](./assets/spotify_scopes.png)
+    - Copy the Client ID and Client Secret.
+        ![Spotify Client Info](./assets/spotify_client_info.png)
+
+### 🪇 Other keys
+
+- Generate `JWT_SECRET` by running the following command.
     ```sh
-    pnpm run dev
+    pnpm run gen-secret
     ```
 
-## 🚀 Production
+- Set `YOUTUBE_DL_PATH` to the path of `yt-dlp` executable. You can install it from [GitHub Releases](https://github.com/yt-dlp/yt-dlp/releases) or use a package manager.
+> [!IMPORTANT]
+> This variable is required for downloading videos from YouTube and other supported platforms.
+>
+> For production, set its value to `/usr/bin/yt-dlp`. (*The Dockerfile installs `yt-dlp` at this location*)
+>
+> For local development, you can set it to the path where you have installed `yt-dlp`.
 
-1. Follow steps 1-9 from the [installation](#-installation) section.
+### 🌏 Setting domain
 
-2. Change `DOMAIN` in `.env` file to your domain name.
+- Set `DOMAIN` to your domain name. *The variable is required only in production.*
     ```env
-    DOMAIN="https://your-domain.com"
+    DOMAIN="https://<your-domain>.com"
     ```
 
 > [!IMPORTANT]
 > `DOMAIN` is the URL you will use to access the app.
-> This dynamically sets `ORIGIN` during `node build` and configure the Caddy server's domain (*for the reverse proxy*).
-> For local development, you can set it to `http://localhost:3000`.
-> Ensure this matches the Redirect URL in the Discord Developer Portal (*see step 5 in the [installation](#-installation) section*).
+> This dynamically sets `ORIGIN` during deployment and configure the Caddy server's domain (*for the reverse proxy*).
+> ![Redirect URl for Production](./assets/redirect_url_prod.png)
+> Ensure that the domain name matches the Redirect URL in the Discord Developer Portal (*see step 4 of the [production](#-production) section*).
 >
 > Check the [SvelteKit Docs](https://svelte.dev/docs/kit/adapter-node#Environment-variables) for more information about the `ORIGIN` variable.
-
-1. Run docker container (*via `docker compose`*)
-    ```sh
-    docker compose up -d
-    ```
 
 ## ❤️ Contributing
 
@@ -139,4 +201,4 @@ Aero makes listening to music feel light and breezy
     - Run `pnpm run format` before committing your changes or use [`Prettier`](https://prettier.io/) extension in your code editor.
     - Make sure to commit error free code. Run `pnpm run check` to check for any errors.
 
-- Check [STYLES.MD](./STYLES.MD) for the CSS style guide.
+- Check [STYLES.md](./STYLES.md) for the CSS style guide.

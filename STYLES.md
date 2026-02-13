@@ -40,6 +40,7 @@
 - Animations Used
     - Fade In/Out
     - Fly In/Out
+    - Custom animations using `anime.js`
 
 - Animation Durations
     - Standard animations: `{{ duration: 100 }}` (*Default duration for most animations, providing quick and responsive transitions*)
