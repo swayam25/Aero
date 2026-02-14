@@ -1,8 +1,8 @@
 import type { SelectRoomSafe } from "$lib/db/schema";
-import type { EnhancedSong } from "$lib/player/types";
 import { userRoomStore } from "$lib/stores/userRoom";
 import supabaseChannel from "$lib/supabase/channel";
 import { get } from "svelte/store";
+import type { SongDetailed } from "ytmusic-api";
 
 type APIResult<T = unknown> = { success: true } & T;
 
@@ -87,13 +87,13 @@ export async function leaveRoomAPI(roomId: string): Promise<{ success: true } | 
     return await postToRoom(roomId, "leave");
 }
 
-export async function playInRoomAPI(song: EnhancedSong): Promise<{ success: true } | { error: string }> {
+export async function playInRoomAPI(song: SongDetailed): Promise<{ success: true } | { error: string }> {
     const roomId = get(userRoomStore)?.id;
     if (!roomId) return { error: "User is not in a room" };
     return await postToRoom(roomId, "play", { song });
 }
 
-export async function addToQueueAPI(song: EnhancedSong): Promise<{ success: true } | { error: string }> {
+export async function addToQueueAPI(song: SongDetailed): Promise<{ success: true } | { error: string }> {
     const roomId = get(userRoomStore)?.id;
     if (!roomId) return { error: "User is not in a room" };
     return await postToRoom(roomId, "add_to_queue", { song });
@@ -105,7 +105,7 @@ export async function removeFromQueueAPI(songId: string): Promise<{ success: tru
     return await postToRoom(roomId, "remove_from_queue", { songId });
 }
 
-export async function setQueueAPI(songs: EnhancedSong[]): Promise<{ success: true } | { error: string }> {
+export async function setQueueAPI(songs: SongDetailed[]): Promise<{ success: true } | { error: string }> {
     const roomId = get(userRoomStore)?.id;
     if (!roomId) return { error: "User is not in a room" };
     return await postToRoom(roomId, "set_queue", { songs });

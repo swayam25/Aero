@@ -13,7 +13,7 @@
     import ContextMenu from "$lib/ctxmenu/components/ContextMenu.svelte";
     import type { InsertPlaylist, SelectRoom, SelectRoomMember, SelectRoomSafe } from "$lib/db/schema";
     import { clearQueue, play, previous, seekTo, setLoop, setShuffle, skip, stop, store } from "$lib/player";
-    import type { EnhancedSong, PlayerStore } from "$lib/player/types";
+    import type { PlayerStore } from "$lib/player/types";
     import { fetchRoomAPI, sendPlayerRoomEvent } from "$lib/room";
     import { playlistsCache } from "$lib/stores";
     import { userRoomStore } from "$lib/stores/userRoom";
@@ -24,6 +24,7 @@
     import { toast, Toaster } from "svelte-sonner";
     import { expoOut } from "svelte/easing";
     import { fly } from "svelte/transition";
+    import type { SongDetailed } from "ytmusic-api";
     import IconParkOutlineLoadingFour from "~icons/icon-park-outline/loading-four";
     import "../app.css";
     import type { PageData } from "./$types";
@@ -255,8 +256,8 @@
                 roomChannel
                     .on("broadcast", { event: "init" }, (payload) => {
                         const payloadData = payload.payload as {
-                            queue: EnhancedSong[];
-                            nowPlaying: EnhancedSong | null;
+                            queue: SongDetailed[];
+                            nowPlaying: SongDetailed | null;
                             currentTime: number;
                             loop: PlayerStore["loop"];
                             shuffle: boolean;
@@ -286,7 +287,7 @@
                         }
                     })
                     .on("broadcast", { event: "play" }, (payload) => {
-                        const payloadData = payload.payload as { queue: EnhancedSong[]; nowPlaying: EnhancedSong };
+                        const payloadData = payload.payload as { queue: SongDetailed[]; nowPlaying: SongDetailed };
                         $store.queue = payloadData.queue;
                         play(payloadData.nowPlaying, data.user?.id, true, true);
                     })
@@ -297,11 +298,11 @@
                         $store.player?.playVideo();
                     })
                     .on("broadcast", { event: "skip" }, (payload) => {
-                        const { song } = payload.payload as { song: EnhancedSong | null };
+                        const { song } = payload.payload as { song: SongDetailed | null };
                         skip(data.user?.id, song);
                     })
                     .on("broadcast", { event: "previous" }, (payload) => {
-                        const { song } = payload.payload as { song: EnhancedSong | null };
+                        const { song } = payload.payload as { song: SongDetailed | null };
                         previous(data.user?.id, song);
                     })
                     .on("broadcast", { event: "seek" }, (payload) => {
@@ -431,7 +432,7 @@
         </div>
     {/if}
     <div id="body" class="size-full overflow-x-hidden overflow-y-auto rounded-lg p-2 md:row-start-2 md:bg-slate-900 md:p-5">
-        <div class="container m-auto size-full">
+        <div class="m-auto size-full">
             {@render children()}
             <div class="{data.user ? 'h-40' : 'h-20'} md:hidden"></div>
         </div>

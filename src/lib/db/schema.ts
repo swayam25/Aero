@@ -1,7 +1,7 @@
 import type { UserData } from "$lib/discord/types";
-import type { EnhancedSong } from "$lib/player/types";
 import { relations } from "drizzle-orm";
 import { boolean, jsonb, pgTable, serial, text, timestamp, uuid } from "drizzle-orm/pg-core";
+import type { SongDetailed } from "ytmusic-api";
 
 export const userTable = pgTable("user", {
     id: serial("id").primaryKey(),
@@ -32,8 +32,8 @@ export const roomTable = pgTable("room", {
         .references(() => userTable.userId, { onDelete: "cascade" }),
     hostUserData: jsonb("host_user_data").$type<UserData>().notNull(),
     createdAt: timestamp("created_at").notNull().defaultNow(),
-    nowPlaying: jsonb("now_playing").$type<EnhancedSong | null>().default(null),
-    queue: jsonb("queue").$type<EnhancedSong[]>().notNull().default([]),
+    nowPlaying: jsonb("now_playing").$type<SongDetailed | null>().default(null),
+    queue: jsonb("queue").$type<SongDetailed[]>().notNull().default([]),
     isPublic: boolean("is_public").notNull().default(true),
 });
 

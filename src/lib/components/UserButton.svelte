@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { invalidateAll } from "$app/navigation";
+    import { goto, invalidateAll } from "$app/navigation";
     import type { UserData } from "$lib/discord/types";
     import { AlertDialog } from "bits-ui";
     import { toast } from "svelte-sonner";
@@ -59,6 +59,7 @@
         isLoggingOut = true;
         try {
             await fetch("/auth/logout");
+            await goto("/");
             await invalidateAll();
         } catch {
         } finally {

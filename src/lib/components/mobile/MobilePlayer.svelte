@@ -8,6 +8,7 @@
     import SolarPlayCircleBold from "~icons/solar/play-circle-bold";
     import SolarSkipNextBold from "~icons/solar/skip-next-bold";
     import SolarSkipPreviousBold from "~icons/solar/skip-previous-bold";
+    import Thumbnail from "$lib/components/Thumbnail.svelte";
     import PlayerButtons from "../PlayerButtons.svelte";
     import MarqueeText from "../ui/MarqueeText.svelte";
     import Slider from "../ui/Slider.svelte";
@@ -59,10 +60,12 @@
         <!-- Album Art and Song Info -->
         <div class="flex flex-col items-center gap-4">
             <div oncontextmenu={handleContextMenu} role="button" tabindex="0" class="cursor-pointer">
-                <div
-                    class="size-72 rounded-2xl bg-slate-800 bg-cover shadow-2xl"
-                    style="background-image: url({$store.meta?.thumbnail.XLARGE})"
-                ></div>
+                <Thumbnail
+                    src={$store.meta?.thumbnails?.[0]?.url || ""}
+                    alt={$store.meta?.name || ""}
+                    class="size-72 rounded-2xl shadow-2xl"
+                    priority={true}
+                />
             </div>
             <div class="w-72 cursor-pointer text-left" oncontextmenu={handleContextMenu} role="button" tabindex="0">
                 <MarqueeText pause={$store.state !== "playing"} class="mb-1 text-xl font-medium text-slate-50">{$store.meta?.name || ""}</MarqueeText>

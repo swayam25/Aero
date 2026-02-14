@@ -1,32 +1,10 @@
 import { addToQueueAPI, isRoomHost, playInRoomAPI, removeFromQueueAPI, sendPlayerRoomEvent, setQueueAPI } from "$lib/room";
-import { getThumbnailUrl } from "$lib/stores";
 import { get, writable } from "svelte/store";
 import YouTubePlayer from "youtube-player";
 import type { SongDetailed, SongFull } from "ytmusic-api";
-import type { EnhancedSong, PlayerStore } from "./types";
+import type { PlayerStore } from "./types";
 
 let updateTimeFrameId: number | null = null;
-
-/**
- * Enhances a song with proxied thumbnail URLs
- */
-export function enhanceSong(song: SongDetailed | any): EnhancedSong {
-    const originalUrl = song.thumbnails?.[0]?.url || "";
-    const cleanUrl = originalUrl.replace(/=w\d+-h\d+(-[a-z](\d+)?)*-rj/g, "");
-
-    return {
-        ...song,
-        album: song.album || null,
-        duration: song.duration ?? null,
-        thumbnail: {
-            SMALL: getThumbnailUrl(cleanUrl, { width: 60, height: 60 }),
-            MEDIUM: getThumbnailUrl(cleanUrl, { width: 120, height: 120 }),
-            LARGE: getThumbnailUrl(cleanUrl, { width: 240, height: 240 }),
-            XLARGE: getThumbnailUrl(cleanUrl, { width: 480, height: 480 }),
-            FULL: getThumbnailUrl(cleanUrl, {}),
-        },
-    };
-}
 
 export const store = writable<PlayerStore>({
     player: null,
@@ -98,9 +76,8 @@ export async function play(song: SongDetailed, userId: string | null | undefined
         return;
     }
 
-    // Enhance song with thumbnails and update player metadata
-    const enhancedSong = enhanceSong(song);
-    store.update((state) => ({ ...state, meta: enhancedSong }));
+    // Update player metadata
+    store.update((state) => ({ ...state, meta: song }));
 
     // Initialize player if not already
     if (!player) init(userId);
@@ -128,9 +105,9 @@ export async function play(song: SongDetailed, userId: string | null | undefined
     };
 
     if (isRmHost) {
-        await playInRoomAPI(enhancedSong);
+        await playInRoomAPI(song);
     }
-    sendPlayerRoomEvent(userId, "play", { queue: get(store).queue, nowPlaying: enhancedSong });
+    sendPlayerRoomEvent(userId, "play", { queue: get(store).queue, nowPlaying: song });
     await fetchLyrics();
     updateTime();
 }
@@ -140,9 +117,8 @@ export async function playPlaylist(song: SongDetailed, plSongs: Promise<SongFull
 
     let { player } = get(store);
 
-    // Enhance song with thumbnails and update player metadata
-    const enhancedSong = enhanceSong(song);
-    store.update((state) => ({ ...state, meta: enhancedSong }));
+    // Update player metadata
+    store.update((state) => ({ ...state, meta: song }));
 
     // Initialize player if not already
     if (!player) init(userId);
@@ -156,7 +132,7 @@ export async function playPlaylist(song: SongDetailed, plSongs: Promise<SongFull
 
     const songsAfter = songs.slice(songIndex + 1);
     const songsBefore = songs.slice(0, songIndex);
-    const reorderedPlaylist = [enhancedSong, ...songsAfter, ...songsBefore].map((s) => enhanceSong(s));
+    const reorderedPlaylist = [song, ...songsAfter, ...songsBefore];
 
     // Update the queue with the reordered playlist
     store.update((state) => ({
@@ -174,21 +150,19 @@ export async function addToQueue(song: SongDetailed, userId: string | null | und
     const player = get(store).player;
     if (!player) return { error: "No player instance" };
 
-    const enhancedSong = enhanceSong(song);
-
     store.update((state) => {
         // Filter out the song if already in the queue
         state.queue = state.queue.filter((queuedSong) => queuedSong.videoId !== song.videoId);
 
         // Add the song at the end of the queue
-        state.queue.push(enhancedSong);
+        state.queue.push(song);
         return state;
     });
 
     // Room
     const isRmHost = isRoomHost(userId);
     if (isRmHost) {
-        await addToQueueAPI(enhancedSong);
+        await addToQueueAPI(song);
     }
 }
 
@@ -263,7 +237,7 @@ export function setVolume(vol: number) {
     player.setVolume(vol);
 }
 
-export async function previous(userId: string | null | undefined, song: EnhancedSong | null = null) {
+export async function previous(userId: string | null | undefined, song: SongDetailed | null = null) {
     const player = get(store).player;
     if (!player) return { error: "No player instance" };
 
@@ -303,7 +277,7 @@ export async function previous(userId: string | null | undefined, song: Enhanced
     await fetchLyrics();
 }
 
-export async function skip(userId: string | null | undefined, song: EnhancedSong | null = null) {
+export async function skip(userId: string | null | undefined, song: SongDetailed | null = null) {
     const player = get(store).player;
     if (!player) return { error: "No player instance" };
 
@@ -315,7 +289,7 @@ export async function skip(userId: string | null | undefined, song: EnhancedSong
         const currentID = get(store).meta?.videoId; // Current video ID
         if (currentID) {
             const currentIndex = queue.findIndex((item) => item.videoId === currentID); // Current video index
-            let next: EnhancedSong; // Next video ID
+            let next: SongDetailed; // Next video ID
             if (song) {
                 next = song;
             } else {

@@ -1,5 +1,4 @@
 import { addSongToPlaylist, createPlaylist, setPlaylistCover, type DB } from "$lib/db";
-import { enhanceSong } from "$lib/player";
 import { getSpotifyPlaylist } from "$lib/services/spotify";
 import { executeWithRateLimit } from "$lib/utils/rateLimit";
 import type { Track } from "@spotify/web-api-ts-sdk";
@@ -153,8 +152,7 @@ async function importPlaylistFromSource(source: string, playlistID: string, user
         try {
             let song = await ytmusic.getSong(lastVideoId);
             if (song && song.thumbnails && song.thumbnails.length > 0) {
-                const enhancedSong = enhanceSong(song);
-                await setPlaylistCover(db, playlistDbId, enhancedSong.thumbnail.FULL);
+                await setPlaylistCover(db, playlistDbId, song.thumbnails[0].url);
             }
         } catch (error) {
             console.log("Failed to set playlist cover:", error);

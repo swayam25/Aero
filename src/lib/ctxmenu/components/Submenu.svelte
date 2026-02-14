@@ -4,6 +4,7 @@
     import { toast } from "svelte-sonner";
     import { fade } from "svelte/transition";
     import CtxButton from "./CtxButton.svelte";
+    import Thumbnail from "$lib/components/Thumbnail.svelte";
 
     let submenu: HTMLDivElement = $state(null!);
 
@@ -46,10 +47,11 @@
                             {@const IconComponent = action.icon}
                             <IconComponent class="size-5 shrink-0" />
                         {:else}
-                            <div
-                                class="size-10 shrink-0 rounded-lg bg-slate-800 bg-cover transition-colors duration-200 group-hover:bg-slate-900"
-                                style="background-image: url({action.image || ''});"
-                            ></div>
+                            <Thumbnail
+                                src={action.image || ""}
+                                alt={action.label}
+                                class="size-10 shrink-0 rounded-lg transition-colors duration-200"
+                            />
                         {/if}
                         <span class="flex-1 text-left">{action.label}</span>
                         {#if action.shortcut}

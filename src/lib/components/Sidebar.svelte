@@ -10,6 +10,7 @@
     import SolarMusicLibraryLinear from "~icons/solar/music-library-linear";
     import SolarUsersGroupRoundedLinear from "~icons/solar/users-group-rounded-linear";
     import Tooltip from "./ui/Tooltip.svelte";
+    import Thumbnail from "./Thumbnail.svelte";
 
     let { user }: { user: UserData | null } = $props();
     let sidebarPlaylistsContainer: HTMLDivElement | undefined = $state();
@@ -83,8 +84,6 @@
                     role="button"
                     tabindex="0"
                     aria-label={playlist.name || "Unnamed playlist"}
-                    class="sidebar-playlist-cover size-15 cursor-pointer rounded-lg bg-slate-800 bg-cover transition-transform"
-                    style="background-image: {playlist.cover ? `url(${playlist.cover})` : 'none'};"
                     onclick={() => goto(`/playlist/${user?.id}/${playlist.id}`)}
                     onkeydown={(e) => {
                         if (e.key === "Enter" || e.key === " ") {
@@ -98,7 +97,13 @@
                         const actions = createPlaylistActions({ name: playlist.name || "Unnamed playlist", id: playlist.id ?? "" }, user?.id);
                         openCtxMenu(e, actions);
                     }}
-                ></div>
+                >
+                    <Thumbnail
+                        src={playlist.cover || ""}
+                        alt={playlist.name || "Unnamed playlist"}
+                        class="sidebar-playlist-cover size-15 cursor-pointer rounded-lg transition-transform"
+                    />
+                </div>
             </Tooltip>
         {/each}
     </div>

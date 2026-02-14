@@ -1,6 +1,6 @@
 import { goto } from "$app/navigation";
 import type { InsertPlaylist, SelectRoomSafe } from "$lib/db/schema";
-import { addToQueue, enhanceSong, play, store as playerStore, removeFromQueue, togglePause } from "$lib/player";
+import { addToQueue, play, store as playerStore, removeFromQueue, togglePause } from "$lib/player";
 import { isRoomHost, joinRoomAPI } from "$lib/room";
 import { isJoiningRoom, playlistsCache, showJoinRoomPopup, showPlDeletePopup, showPlRenamePopup } from "$lib/stores";
 import { toast } from "svelte-sonner";
@@ -369,7 +369,6 @@ async function loadPlaylistSubmenu(song: SongDetailed): Promise<CtxAction[]> {
                 onclick: async (ctx) => {
                     ctx.closeMenu();
                     try {
-                        const enhanced = enhanceSong(song);
                         toast.promise(
                             (async () => {
                                 const resp = await fetch(`/api/playlist/${playlist.id}`, {
@@ -378,7 +377,7 @@ async function loadPlaylistSubmenu(song: SongDetailed): Promise<CtxAction[]> {
                                         value: {
                                             playlistID: playlist.id,
                                             songID: song.videoId,
-                                            songCover: enhanced.thumbnail.FULL,
+                                            songCover: song.thumbnails?.[0]?.url,
                                         },
                                     }),
                                     method: "POST",

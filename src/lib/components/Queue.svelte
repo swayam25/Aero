@@ -10,6 +10,7 @@
     import { fade } from "svelte/transition";
     import HugeiconsCd from "~icons/hugeicons/cd";
     import IconParkOutlineDrag from "~icons/icon-park-outline/drag";
+    import Thumbnail from "./Thumbnail.svelte";
 
     let {
         user,
@@ -198,10 +199,11 @@
                                     <span in:fade={{ duration: 100 }} class="size-full text-slate-200">{idx + 1}</span>
                                 {/if}
                             </div>
-                            <div
-                                class="size-15 shrink-0 rounded-lg bg-slate-800 bg-cover transition-colors duration-200 group-hover:bg-slate-900"
-                                style="background-image: url({song.thumbnail.LARGE});"
-                            ></div>
+                            <Thumbnail
+                                src={song.thumbnails?.[0]?.url}
+                                alt={song.name}
+                                class="size-15 shrink-0 rounded-lg transition-colors duration-200 group-hover:bg-slate-900"
+                            />
                             <div class="flex-truncate flex flex-col items-start justify-center text-left">
                                 <p class="w-full truncate font-medium" title={song.name}>{song.name}</p>
                                 <p class="w-full truncate text-sm text-slate-400" title={song.artist.name}>{song.artist.name}</p>

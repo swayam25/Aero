@@ -2,9 +2,10 @@
     import { page } from "$app/state";
     import Search from "$lib/components/Search.svelte";
     import SongListX from "$lib/components/SongListX.svelte";
+    import Thumbnail from "$lib/components/Thumbnail.svelte";
     import Seo from "$lib/components/ui/Seo.svelte";
     import { createSongActions, openCtxMenu } from "$lib/ctxmenu";
-    import { enhanceSong, play } from "$lib/player";
+    import { play } from "$lib/player";
     import { formatTime } from "$lib/utils/time";
     import { fade } from "svelte/transition";
     import type { PageData } from "./$types";
@@ -52,7 +53,7 @@
             <div class="flex w-full min-w-2/5 flex-auto flex-col items-start justify-center gap-2">
                 <p class="block text-4xl font-bold">Top Result</p>
                 {#if songs[0]}
-                    {@const firstSong = enhanceSong(songs[0])}
+                    {@const firstSong = songs[0]}
                     <button
                         onclick={async () => {
                             await play(songs[0], data.user?.id);
@@ -64,10 +65,12 @@
                         }}
                         class="group flex size-full cursor-pointer flex-col items-start justify-between gap-2 rounded-lg bg-slate-800 p-5 transition-colors duration-200 hover:bg-slate-700"
                     >
-                        <div
-                            class="size-30 shrink-0 rounded-lg bg-slate-900 bg-cover transition-colors duration-200 group-hover:bg-slate-800 md:size-45"
-                            style="background-image: url({firstSong.thumbnail.LARGE});"
-                        ></div>
+                        <Thumbnail
+                            src={firstSong.thumbnails?.[0]?.url}
+                            alt={songs[0].name}
+                            class="size-30 shrink-0 rounded-lg transition-colors duration-200 md:size-45"
+                            priority={true}
+                        />
                         <div class="flex size-full flex-col items-start justify-center gap-1 text-left">
                             <p class="w-full text-3xl font-medium md:text-4xl">{songs[0].name}</p>
                             <p class="w-full text-xl text-slate-400 md:text-2xl">{songs[0].artist.name}</p>
@@ -79,7 +82,6 @@
                 <p class="block text-4xl font-bold">Songs</p>
                 <div class="flex w-full flex-col items-center justify-between rounded-lg transition-colors duration-200 *:cursor-pointer">
                     {#each songs.slice(1, 6) as song}
-                        {@const enhanced = enhanceSong(song)}
                         <button
                             onclick={async () => {
                                 await play(song, data.user?.id);
@@ -91,10 +93,11 @@
                             }}
                             class="group flex h-auto w-full min-w-0 items-center justify-between gap-2 rounded-lg p-2 transition-colors duration-200 hover:bg-slate-800"
                         >
-                            <div
-                                class="size-15 shrink-0 rounded-lg bg-slate-800 bg-cover transition-colors duration-200 group-hover:bg-slate-900"
-                                style="background-image: url({enhanced.thumbnail.SMALL});"
-                            ></div>
+                            <Thumbnail
+                                src={song.thumbnails?.[0]?.url}
+                                alt={song.name}
+                                class="size-15 shrink-0 rounded-lg transition-colors duration-200"
+                            />
                             <div class="flex-truncate text-left">
                                 <p class="w-full max-w-full truncate" title={song.name}>{song.name}</p>
                                 <p class="w-full max-w-full truncate text-sm text-slate-400" title={song.artist.name}>{song.artist.name}</p>

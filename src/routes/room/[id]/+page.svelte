@@ -1,5 +1,6 @@
 <script lang="ts">
     import { invalidateAll } from "$app/navigation";
+    import Thumbnail from "$lib/components/Thumbnail.svelte";
     import Avatar from "$lib/components/ui/Avatar.svelte";
     import Badge from "$lib/components/ui/Badge.svelte";
     import Button from "$lib/components/ui/Button.svelte";
@@ -156,10 +157,13 @@
         {#each thumbnails as song, idx}
             {@const span = thumbnails.length === 3 && idx === 0 ? "col-span-2" : ""}
             {@const borderRadius = radiiByCount[thumbnails.length]?.[idx] || radiiByCount[4][idx]}
-            <div
-                class="flex size-full items-center justify-center bg-slate-800 bg-cover bg-center {span}"
-                style="background-image: url('{song?.thumbnail.LARGE}'); border-radius: {borderRadius};"
-            ></div>
+            <Thumbnail
+                src={song?.thumbnails?.[0]?.url || ""}
+                alt={song?.name || ""}
+                class="flex size-full items-center justify-center bg-center {span}"
+                style="border-radius: {borderRadius};"
+                priority={true}
+            />
         {/each}
     </div>
     <div class="flex flex-col items-center justify-between gap-2 md:items-start md:self-stretch">

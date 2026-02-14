@@ -1,8 +1,8 @@
 import type { UserData } from "$lib/discord/types";
-import type { EnhancedSong } from "$lib/player/types";
 import { and, eq } from "drizzle-orm";
 import type { PostgresJsDatabase } from "drizzle-orm/postgres-js";
 import type postgres from "postgres";
+import type { SongDetailed } from "ytmusic-api";
 import * as schema from "./schema";
 
 export type DB = PostgresJsDatabase<typeof schema> & {
@@ -163,11 +163,11 @@ export async function removeRoomMember(db: DB, roomId: string, user: UserData) {
     await db.delete(schema.roomMemberTable).where(and(eq(schema.roomMemberTable.roomId, roomId), eq(schema.roomMemberTable.userId, user.id)));
 }
 
-export async function playRoom(db: DB, roomId: string, song: EnhancedSong) {
+export async function playRoom(db: DB, roomId: string, song: SongDetailed) {
     await db.update(schema.roomTable).set({ nowPlaying: song }).where(eq(schema.roomTable.id, roomId));
 }
 
-export async function addSongToQueue(db: DB, roomId: string, song: EnhancedSong) {
+export async function addSongToQueue(db: DB, roomId: string, song: SongDetailed) {
     const room = await db.query.roomTable.findFirst({ where: eq(schema.roomTable.id, roomId) });
     const queue = (room?.queue || []).filter((s) => s.videoId !== (song as any).videoId);
     queue.push(song as any);
@@ -181,7 +181,7 @@ export async function removeSongFromQueue(db: DB, roomId: string, songID: string
     await db.update(schema.roomTable).set({ queue }).where(eq(schema.roomTable.id, roomId));
 }
 
-export async function setQueue(db: DB, roomId: string, songs: EnhancedSong[]) {
+export async function setQueue(db: DB, roomId: string, songs: SongDetailed[]) {
     await db.update(schema.roomTable).set({ queue: songs }).where(eq(schema.roomTable.id, roomId));
 }
 

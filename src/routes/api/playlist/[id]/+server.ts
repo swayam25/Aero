@@ -1,5 +1,4 @@
 import { addSongToPlaylist, getPlaylist, removeSongFromPlaylist, reorderPlaylist, setPlaylistCover, toggleView } from "$lib/db";
-import { enhanceSong } from "$lib/player";
 import { json, type RequestHandler } from "@sveltejs/kit";
 
 export const POST: RequestHandler = async ({ locals, request }) => {
@@ -25,7 +24,8 @@ export const POST: RequestHandler = async ({ locals, request }) => {
         await removeSongFromPlaylist(locals.db, value.playlistID, value.songID);
         const lastSongID = playlistExists.songs.slice(-1)[0] === value.songID ? playlistExists.songs.slice(-2)[0] : null;
         if (lastSongID) {
-            await setPlaylistCover(locals.db, value.playlistID, enhanceSong(await locals.ytmusic.getSong(lastSongID)).thumbnail.FULL);
+            const song = await locals.ytmusic.getSong(lastSongID);
+            await setPlaylistCover(locals.db, value.playlistID, song.thumbnails?.[0]?.url);
         }
     } else if (key === "toggle_view") {
         const isPublic = await toggleView(locals.db, value.playlistID);
@@ -34,7 +34,8 @@ export const POST: RequestHandler = async ({ locals, request }) => {
         return json(playlistExists);
     } else if (key === "reorder") {
         await reorderPlaylist(locals.db, value.playlistID, value.songIDs);
-        await setPlaylistCover(locals.db, value.playlistID, enhanceSong(await locals.ytmusic.getSong(value.songIDs.slice(-1)[0])).thumbnail.FULL);
+        const song = await locals.ytmusic.getSong(value.songIDs.slice(-1)[0]);
+        await setPlaylistCover(locals.db, value.playlistID, song.thumbnails?.[0]?.url);
     }
 
     return json({ success: true });

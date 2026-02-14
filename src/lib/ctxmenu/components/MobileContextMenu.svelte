@@ -6,6 +6,7 @@
     import SolarAltArrowRightLinear from "~icons/solar/alt-arrow-right-linear";
     import SolarConfoundedCircleLinear from "~icons/solar/confounded-circle-linear";
     import CtxButton from "./CtxButton.svelte";
+    import Thumbnail from "$lib/components/Thumbnail.svelte";
 
     let submenuStack: CtxAction[][] = $state([]);
     let currentTitle = $state("");
@@ -105,10 +106,11 @@
                         {@const IconComponent = action.icon}
                         <IconComponent class="size-5 shrink-0" />
                     {:else}
-                        <div
-                            class="size-10 shrink-0 rounded-lg bg-slate-800 bg-cover transition-colors duration-200 group-hover:bg-slate-900"
-                            style="background-image: url({action.image || ''});"
-                        ></div>
+                        <Thumbnail
+                            src={action.image || ""}
+                            alt={action.label}
+                            class="size-10 shrink-0 rounded-lg transition-colors duration-200"
+                        />
                     {/if}
                     <div class="flex flex-1 flex-col text-left">
                         <span class="font-medium">{action.label}</span>

@@ -1,5 +1,6 @@
 <script lang="ts">
     import { invalidateAll } from "$app/navigation";
+    import Thumbnail from "$lib/components/Thumbnail.svelte";
     import Avatar from "$lib/components/ui/Avatar.svelte";
     import Button from "$lib/components/ui/Button.svelte";
     import Draggable from "$lib/components/ui/Draggable.svelte";
@@ -7,7 +8,7 @@
     import Switch from "$lib/components/ui/Switch.svelte";
     import Tooltip from "$lib/components/ui/Tooltip.svelte";
     import { createPlaylistSongActions, openCtxMenu } from "$lib/ctxmenu";
-    import { enhanceSong, fetchSongDetailed, playPlaylist, store } from "$lib/player";
+    import { fetchSongDetailed, playPlaylist, store } from "$lib/player";
     import { isImportingPlaylist, store as popupStore, showPlDeletePopup, showPlRenamePopup } from "$lib/stores";
     import { supabaseChannel } from "$lib/supabase/channel";
     import { createMobileMediaQuery, createTouchDeviceQuery } from "$lib/utils/mobile";
@@ -377,7 +378,7 @@
 {/if}
 
 <div class="flex w-full flex-col items-center justify-center gap-4 md:flex-row md:items-stretch md:justify-start">
-    <div class="size-40 shrink-0 rounded-lg bg-slate-800 bg-cover md:size-50" style="background-image: url({data.playlist.cover});"></div>
+    <Thumbnail src={data.playlist.cover} alt={data.playlist.name} class="size-40 shrink-0 rounded-lg md:size-50" priority={true} />
     <div class="flex flex-col items-center justify-between gap-2 md:items-start md:self-stretch">
         <div class="flex h-full flex-col items-center justify-center gap-1 md:items-start">
             <div class="flex items-center justify-center gap-2 md:items-end">
@@ -574,7 +575,6 @@
                                 </div>
                             </div>
                         {:then song}
-                            {@const enhanced = enhanceSong(song)}
                             <li
                                 class="w-full transition-all duration-200"
                                 draggable={data.loginUser?.id !== data.user.id || $isImportingPlaylist || isSyncing || isRearrangeMode
@@ -637,10 +637,11 @@
                                             <span in:fade={{ duration: 100 }} class="text-slate-200">{idx + 1}</span>
                                         {/if}
                                     </div>
-                                    <div
-                                        class="size-15 shrink-0 rounded-lg bg-slate-800 bg-cover transition-colors duration-200 group-hover:bg-slate-900"
-                                        style="background-image: url({enhanced.thumbnail.SMALL});"
-                                    ></div>
+                                    <Thumbnail
+                                        src={song.thumbnails?.[0]?.url}
+                                        alt={song.name}
+                                        class="size-15 shrink-0 rounded-lg transition-colors duration-200 group-hover:bg-slate-900"
+                                    />
                                     <div class="flex-truncate flex flex-col items-start justify-center text-left">
                                         <p class="w-full truncate font-medium" title={song.name}>{song.name}</p>
                                         <p class="w-full truncate text-sm text-slate-400" title={song.artist.name}>{song.artist.name}</p>

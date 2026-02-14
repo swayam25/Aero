@@ -75,7 +75,7 @@
     open={showMobilePlayer}
     onClose={closeMobilePlayer}
     fullScreen={true}
-    backgroundImage={$store.meta?.thumbnail.XLARGE || ""}
+    backgroundImage={$store.meta?.thumbnails?.[0]?.url || ""}
     blur={true}
     dismissible={!seekStarted}
 >

@@ -1,10 +1,11 @@
 <script lang="ts">
     import SongListX from "$lib/components/SongListX.svelte";
+    import Thumbnail from "$lib/components/Thumbnail.svelte";
     import Popover from "$lib/components/ui/Popover.svelte";
     import Seo from "$lib/components/ui/Seo.svelte";
     import Tooltip from "$lib/components/ui/Tooltip.svelte";
     import CtxButton from "$lib/ctxmenu/components/CtxButton.svelte";
-    import { enhanceSong, fetchSongDetailed, play, store } from "$lib/player";
+    import { fetchSongDetailed, play, store } from "$lib/player";
     import { playlistsCache } from "$lib/stores";
     import { formatTime } from "$lib/utils/time";
     import { onMount } from "svelte";
@@ -19,7 +20,6 @@
     import type { PageData } from "./$types";
 
     let { data }: { data: PageData } = $props();
-    let enhancedSong = $derived(enhanceSong(data.song));
     let openPlaylistPopover = $state(false);
     let copied = $state(false);
 
@@ -33,11 +33,11 @@
 <Seo
     title={data.song.name}
     description={`Listen to ${data.song.name} by ${data.song.artist.name}.\n\nDuration: ${formatTime(data.song.duration)}`}
-    image={enhancedSong.thumbnail.LARGE}
+    image={data.song.thumbnails?.[0]?.url}
 />
 
 <div class="flex w-full flex-col items-center justify-center gap-4 md:flex-row md:justify-start">
-    <div class="size-40 shrink-0 rounded-lg bg-slate-800 bg-cover md:size-50" style="background-image: url({enhancedSong.thumbnail.LARGE});"></div>
+    <Thumbnail src={data.song.thumbnails?.[0]?.url} alt={data.song.name} class="size-40 shrink-0 rounded-lg md:size-50" priority={true} />
     <div class="flex flex-col items-start justify-center gap-2 text-left">
         <div class="flex flex-col items-start justify-center gap-2 text-left">
             <h1
@@ -128,7 +128,7 @@
                                                             value: {
                                                                 playlistID: playlist.id,
                                                                 songID: data.song.videoId,
-                                                                songCover: enhancedSong.thumbnail.MEDIUM,
+                                                                songCover: data.song.thumbnails?.[0]?.url,
                                                             },
                                                         }),
                                                         method: "POST",
@@ -147,10 +147,15 @@
                                             }}
                                             class="items-center justify-center"
                                         >
-                                            <div
-                                                class="size-10 shrink-0 rounded-lg bg-slate-800 bg-cover transition-colors duration-200 group-hover:bg-slate-900"
-                                                style="background-image: url({playlist.cover || ''});"
-                                            ></div>
+                                            {#if playlist.cover}
+                                                <Thumbnail
+                                                    src={playlist.cover}
+                                                    alt={playlist.name}
+                                                    class="size-10 shrink-0 rounded-lg transition-colors duration-200 group-hover:bg-slate-900"
+                                                />
+                                            {:else}
+                                                <div class="size-10 shrink-0 rounded-lg bg-slate-800"></div>
+                                            {/if}
                                             <span class="flex-1 text-left">{playlist.name}</span>
                                         </CtxButton>
                                     {/each}
@@ -181,7 +186,7 @@
 <div class="mt-8 text-left">
     <h2 class="text-3xl font-bold md:text-4xl">Related Songs</h2>
     {#await data.relatedSongs}
-        <SongListX skeleton skeletonCount={8} />
+        <SongListX skeleton />
     {:then relatedSongs}
         <div in:fade={{ duration: 100 }}>
             <SongListX user={data.user} songs={relatedSongs} />
@@ -195,7 +200,7 @@
 <div class="text-left">
     <h2 class="text-3xl font-bold md:text-4xl">More From Artists</h2>
     {#await data.moreFromArtist}
-        <SongListX skeleton skeletonCount={8} />
+        <SongListX skeleton />
     {:then moreFromArtist}
         <div in:fade={{ duration: 100 }}>
             <SongListX user={data.user} songs={moreFromArtist} />

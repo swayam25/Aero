@@ -1,21 +1,21 @@
 <script lang="ts">
     import { createSongActions, openCtxMenu } from "$lib/ctxmenu";
     import type { UserData } from "$lib/discord/types";
-    import { enhanceSong, play } from "$lib/player";
+    import { play } from "$lib/player";
     import { cn } from "$lib/utils/cn";
     import { fade } from "svelte/transition";
     import type { SongDetailed } from "ytmusic-api";
     import SolarAltArrowLeftLinear from "~icons/solar/alt-arrow-left-linear";
     import SolarAltArrowRightLinear from "~icons/solar/alt-arrow-right-linear";
+    import Thumbnail from "./Thumbnail.svelte";
 
     interface Props {
         skeleton?: boolean;
-        skeletonCount?: number;
         user?: UserData;
         songs?: SongDetailed[];
         class?: string;
     }
-    let { skeleton = false, skeletonCount = 10, user, songs, class: className }: Props = $props();
+    let { skeleton = false, user, songs, class: className }: Props = $props();
 
     let songList: HTMLDivElement | null = $state(null);
     let isDragging: boolean = $state(false);
@@ -131,6 +131,15 @@
             scrollSide = null;
         }
     }
+
+    let skeletonCount: number = $state(8);
+
+    $effect(() => {
+        const bodyWidth = document.getElementById("body")?.clientWidth;
+        if (bodyWidth) {
+            skeletonCount = Math.ceil(bodyWidth / 200);
+        }
+    });
 </script>
 
 {#if skeleton}
@@ -165,7 +174,6 @@
             style="scrollbar-width: none; touch-action: pan-y;"
         >
             {#each songs as song}
-                {@const enhanced = enhanceSong(song)}
                 <button
                     class="group/btn flex shrink-0 cursor-pointer flex-col items-start justify-center gap-2 rounded-lg p-3 transition-colors duration-200 hover:bg-slate-800"
                     onclick={async () => {
@@ -179,10 +187,11 @@
                         openCtxMenu(e, actions);
                     }}
                 >
-                    <div
-                        class="size-40 shrink-0 rounded-lg bg-slate-800 bg-cover transition-colors duration-200 group-hover/btn:bg-slate-900 md:size-50"
-                        style="background-image: url({enhanced.thumbnail.LARGE});"
-                    ></div>
+                    <Thumbnail
+                        src={song.thumbnails?.[0]?.url}
+                        alt={song.name}
+                        class="size-40 shrink-0 rounded-lg transition-colors duration-200 group-hover/btn:bg-slate-900 md:size-50"
+                    />
                     <div class="w-40 text-left text-sm md:w-50">
                         <p class="min-w-0 truncate" title={song.name}>{song.name}</p>
                         <p class="min-w-0 truncate text-slate-400" title={song.artist.name}>

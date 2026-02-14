@@ -1,5 +1,6 @@
 <script lang="ts">
     import NewRoomPopup from "$lib/components/NewRoomPopup.svelte";
+    import Thumbnail from "$lib/components/Thumbnail.svelte";
     import Button from "$lib/components/ui/Button.svelte";
     import Seo from "$lib/components/ui/Seo.svelte";
     import Tooltip from "$lib/components/ui/Tooltip.svelte";
@@ -203,10 +204,12 @@
                     {#each thumbnails as song, idx}
                         {@const span = thumbnails.length === 3 && idx === 0 ? "col-span-2" : ""}
                         {@const borderRadius = radiiByCount[thumbnails.length]?.[idx] || radiiByCount[4][idx]}
-                        <div
-                            class="flex size-full items-center justify-center bg-slate-800 bg-cover bg-center transition-colors duration-200 group-hover:bg-slate-900 {span}"
-                            style="background-image: url('{song?.thumbnail.LARGE}'); border-radius: {borderRadius};"
-                        ></div>
+                        <Thumbnail
+                            src={song?.thumbnails?.[0]?.url || ""}
+                            alt={song?.name || ""}
+                            class="flex size-full items-center justify-center bg-center transition-colors duration-200 {span}"
+                            style="border-radius: {borderRadius};"
+                        />
                     {/each}
                 </div>
                 <div class="flex w-40 items-center justify-between gap-2 text-sm md:w-50">

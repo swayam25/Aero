@@ -10,6 +10,7 @@
     import SolarSkipNextBold from "~icons/solar/skip-next-bold";
     import SolarSkipPreviousBold from "~icons/solar/skip-previous-bold";
     import PlayerButtons from "./PlayerButtons.svelte";
+    import Thumbnail from "./Thumbnail.svelte";
     import MarqueeText from "./ui/MarqueeText.svelte";
     import Slider from "./ui/Slider.svelte";
 
@@ -66,10 +67,16 @@
         }}
         tabindex="0"
     >
-        <div
-            class="size-15 rounded-l-lg bg-slate-800 bg-cover transition-all md:rounded-lg md:bg-slate-900"
-            style="background-image: url({$store.state !== 'unstarted' ? $store.meta?.thumbnail.SMALL : ''});"
-        ></div>
+        {#if $store.state !== "unstarted" && $store.meta}
+            <Thumbnail
+                src={$store.meta.thumbnails?.[0]?.url}
+                alt={$store.meta.name}
+                class="size-15 rounded-l-lg transition-all md:rounded-lg"
+                priority={true}
+            />
+        {:else}
+            <div class="size-15 rounded-l-lg bg-slate-800 transition-all md:rounded-lg md:bg-slate-900"></div>
+        {/if}
         {#if $store.state === "unstarted" || !$store.meta}
             <div class="flex max-w-40 flex-col items-start justify-center gap-2">
                 <span class="h-3 w-40 rounded-lg bg-slate-800 md:h-4 md:bg-slate-900"></span>

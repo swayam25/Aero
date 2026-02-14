@@ -1,6 +1,7 @@
 <script lang="ts">
     import ImportPlaylist from "$lib/components/ImportPlaylist.svelte";
     import NewPlaylistPopup from "$lib/components/NewPlaylistPopup.svelte";
+    import Thumbnail from "$lib/components/Thumbnail.svelte";
     import Button from "$lib/components/ui/Button.svelte";
     import Seo from "$lib/components/ui/Seo.svelte";
     import Tooltip from "$lib/components/ui/Tooltip.svelte";
@@ -137,10 +138,11 @@
                 }}
                 class="playlist-card group flex size-fit cursor-pointer flex-col items-start justify-center gap-2 rounded-lg p-3 transition-colors duration-200 hover:bg-slate-800"
             >
-                <div
-                    class="size-40 shrink-0 rounded-lg bg-slate-800 bg-cover transition-colors duration-200 group-hover:bg-slate-900 md:size-50"
-                    style="background-image: url({playlist.cover});"
-                ></div>
+                <Thumbnail
+                    src={playlist.cover}
+                    alt={playlist.name}
+                    class="size-40 shrink-0 rounded-lg transition-colors duration-200 group-hover:bg-slate-900 md:size-50"
+                />
                 <div class="flex w-40 items-center justify-between gap-2 text-sm md:w-50">
                     <p class="min-w-0 flex-1 truncate" title={playlist.name}>{playlist.name}</p>
                     {#if playlist.songs.length >= 1}
