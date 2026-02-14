@@ -147,11 +147,7 @@
                 href={`/playlist/${data.user?.id}/${playlist.id}`}
                 class="group flex size-fit cursor-pointer flex-col items-start justify-center gap-2 rounded-lg p-3 transition-colors duration-200 hover:bg-slate-800"
             >
-                <Thumbnail
-                    src={playlist.cover}
-                    alt={playlist.name}
-                    class="size-40 shrink-0 rounded-lg transition-colors duration-200 md:size-50"
-                />
+                <Thumbnail src={playlist.cover} alt={playlist.name} class="size-40 shrink-0 rounded-lg transition-colors duration-200 md:size-50" />
                 <div class="flex w-40 items-center justify-between gap-2 text-sm md:w-50">
                     <p class="min-w-0 flex-1 truncate" title={playlist.name}>{playlist.name}</p>
                     {#if playlist.songs.length >= 1}

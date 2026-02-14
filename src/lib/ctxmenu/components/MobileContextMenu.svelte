@@ -106,11 +106,7 @@
                         {@const IconComponent = action.icon}
                         <IconComponent class="size-5 shrink-0" />
                     {:else}
-                        <Thumbnail
-                            src={action.image || ""}
-                            alt={action.label}
-                            class="size-10 shrink-0 rounded-lg transition-colors duration-200"
-                        />
+                        <Thumbnail src={action.image || ""} alt={action.label} class="size-10 shrink-0 rounded-lg transition-colors duration-200" />
                     {/if}
                     <div class="flex flex-1 flex-col text-left">
                         <span class="font-medium">{action.label}</span>
