@@ -4,8 +4,6 @@
     import { userRoomStore } from "$lib/stores/userRoom";
     import { cn } from "$lib/utils/cn";
     import { onMount } from "svelte";
-    import { toast } from "svelte-sonner";
-    import SolarDownloadMinimalisticLinear from "~icons/solar/download-minimalistic-linear";
     import SolarMicrophoneLargeLinear from "~icons/solar/microphone-large-linear";
     import SolarMutedLinear from "~icons/solar/muted-linear";
     import SolarPlaylist2Linear from "~icons/solar/playlist-2-linear";
@@ -25,7 +23,6 @@
         onQueueClick?: () => void;
         onLyricsClick?: () => void;
         onShuffleClick?: () => void;
-        onDownloadClick?: () => void;
         showVolume?: boolean;
         iconSize?: string;
         gap?: string;
@@ -40,7 +37,6 @@
         onQueueClick,
         onLyricsClick,
         onShuffleClick,
-        onDownloadClick,
         showVolume = true,
         iconSize = "size-6",
         gap = "gap-8",
@@ -116,49 +112,6 @@
         if (onShuffleClick) onShuffleClick();
         setShuffle(!$store.shuffle, user?.id);
     }
-
-    // Download
-    let downloadLoading: boolean = $state(false);
-    async function handleDownload() {
-        if (onDownloadClick) onDownloadClick();
-        if (!user) {
-            toast.warning("Login to download songs");
-            return;
-        }
-        if (!$store.meta || !$store.meta.videoId) return;
-
-        downloadLoading = true;
-        const id = $store.meta.videoId;
-        toast.promise(
-            (async () => {
-                const response = await fetch(`/api/download?id=${encodeURIComponent(id)}`);
-                if (!response.ok) {
-                    const data = await response.json();
-                    throw new Error(data.error || "Unknown error");
-                }
-                const blob = await response.blob();
-                const url = window.URL.createObjectURL(blob);
-                const a = document.createElement("a");
-                a.href = url;
-                a.download = ($store.meta?.name || "song") + ".m4a";
-                document.body.appendChild(a);
-                a.click();
-                document.body.removeChild(a);
-                setTimeout(() => window.URL.revokeObjectURL(url), 100);
-            })(),
-            {
-                loading: "Downloading...",
-                success: () => {
-                    downloadLoading = false;
-                    return "Download complete!";
-                },
-                error: (err: any) => {
-                    downloadLoading = false;
-                    return err?.message || "Unknown error";
-                },
-            },
-        );
-    }
 </script>
 
 <div
@@ -233,16 +186,5 @@
         class:!cursor-not-allowed={$store.queue.length < 2 || !isRoomHost}
     >
         <SolarShuffleLinear class="size-full {$store.shuffle ? 'text-sky-500' : 'text-slate-50'}" />
-    </button>
-
-    <!-- Download -->
-    <button
-        class="size-5 cursor-pointer opacity-80 transition-opacity not-disabled:hover:opacity-100"
-        class:!cursor-progress={downloadLoading}
-        class:!cursor-not-allowed={!$store.meta || !$store.meta.videoId}
-        disabled={downloadLoading || !$store.meta || !$store.meta.videoId}
-        onclick={handleDownload}
-    >
-        <SolarDownloadMinimalisticLinear class="size-full" />
     </button>
 </div>

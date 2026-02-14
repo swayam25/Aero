@@ -37,13 +37,12 @@ Aero makes listening to music feel light and breezy
 
 ### 🧰 Tools
 
-| Tool                                                                                                                                               | Type                     | Version     | Purpose                                                |
-| -------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------ | ----------- | ------------------------------------------------------ |
-| [![Docker](https://img.shields.io/badge/Docker-%232560FF?style=for-the-badge&logo=docker&logoColor=%23FFFFFF)](https://www.docker.com/)            | Required                 | 20.10+      | To deploy the app using containerization.              |
-| [![Git](https://img.shields.io/badge/Git-%23F05133?style=for-the-badge&logo=git&logoColor=%23FFFFFF)](https://git-scm.com/)                        | Required                 | 2.50+       | To clone the repository and manage version control.    |
-| [![Node.js](https://img.shields.io/badge/Node.js-%235FA04E?style=for-the-badge&logo=node.js&logoColor=%23FFFFFF)](https://nodejs.org/)             | Optional (*Development*) | 24+         | To run the app locally and contribute to the codebase. |
-| [![Pnpm](https://img.shields.io/badge/Pnpm-%23F69220?style=for-the-badge&logo=pnpm&logoColor=%23FFFFFF)](https://pnpm.io/)                         | Optional (*Development*) | 10.20+      | To manage project dependencies efficiently.            |
-| [![YT-DLP](https://img.shields.io/badge/YT--DLP-%23FF0000?style=for-the-badge&logo=youtube&logoColor=%23FFFFFF)](https://github.com/yt-dlp/yt-dlp) | Optional (*Development*) | 2026.02.04+ | To download music.                                     |
+| Tool                                                                                                                                    | Type                     | Version | Purpose                                                |
+| --------------------------------------------------------------------------------------------------------------------------------------- | ------------------------ | ------- | ------------------------------------------------------ |
+| [![Docker](https://img.shields.io/badge/Docker-%232560FF?style=for-the-badge&logo=docker&logoColor=%23FFFFFF)](https://www.docker.com/) | Required                 | 20.10+  | To deploy the app using containerization.              |
+| [![Git](https://img.shields.io/badge/Git-%23F05133?style=for-the-badge&logo=git&logoColor=%23FFFFFF)](https://git-scm.com/)             | Required                 | 2.50+   | To clone the repository and manage version control.    |
+| [![Node.js](https://img.shields.io/badge/Node.js-%235FA04E?style=for-the-badge&logo=node.js&logoColor=%23FFFFFF)](https://nodejs.org/)  | Optional (*Development*) | 24+     | To run the app locally and contribute to the codebase. |
+| [![Pnpm](https://img.shields.io/badge/Pnpm-%23F69220?style=for-the-badge&logo=pnpm&logoColor=%23FFFFFF)](https://pnpm.io/)              | Optional (*Development*) | 10.20+  | To manage project dependencies efficiently.            |
 
 ### 🧲 VPS Specs
 
@@ -165,14 +164,6 @@ Aero makes listening to music feel light and breezy
     ```sh
     pnpm run gen-secret
     ```
-
-- Set `YOUTUBE_DL_PATH` to the path of `yt-dlp` executable. You can install it from [GitHub Releases](https://github.com/yt-dlp/yt-dlp/releases) or use a package manager.
-> [!IMPORTANT]
-> This variable is required for downloading videos from YouTube and other supported platforms.
->
-> For production, set its value to `/usr/bin/yt-dlp`. (*The Dockerfile installs `yt-dlp` at this location*)
->
-> For local development, you can set it to the path where you have installed `yt-dlp`.
 
 ### 🌏 Setting domain
 

@@ -1,10 +1,7 @@
 import { json } from "@sveltejs/kit";
 
 export const GET = async ({ locals, url }) => {
-    const user = locals.user;
     const songID = url.searchParams.get("songID");
-
-    if (!user) return json({ error: "Login to get lyrics" }, { status: 401 });
 
     if (!songID) return json({ error: "Missing songID" }, { status: 400 });
 

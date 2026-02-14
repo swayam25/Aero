@@ -33,7 +33,7 @@
                                     {@render description()}
                                 </AlertDialog.Description>
                                 <div
-                                    class="flex flex-col items-center justify-center gap-2 *:w-full *:cursor-pointer *:rounded-lg *:bg-slate-800 *:px-3 *:py-2 *:transition-all *:duration-200 *:not-first:flex *:not-first:w-full *:not-first:items-center *:not-first:justify-center *:not-first:gap-2 *:not-disabled:hover:bg-slate-800/50 *:disabled:brightness-80 md:flex-row md:justify-between md:gap-5"
+                                    class="flex flex-col items-center justify-center gap-2 *:w-full *:cursor-pointer *:rounded-lg *:bg-slate-800 *:px-3 *:py-2 *:transition-all *:duration-200 *:not-first:flex *:not-first:w-full *:not-first:items-center *:not-first:justify-center *:not-first:gap-2 *:not-disabled:hover:bg-slate-800/50 *:disabled:pointer-events-none *:disabled:cursor-not-allowed *:disabled:brightness-80 md:flex-row md:justify-between md:gap-5"
                                 >
                                     <AlertDialog.Cancel>Cancel</AlertDialog.Cancel>
                                     {@render actions()}

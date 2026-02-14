@@ -2,6 +2,9 @@
     import { invalidateAll } from "$app/navigation";
     import type { UserData } from "$lib/discord/types";
     import { AlertDialog } from "bits-ui";
+    import { toast } from "svelte-sonner";
+    import { fade } from "svelte/transition";
+    import IconParkOutlineLoadingFour from "~icons/icon-park-outline/loading-four";
     import SolarLogin2Linear from "~icons/solar/login-2-linear";
     import SolarLogout2Linear from "~icons/solar/logout-2-linear";
     import SolarTrashBinTrashLinear from "~icons/solar/trash-bin-trash-linear";
@@ -15,8 +18,10 @@
     let { user, mobile = false }: { user: UserData | null; mobile?: boolean } = $props();
     let deletePopupOpen = $state(false);
     let loginPopup: Window | null = null;
+    let popupCheckInterval: number | null = null;
+    let isLoggingIn = $state(false);
 
-    function handleMessage(event: MessageEvent) {
+    async function handleMessage(event: MessageEvent) {
         if (event.origin !== window.location.origin) return;
 
         if (event.data.type === "LOGIN_SUCCESS") {
@@ -24,7 +29,14 @@
                 loginPopup.close();
                 loginPopup = null;
             }
-            invalidateAll();
+            if (popupCheckInterval) {
+                clearInterval(popupCheckInterval);
+                popupCheckInterval = null;
+            }
+            isLoggingIn = false;
+            toast.loading("Fetching user data...", { id: "login" });
+            await invalidateAll();
+            toast.success("Logged in successfully!", { id: "login" });
         }
     }
 
@@ -35,28 +47,43 @@
             if (loginPopup && !loginPopup.closed) {
                 loginPopup.close();
             }
+            if (popupCheckInterval) {
+                clearInterval(popupCheckInterval);
+            }
         };
     });
 
+    let isLoggingOut = $state(false);
     async function logout() {
+        if (isLoggingOut) return;
+        isLoggingOut = true;
         try {
             await fetch("/auth/logout");
-            invalidateAll();
-        } catch {}
+            await invalidateAll();
+        } catch {
+        } finally {
+            isLoggingOut = false;
+        }
     }
 
+    let isDeleting = $state(false);
     async function deleteAcc() {
-        deletePopupOpen = false;
+        if (isDeleting) return;
+        isDeleting = true;
         await fetch("/auth/delete", {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
             },
         });
-        invalidateAll();
+        await invalidateAll();
+        isDeleting = false;
+        deletePopupOpen = false;
     }
 
     async function handleLogin() {
+        if (isLoggingIn) return;
+        isLoggingIn = true;
         try {
             const response = await fetch("/auth/login");
             const data = await response.json();
@@ -69,10 +96,26 @@
 
                 if (loginPopup) {
                     loginPopup.focus();
+
+                    // Check if popup is closed (user cancelled)
+                    popupCheckInterval = window.setInterval(() => {
+                        if (loginPopup && loginPopup.closed) {
+                            clearInterval(popupCheckInterval!);
+                            popupCheckInterval = null;
+                            loginPopup = null;
+                            isLoggingIn = false;
+                        }
+                    }, 500);
+                } else {
+                    // Popup was blocked
+                    isLoggingIn = false;
                 }
+            } else {
+                isLoggingIn = false;
             }
         } catch (error) {
             console.error("Login failed:", error);
+            isLoggingIn = false;
         }
     }
 </script>
@@ -84,8 +127,12 @@
         Profile
     </CtxButton>
     <!-- Logout -->
-    <CtxButton onclick={logout}>
-        <SolarLogout2Linear class="size-5" />
+    <CtxButton onclick={logout} disabled={isLoggingOut}>
+        {#if isLoggingOut}
+            <IconParkOutlineLoadingFour class="size-5 animate-spin" />
+        {:else}
+            <SolarLogout2Linear class="size-5" />
+        {/if}
         Logout
     </CtxButton>
     <!-- Delete -->
@@ -102,8 +149,16 @@
             and all associated data. Please confirm that you want to proceed.
         {/snippet}
         {#snippet actions()}
-            <AlertDialog.Action class="hover:bg-red-500/10! hover:text-red-500" onclick={deleteAcc}>
-                <SolarTrashBinTrashLinear class="size-5" />
+            <AlertDialog.Action
+                class="hover:bg-red-500/10! hover:text-red-500 {isDeleting ? 'cursor-progress! bg-red-500/10! text-red-500' : ''}"
+                disabled={isDeleting}
+                onclick={deleteAcc}
+            >
+                {#if isDeleting}
+                    <IconParkOutlineLoadingFour class="size-5 animate-spin" />
+                {:else}
+                    <SolarTrashBinTrashLinear class="size-5" />
+                {/if}
                 Delete Account
             </AlertDialog.Action>
         {/snippet}
@@ -141,8 +196,16 @@
                 {/snippet}
             </Popover>
         {:else}
-            <Button onclick={handleLogin} class="font-bold">
-                <SolarLogin2Linear class="size-5" />
+            <Button onclick={handleLogin} class="font-bold" disabled={isLoggingIn}>
+                {#if isLoggingIn}
+                    <span in:fade={{ duration: 100 }}>
+                        <IconParkOutlineLoadingFour class="size-5 animate-spin" />
+                    </span>
+                {:else}
+                    <span in:fade={{ duration: 100 }}>
+                        <SolarLogin2Linear class="size-5" />
+                    </span>
+                {/if}
                 LOGIN
             </Button>
         {/if}
