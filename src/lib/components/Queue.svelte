@@ -8,9 +8,9 @@
     import { createMobileMediaQuery } from "$lib/utils/mobile";
     import { onMount } from "svelte";
     import { fade } from "svelte/transition";
-    import HugeiconsCd from "~icons/hugeicons/cd";
     import IconParkOutlineDrag from "~icons/icon-park-outline/drag";
     import Thumbnail from "./Thumbnail.svelte";
+    import Wave from "./Wave.svelte";
 
     let {
         user,
@@ -192,8 +192,8 @@
                                         <IconParkOutlineDrag class="size-6" />
                                     </div>
                                 {:else if song.videoId === $store.meta?.videoId}
-                                    <span in:fade={{ duration: 100 }} class="size-full">
-                                        <HugeiconsCd class="size-full animate-spin text-sky-500" />
+                                    <span in:fade={{ duration: 100 }} class="flex size-full items-center justify-center">
+                                        <Wave class="size-4 text-sky-500" />
                                     </span>
                                 {:else}
                                     <span in:fade={{ duration: 100 }} class="size-full text-slate-200">{idx + 1}</span>

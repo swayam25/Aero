@@ -1,6 +1,7 @@
 <script lang="ts">
     import { invalidateAll } from "$app/navigation";
     import Thumbnail from "$lib/components/Thumbnail.svelte";
+    import Wave from "$lib/components/Wave.svelte";
     import Avatar from "$lib/components/ui/Avatar.svelte";
     import Button from "$lib/components/ui/Button.svelte";
     import Draggable from "$lib/components/ui/Draggable.svelte";
@@ -18,7 +19,6 @@
     import { toast } from "svelte-sonner";
     import { fade } from "svelte/transition";
     import type { SongFull } from "ytmusic-api";
-    import HugeiconsCd from "~icons/hugeicons/cd";
     import IconParkOutlineCheck from "~icons/icon-park-outline/check";
     import IconParkOutlineDrag from "~icons/icon-park-outline/drag";
     import IconParkOutlineLoadingFour from "~icons/icon-park-outline/loading-four";
@@ -630,8 +630,8 @@
                                                 <IconParkOutlineDrag class="size-6" />
                                             </div>
                                         {:else if song.videoId === $store.meta?.videoId}
-                                            <span in:fade={{ duration: 100 }} class="size-full">
-                                                <HugeiconsCd class="size-full animate-spin text-sky-500" />
+                                            <span in:fade={{ duration: 100 }} class="flex size-full items-center justify-center">
+                                                <Wave class="size-4 text-sky-500" />
                                             </span>
                                         {:else}
                                             <span in:fade={{ duration: 100 }} class="text-slate-200">{idx + 1}</span>
