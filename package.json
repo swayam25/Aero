@@ -19,7 +19,7 @@
     },
     "devDependencies": {
         "@sveltejs/adapter-node": "^5.5.3",
-        "@sveltejs/kit": "^2.51.0",
+        "@sveltejs/kit": "^2.52.2",
         "@sveltejs/vite-plugin-svelte": "^5.1.1",
         "@tailwindcss/vite": "^4.1.18",
         "@types/youtube-player": "^5.5.11",
