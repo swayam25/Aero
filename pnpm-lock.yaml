@@ -56,10 +56,10 @@ importers:
     devDependencies:
       '@sveltejs/adapter-node':
         specifier: ^5.5.3
-        version: 5.5.3(@sveltejs/kit@2.51.0(@sveltejs/vite-plugin-svelte@5.1.1(svelte@5.51.5)(vite@6.4.1(@types/node@25.2.3)(jiti@2.6.1)(lightningcss@1.30.2)))(svelte@5.51.5)(typescript@5.9.3)(vite@6.4.1(@types/node@25.2.3)(jiti@2.6.1)(lightningcss@1.30.2)))
+        version: 5.5.3(@sveltejs/kit@2.52.2(@sveltejs/vite-plugin-svelte@5.1.1(svelte@5.51.5)(vite@6.4.1(@types/node@25.2.3)(jiti@2.6.1)(lightningcss@1.30.2)))(svelte@5.51.5)(typescript@5.9.3)(vite@6.4.1(@types/node@25.2.3)(jiti@2.6.1)(lightningcss@1.30.2)))
       '@sveltejs/kit':
-        specifier: ^2.51.0
-        version: 2.51.0(@sveltejs/vite-plugin-svelte@5.1.1(svelte@5.51.5)(vite@6.4.1(@types/node@25.2.3)(jiti@2.6.1)(lightningcss@1.30.2)))(svelte@5.51.5)(typescript@5.9.3)(vite@6.4.1(@types/node@25.2.3)(jiti@2.6.1)(lightningcss@1.30.2))
+        specifier: ^2.52.2
+        version: 2.52.2(@sveltejs/vite-plugin-svelte@5.1.1(svelte@5.51.5)(vite@6.4.1(@types/node@25.2.3)(jiti@2.6.1)(lightningcss@1.30.2)))(svelte@5.51.5)(typescript@5.9.3)(vite@6.4.1(@types/node@25.2.3)(jiti@2.6.1)(lightningcss@1.30.2))
       '@sveltejs/vite-plugin-svelte':
         specifier: ^5.1.1
         version: 5.1.1(svelte@5.51.5)(vite@6.4.1(@types/node@25.2.3)(jiti@2.6.1)(lightningcss@1.30.2))
@@ -853,8 +853,8 @@ packages:
     peerDependencies:
       '@sveltejs/kit': ^2.4.0
 
-  '@sveltejs/kit@2.51.0':
-    resolution: {integrity: sha512-BkcfxVVYmfxHGYLugemb7TWW+y/MNZbxXHXJ141lyyi2ozq0Q4kbqoV0cBGlh7F0vNtCMvfr7UPnxIaBjcP9gg==}
+  '@sveltejs/kit@2.52.2':
+    resolution: {integrity: sha512-1in76dftrofUt138rVLvYuwiQLkg9K3cG8agXEE6ksf7gCGs8oIr3+pFrVtbRmY9JvW+psW5fvLM/IwVybOLBA==}
     engines: {node: '>=18.13'}
     hasBin: true
     peerDependencies:
@@ -1004,11 +1004,6 @@ packages:
   '@types/youtube-player@5.5.11':
     resolution: {integrity: sha512-pM41CDBqJqBmTeJWnF7NOGz82IQoYOhqzMYXv5vKCXBqGiYSLldxMtpCk6KAEtADTy49S45AriYaCaZyeUX38Q==}
 
-  acorn@8.15.0:
-    resolution: {integrity: sha512-NZyJarBfL7nWwIq+FDL6Zp/yHEhePMNnnJ0y3qfieCrmNvYct8uvtiV41UvlSe6apAfk0fY1FbWx+NwfmpvtTg==}
-    engines: {node: '>=0.4.0'}
-    hasBin: true
-
   acorn@8.16.0:
     resolution: {integrity: sha512-UVJyE9MttOsBQIDKw1skb9nAwQuR5wuGD3+82K6JgJlm/Y+KI92oNsMNGZCYdDsVtRHSak0pcV5Dno5+4jh9sw==}
     engines: {node: '>=0.4.0'}
@@ -1101,9 +1096,6 @@ packages:
   detect-libc@2.1.2:
     resolution: {integrity: sha512-Btj2BOOO83o3WyH59e8MgXsxEQVcarkUOpEYrubB0urwnN10yQ364rsiByU11nZlqWYZm05i/of7io4mzihBtQ==}
     engines: {node: '>=8'}
-
-  devalue@5.6.2:
-    resolution: {integrity: sha512-nPRkjWzzDQlsejL1WVifk5rvcFi/y1onBRxjaFMjZeR9mFpqu2gmAZ9xUB9/IEanEP/vBtGeGganC/GO1fmufg==}
 
   devalue@5.6.3:
     resolution: {integrity: sha512-nc7XjUU/2Lb+SvEFVGcWLiKkzfw8+qHI7zn8WYXKkLMgfGSHbgCEaR6bJpev8Cm6Rmrb19Gfd/tZvGqx9is3wg==}
@@ -2386,36 +2378,31 @@ snapshots:
       - bufferutil
       - utf-8-validate
 
-  '@sveltejs/acorn-typescript@1.0.9(acorn@8.15.0)':
-    dependencies:
-      acorn: 8.15.0
-
   '@sveltejs/acorn-typescript@1.0.9(acorn@8.16.0)':
     dependencies:
       acorn: 8.16.0
 
-  '@sveltejs/adapter-node@5.5.3(@sveltejs/kit@2.51.0(@sveltejs/vite-plugin-svelte@5.1.1(svelte@5.51.5)(vite@6.4.1(@types/node@25.2.3)(jiti@2.6.1)(lightningcss@1.30.2)))(svelte@5.51.5)(typescript@5.9.3)(vite@6.4.1(@types/node@25.2.3)(jiti@2.6.1)(lightningcss@1.30.2)))':
+  '@sveltejs/adapter-node@5.5.3(@sveltejs/kit@2.52.2(@sveltejs/vite-plugin-svelte@5.1.1(svelte@5.51.5)(vite@6.4.1(@types/node@25.2.3)(jiti@2.6.1)(lightningcss@1.30.2)))(svelte@5.51.5)(typescript@5.9.3)(vite@6.4.1(@types/node@25.2.3)(jiti@2.6.1)(lightningcss@1.30.2)))':
     dependencies:
       '@rollup/plugin-commonjs': 29.0.0(rollup@4.57.1)
       '@rollup/plugin-json': 6.1.0(rollup@4.57.1)
       '@rollup/plugin-node-resolve': 16.0.3(rollup@4.57.1)
-      '@sveltejs/kit': 2.51.0(@sveltejs/vite-plugin-svelte@5.1.1(svelte@5.51.5)(vite@6.4.1(@types/node@25.2.3)(jiti@2.6.1)(lightningcss@1.30.2)))(svelte@5.51.5)(typescript@5.9.3)(vite@6.4.1(@types/node@25.2.3)(jiti@2.6.1)(lightningcss@1.30.2))
+      '@sveltejs/kit': 2.52.2(@sveltejs/vite-plugin-svelte@5.1.1(svelte@5.51.5)(vite@6.4.1(@types/node@25.2.3)(jiti@2.6.1)(lightningcss@1.30.2)))(svelte@5.51.5)(typescript@5.9.3)(vite@6.4.1(@types/node@25.2.3)(jiti@2.6.1)(lightningcss@1.30.2))
       rollup: 4.57.1
 
-  '@sveltejs/kit@2.51.0(@sveltejs/vite-plugin-svelte@5.1.1(svelte@5.51.5)(vite@6.4.1(@types/node@25.2.3)(jiti@2.6.1)(lightningcss@1.30.2)))(svelte@5.51.5)(typescript@5.9.3)(vite@6.4.1(@types/node@25.2.3)(jiti@2.6.1)(lightningcss@1.30.2))':
+  '@sveltejs/kit@2.52.2(@sveltejs/vite-plugin-svelte@5.1.1(svelte@5.51.5)(vite@6.4.1(@types/node@25.2.3)(jiti@2.6.1)(lightningcss@1.30.2)))(svelte@5.51.5)(typescript@5.9.3)(vite@6.4.1(@types/node@25.2.3)(jiti@2.6.1)(lightningcss@1.30.2))':
     dependencies:
       '@standard-schema/spec': 1.1.0
-      '@sveltejs/acorn-typescript': 1.0.9(acorn@8.15.0)
+      '@sveltejs/acorn-typescript': 1.0.9(acorn@8.16.0)
       '@sveltejs/vite-plugin-svelte': 5.1.1(svelte@5.51.5)(vite@6.4.1(@types/node@25.2.3)(jiti@2.6.1)(lightningcss@1.30.2))
       '@types/cookie': 0.6.0
-      acorn: 8.15.0
+      acorn: 8.16.0
       cookie: 0.6.0
-      devalue: 5.6.2
+      devalue: 5.6.3
       esm-env: 1.2.2
       kleur: 4.1.5
       magic-string: 0.30.21
       mrmime: 2.0.1
-      sade: 1.8.1
       set-cookie-parser: 3.0.1
       sirv: 3.0.2
       svelte: 5.51.5
@@ -2544,8 +2531,6 @@ snapshots:
 
   '@types/youtube-player@5.5.11': {}
 
-  acorn@8.15.0: {}
-
   acorn@8.16.0: {}
 
   animejs@4.3.5: {}
@@ -2621,8 +2606,6 @@ snapshots:
   dequal@2.0.3: {}
 
   detect-libc@2.1.2: {}
-
-  devalue@5.6.2: {}
 
   devalue@5.6.3: {}
 
