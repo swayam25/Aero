@@ -17,6 +17,14 @@ Aero makes listening to music feel light and breezy
 
 https://github.com/user-attachments/assets/ccf2330c-35de-42ec-8a95-5a606d10dfd4
 
+<details>
+
+<summary>Mobile Preview</summary>
+
+https://github.com/user-attachments/assets/a0fd4e05-362f-4624-9092-e13907153864
+
+</details>
+
 ## 💫 Prerequisites
 
 ### 🧰 Tools
