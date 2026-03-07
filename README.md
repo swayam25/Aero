@@ -25,6 +25,14 @@ https://github.com/user-attachments/assets/a0fd4e05-362f-4624-9092-e13907153864
 
 </details>
 
+<details>
+
+<summary>Rooms Preview</summary>
+
+https://github.com/user-attachments/assets/1575afdd-aa04-44c0-83f4-d41c548cdedd
+
+</details>
+
 ## 💫 Prerequisites
 
 ### 🧰 Tools
