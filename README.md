@@ -50,8 +50,7 @@ https://github.com/user-attachments/assets/1575afdd-aa04-44c0-83f4-d41c548cdedd
 | --------- | ------------------- | ----------------------- |
 | CPU       | 2 vCPU              | 4 vCPU or more          |
 | RAM       | 4 GB                | 8 GB or more            |
-| Storage   | 10 GB               | 20 GB                   |
-| Network   | 100 Mbps            | 1 Gbps or more          |
+| Storage   | 10 GB               | 20 GB or more           |
 
 ## 🚀 Production
 
