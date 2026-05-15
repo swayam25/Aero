@@ -35,22 +35,12 @@ https://github.com/user-attachments/assets/1575afdd-aa04-44c0-83f4-d41c548cdedd
 
 ## 💫 Prerequisites
 
-### 🧰 Tools
-
 | Tool                                                                                                                                    | Type                     | Version | Purpose                                                |
 | --------------------------------------------------------------------------------------------------------------------------------------- | ------------------------ | ------- | ------------------------------------------------------ |
 | [![Docker](https://img.shields.io/badge/Docker-%232560FF?style=for-the-badge&logo=docker&logoColor=%23FFFFFF)](https://www.docker.com/) | Required                 | 20.10+  | To deploy the app using containerization.              |
 | [![Git](https://img.shields.io/badge/Git-%23F05133?style=for-the-badge&logo=git&logoColor=%23FFFFFF)](https://git-scm.com/)             | Required                 | 2.50+   | To clone the repository and manage version control.    |
 | [![Node.js](https://img.shields.io/badge/Node.js-%235FA04E?style=for-the-badge&logo=node.js&logoColor=%23FFFFFF)](https://nodejs.org/)  | Optional (*Development*) | 24+     | To run the app locally and contribute to the codebase. |
 | [![Pnpm](https://img.shields.io/badge/Pnpm-%23F69220?style=for-the-badge&logo=pnpm&logoColor=%23FFFFFF)](https://pnpm.io/)              | Optional (*Development*) | 10.20+  | To manage project dependencies efficiently.            |
-
-### 🧲 VPS Specs
-
-| Component | Minimum Requirement | Recommended Requirement |
-| --------- | ------------------- | ----------------------- |
-| CPU       | 2 vCPU              | 4 vCPU or more          |
-| RAM       | 4 GB                | 8 GB or more            |
-| Storage   | 10 GB               | 20 GB or more           |
 
 ## 🚀 Production
 
