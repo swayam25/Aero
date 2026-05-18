@@ -13,6 +13,11 @@ Aero makes listening to music feel light and breezy
 
 </div>
 
+> [!IMPORTANT]
+> This project is no longer maintained and has been archived.
+>
+> Some integrations and dependencies may not work as expected.
+
 ## 📸 Preview
 
 https://github.com/user-attachments/assets/ccf2330c-35de-42ec-8a95-5a606d10dfd4
