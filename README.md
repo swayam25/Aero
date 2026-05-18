@@ -113,7 +113,6 @@ https://github.com/user-attachments/assets/1575afdd-aa04-44c0-83f4-d41c548cdedd
 | `DISCORD_BOT_TOKEN`     | `string` | Discord bot token                                        |
 | `SPOTIFY_CLIENT_ID`     | `string` | Spotify client ID                                        |
 | `SPOTIFY_CLIENT_SECRET` | `string` | Spotify client secret                                    |
-| `YOUTUBE_DL_PATH`       | `string` | Path to `youtube-dl`/`yt-dlp` binary                     |
 | `DOMAIN`                | `string` | Your domain for the reverse proxy, also used as `ORIGIN` |
 
 ### 📚 Getting database keys
